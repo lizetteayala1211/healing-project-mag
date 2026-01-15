@@ -362,3 +362,16 @@ body{
 @media (min-width: 1024px){
   .hamburger{ display:none; }
 }
+
+/* === Pull the ledger box into the left gutter without changing column widths === */
+@media (min-width: 1024px){
+  .rail{
+    /* keep it in column 2 as-is, but shift the CONTENT left */
+    transform: translateX(calc(-1 * var(--gutter-w)));
+  }
+
+  /* Optional: if you want it perfectly centered within the gutter space */
+  .rail .rail-card{
+    width: var(--ledger-w);
+  }
+}
