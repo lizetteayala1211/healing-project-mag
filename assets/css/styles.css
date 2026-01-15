@@ -7,6 +7,9 @@
 
   --max:1300px;
   --rail:220px;
+
+  --gutter: 260px; /* controls BOTH ledger width + right empty space */
+  --frame-gap: 20px; /* spacing between columns */
 }
 
 *{ box-sizing:border-box; }
@@ -62,21 +65,43 @@ body{
 }
 
 /* ===== SHELL LAYOUT ===== */
-.layout-container{ max-width:var(--max); margin:0 auto; padding:0 16px; }
-.shell{ position:relative; display:block; }
+.layout-container{ 
+  max-width:var(--max); 
+  margin:0 auto; 
+  padding:0 16px; 
+}
+
+/* Make the overall shell a 3-column grid */
+.shell{
+  display: grid;
+  grid-template-columns: var(--gutter) minmax(0, 1fr) var(--gutter);
+  gap: var(--frame-gap);
+  align-items: start;
+}
+
+/* Right gutter column (empty, just for symmetry) */
+.shell::after{
+  content: "";
+  display: block;
+  height: 1px; /* doesn’t matter, it just occupies the right column */
+}
 
 /* ===== SIDE RAIL ===== */
+
+/* Put the rail in the left column (no longer fixed) */
 .rail{
-  position:fixed;
-  top:86px;
-  width:var(--rail);
-  display:none;
+  position: sticky;
+  top: var(--header-h, 86px);
+  width: 100%;
+  display: block;
 }
+
+/* Main sits in the middle column */
 .main{
-  border-left:1px solid var(--rule);
-  border-right:1px solid var(--rule);
-  min-height:calc(100vh - 140px);
+  margin-left: 0; /* undo old desktop offset */
+  width: 100%;
 }
+
 .page{ padding:28px 20px; }
 
 /* RULES VIBE (optional vertical lines inside pages) */
@@ -204,9 +229,9 @@ body{
 .prose p{ margin:0 0 14px 0; }
 
 /* ===== RESPONSIVE ===== */
+
 @media (min-width: 1024px){
   .rail{ display:block; }
-  .main{ margin-left:calc(var(--rail) + 20px); }
   .page{ padding:42px 44px; }
   .grid{ grid-template-columns:repeat(3, 1fr); gap:16px; }
   .span-2{ grid-column:span 2; }
@@ -231,4 +256,18 @@ body{
 }
 @media (min-width: 1024px){
   .hamburger{ display:none; }
+}
+
+/* On small screens, go back to a simple layout */
+@media (max-width: 1023px){
+  .shell{
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .rail{
+    display: none;
+  }
+  .shell::after{
+    display: none;
+  }
 }
