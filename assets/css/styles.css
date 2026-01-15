@@ -167,6 +167,9 @@ body{
 }
 .rail-link{
   display:flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap:12px;
   padding:14px 14px;
   border-bottom:1px solid var(--rule);
@@ -189,14 +192,14 @@ body{
 ===================== */
 .main{
   border:none;
-  margin:0;
-  min-height:auto;
+  margin: 24px 24px;
+  height:auto;
   overflow:visible;
-  width: 100%;
+  width: auto;
 }
-.page{
+/* .page{
   padding: var(--page-pad-y) var(--page-pad-x);
-}
+} */
 
 /* Optional ledger-style internal rules inside the center page */
 .rules{ position:relative; }
@@ -329,12 +332,15 @@ body{
    Sticky (NOT fixed) to avoid bottom dead-space
 ===================== */
 /* ===== FOOTER TICKER (one-line scrolling quote) ===== */
+/* ===== FOOTER TICKER (guaranteed moving) ===== */
+
+/* ===== FOOTER TICKER (reliable marquee) ===== */
 .quote{
   position: sticky;
   bottom: 0;
   background: var(--paper);
   border-top: 1px solid var(--rule);
-  z-index: 30;
+  z-index: 50;
 }
 
 .quote-inner{
@@ -343,42 +349,37 @@ body{
   padding: 10px 16px;
 }
 
-/* The “window” */
+/* “window” */
 .ticker{
   width: 100%;
-  overflow: hidden;          /* hides overflow so it never wraps */
-  white-space: nowrap;       /* force one line */
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-/* The moving track */
+/* moving layer */
 .ticker-track{
-  display: inline-flex;
-  align-items: center;
-  gap: 64px;                 /* space between repeated quotes */
+  display: inline-block;
+  padding-left: 100%;              /* start off-screen right */
   will-change: transform;
-  animation: thp-ticker 28s linear infinite;
+  animation: thp-marquee 22s linear infinite;
 }
 
-/* One quote instance */
-.ticker-item{
+.ticker-text{
   display: inline-block;
+  padding-right: 64px;             /* breathing room before loop */
   font-style: italic;
   color: rgba(0,0,0,.75);
 }
 
-/* Motion */
-@keyframes thp-ticker{
+/* move fully across */
+@keyframes thp-marquee{
   0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  100% { transform: translateX(-100%); }
 }
 
-/* Respect reduced motion */
+/* accessibility */
 @media (prefers-reduced-motion: reduce){
   .ticker-track{ animation: none; }
-}
-
-@media (hover:hover){
-  .ticker:hover .ticker-track{ animation-play-state: paused; }
 }
 
 /* =====================
