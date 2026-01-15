@@ -43,36 +43,33 @@ sideRailMobile?.addEventListener("click", (e) => {
 
 // helpers used by page partials
 window.THP = {
-  renderCardsGrid: (currentPath) => {
-    const grid = document.getElementById("cardsGrid");
-    if (!grid) return;
+renderCardsGrid: (currentPath) => {
+  const grid = document.getElementById("cardsGrid");
+  if (!grid) return;
 
-    // "/call-response" -> "call-response"
-    const key = (currentPath || "").replace("/", "");
-    const featuredPaths = sectionFeatured?.[key] || [];
+  const key = (currentPath || "").replace("/", "");
+  const featuredPaths = sectionFeatured?.[key] || [];
 
-    const featured = featuredPaths
-      .map((p) => cards.find((c) => c.path === p))
-      .filter(Boolean);
+  const featured = featuredPaths
+    .map((p) => cards.find((c) => c.path === p))
+    .filter(Boolean);
 
-    const rest = cards.filter((c) => !featuredPaths.includes(c.path));
+  const rest = cards.filter((c) => !featuredPaths.includes(c.path));
+  const ordered = [...featured, ...rest];
 
-    const ordered = [...featured, ...rest];
-
-    grid.innerHTML = ordered
-      .map((c) => {
-        const span = "";
-        const featuredClass = idx < featured.length ? "is-featured" : "";
-        return `
-          <a class="card" href="#${c.path}" style="background:${c.color}">
-            <span class="card-dot"></span>
-            <h3>${c.title}</h3>
-            <p>${c.byline}</p>
-          </a>
-        `;
-      })
-      .join("");
-  },
+  grid.innerHTML = ordered
+    .map((c, idx) => {
+      const featuredClass = idx < featured.length ? "is-featured" : "";
+      return `
+        <a class="card ${featuredClass}" href="#${c.path}" style="background:${c.color}">
+          <span class="card-dot"></span>
+          <h3>${c.title}</h3>
+          <p>${c.byline}</p>
+        </a>
+      `;
+    })
+    .join("");
+},
   setPath,
 };
 
@@ -102,10 +99,4 @@ async function render() {
 
 window.addEventListener("hashchange", render);
 render();
-
-const featuredClass = idx < featured.length ? "is-featured" : "";
-return `
-  <a class="card ${featuredClass}" href="#${c.path}" style="background:${c.color}">
-...
-`;
 
