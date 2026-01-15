@@ -19,23 +19,28 @@
     </header>
 
     <!-- OVERALL LAYOUT -->
-    <div class="layout-container">
-<div class="shell">
-  <div class="page-grid">
-    <aside class="rail" id="side-rail"></aside>
+<div class="layout-container">
+  <div class="shell">
+    <div class="page-grid">
+      <div class="gutter-left" aria-hidden="true"></div>
 
-    <main class="main">
-      <div class="page" id="app"></div>
-    </main>
+      <!-- SIDE RAIL -->
+      <aside class="rail" id="side-rail"></aside>
 
-    <div class="gutter-right" aria-hidden="true"></div>
-  </div>
+      <!-- MAIN -->
+      <main class="main">
+        <div class="page" id="app"></div>
+      </main>
 
-  <!-- MOBILE RAIL DRAWER stays as-is -->
-  <div class="drawer" id="mobile-drawer">
-    <div class="drawer-back" id="drawer-backdrop"></div>
-    <div class="drawer-panel">
-      <div id="side-rail-mobile"></div>
+      <div class="gutter-right" aria-hidden="true"></div>
+    </div>
+
+    <!-- MOBILE RAIL DRAWER (unchanged) -->
+    <div class="drawer" id="mobile-drawer">
+      <div class="drawer-back" id="drawer-backdrop"></div>
+      <div class="drawer-panel">
+        <div id="side-rail-mobile"></div>
+      </div>
     </div>
   </div>
 </div>
