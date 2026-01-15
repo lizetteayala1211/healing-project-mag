@@ -21,34 +21,30 @@
     <!-- OVERALL LAYOUT -->
 <div class="layout-container">
   <div class="shell">
-<div class="page-grid">
-  <!-- LEFT COLUMN (gutter + ledger together) -->
-  <aside class="left-rail">
-    <div class="rail" id="side-rail"></div>
-  </aside>
 
-  <!-- CENTER COLUMN -->
-  <main class="main">
-    <div class="page" id="app"></div>
-  </main>
+    <div class="page-grid">
+      <!-- LEFT GUTTER = LEDGER -->
+      <div class="left-rail" id="side-rail"></div>
 
-  <!-- RIGHT COLUMN (empty gutter) -->
-  <div class="gutter-right" aria-hidden="true"></div>
-</div>
+      <!-- CENTER = CONTENT -->
+      <main class="main">
+        <div class="page" id="app"></div>
+      </main>
 
-<!-- MOBILE DRAWER stays the same -->
-<div class="drawer" id="mobile-drawer">
-  <div class="drawer-back" id="drawer-backdrop"></div>
-  <div class="drawer-panel">
-    <div id="side-rail-mobile"></div>
-  </div>
-</div>
+      <!-- RIGHT GUTTER = EMPTY -->
+      <!-- <div class="gutter-right" aria-hidden="true"></div> -->
+    </div>
 
+    <!-- MOBILE DRAWER stays separate -->
+    <div class="drawer" id="mobile-drawer">
+      <div class="drawer-back" id="drawer-backdrop"></div>
+      <div class="drawer-panel">
+        <div id="side-rail-mobile"></div>
+      </div>
+    </div>
 
   </div>
 </div>
-
-
         <!-- MAIN -->
         <main class="main">
           <div class="page" id="app"></div>
@@ -58,13 +54,20 @@
 
     <!-- (ROTATING) FOOTER QUOTE -->
     <footer class="quote">
-      <div class="quote-inner">
-        <em>
-          I realized it's not a one-size-fits-all here. You have to be able to adapt in your caregiving,
-          because, here, the method one day might not be the method the next.
-        </em>
+  <div class="quote-inner">
+    <div class="ticker" aria-label="Rotating quote">
+      <div class="ticker-track">
+        <span class="ticker-item">
+          I realized it's not a one-size-fits-all here. You have to be able to adapt in your caregiving, because, here, the method one day might not be the method the next.
+        </span>
+        <span class="ticker-item" aria-hidden="true">
+          I realized it's not a one-size-fits-all here. You have to be able to adapt in your caregiving, because, here, the method one day might not be the method the next.
+        </span>
       </div>
-    </footer>
+    </div>
+  </div>
+</footer>
+
 
     <script type="module" src="/assets/js/app.js"></script>
   </body>

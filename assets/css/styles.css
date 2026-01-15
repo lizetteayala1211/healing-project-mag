@@ -1,25 +1,11 @@
 /* =========================================================
-   THP MAG — FULL STYLESHEET (ONE-SWOOP COPY/PASTE)
-   Layout goals:
-   - Desktop (>=1024): 3 columns
-       [LEFT = ledger gutter] [CENTER = page content] [RIGHT = empty gutter]
-     Left and Right columns are equal width.
-   - Cards: always 3 columns on >=1024, each card = 200px wide.
-   - Mobile (<1024): ledger hidden (drawer nav), cards stack.
-   Required HTML structure inside the center layout:
-     <div class="layout-container">
-       <div class="shell">
-         <div class="page-grid">
-           <aside class="left-rail"><div class="rail" id="side-rail"></div></aside>
-           <main class="main"><div class="page" id="app"></div></main>
-           <div class="gutter-right" aria-hidden="true"></div>
-         </div>
-         <div class="drawer" id="mobile-drawer">...</div>
-       </div>
-     </div>
+   THE HEALING PROJECT MAGAZINE — FULL STYLESHEET
+   Replace your entire styles.css with this file
 ========================================================= */
 
-/* ===== TOKENS ===== */
+/* =====================
+   VARIABLES
+===================== */
 :root{
   --paper:#f3efe6;
   --ink:#1a1a1a;
@@ -27,55 +13,58 @@
   --muted:rgba(0,0,0,.7);
   --dot:#1f2a7a;
 
-  --max: 1300px;
-  --pad-x: 16px;
+  --max:1300px;
 
+  /* Header / footer sizing */
   --header-h: 86px;
   --footer-h: 56px;
 
-  /* 1024+ layout: 3 columns */
-  --page-max: 1200px;     /* center frame max; doesn't force full-bleed */
-  --col-gap: 28px;        /* space between left/center/right columns */
+  /* 3-column layout */
+  --side-w: 400px;         /* left ledger gutter + right empty gutter */
+  --col-gap: 18px;
 
-  /* Left/Right columns MUST match */
-  --side-w: 260px;        /* ledger gutter width + right empty gutter width */
-
-  /* Center column sizing locked for 3 cards @ 200px */
-  --card-w: 200px;
-  --card-gap: 16px;
-
+  /* Center content sizing */
   --page-pad-x: 24px;
-  --page-pad-y: 32px;
+  --page-pad-y: 28px;
 
-  /* center width = (3*200 + 2*16)=632 + padding (48)=680 */
-  --center-w: 680px;
-
+  /* Cards */
+  --card-w: 340px;         /* locked per your request */
+  --card-gap: 16px;
+  --card-min-h: 205px;     /* makes cards “longer” */
   --card-radius: 20px;
-  --card-min-h: 180px;
+
+  /* Center column width = 3 cards + 2 gaps + center padding */
+  --center-inner: calc((var(--card-w) * 3) + (var(--card-gap) * 2)); /* 632 */
+  --center-w: calc(var(--center-inner) + (var(--page-pad-x) * 2));   /* 680 */
 }
 
-/* ===== RESET ===== */
+/* =====================
+   RESET
+===================== */
 *{ box-sizing:border-box; }
-html,body{ height:100%; }
+html,body{ height:auto; }
 body{
   margin:0;
   font-family: ui-serif, Georgia, "Times New Roman", serif;
   background:var(--paper);
   color:var(--ink);
+  overflow:auto; /* only page scrolls */
 }
 
-/* ===== TOP BAR ===== */
+/* =====================
+   HEADER
+===================== */
 .home-bar{
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: var(--paper);
-  border-bottom: 1px solid var(--rule);
+  position:sticky;
+  top:0;
+  z-index:40;
+  background:var(--paper);
+  border-bottom:1px solid var(--rule);
 }
 .home-bar-inner{
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: 18px var(--pad-x);
+  max-width:var(--max);
+  margin:0 auto;
+  padding:18px 16px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -87,6 +76,8 @@ body{
   font-weight:600;
   letter-spacing:-0.02em;
 }
+
+/* Hamburger */
 .hamburger{
   width:44px;
   height:44px;
@@ -105,100 +96,74 @@ body{
   margin:2px 0;
 }
 
-/* ===== OUTER WRAPPERS ===== */
+/* =====================
+   OUTER WRAPPERS
+===================== */
 .layout-container{
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: 0 var(--pad-x);
+  max-width:var(--max);
+  margin:0;
+  /* padding:0 16px; */
 }
-.shell{ position: relative; }
+.shell{ position:relative; }
 
-/* =========================================================
-   DESKTOP PAGE GRID (>=1024)
-   3 columns:
-   [LEFT ledger gutter] [CENTER content] [RIGHT empty]
-========================================================= */
+/* =====================
+   MAIN 3-COLUMN GRID
+   Left = ledger gutter
+   Center = content
+   Right = empty gutter
+===================== */
 .page-grid{
-  /* default/mobile: becomes block */
-  display: block;
+  /* NO far-left line */
+  border-left:none;
 
-  /* keep the vertical frame lines even on mobile */
-  border-left: 1px solid var(--rule);
-  border-right: 1px solid var(--rule);
+  /* YES far-right line */
+  border-right:1px solid var(--rule);
+
+  /* Frame reaches footer */
+  min-height: calc(100vh - var(--header-h) - var(--footer-h));
+
+  /* ensure the content doesn't create its own scroll panel */
+  overflow: visible;
 }
 
-/* Desktop */
-@media (min-width: 1024px){
+/* Desktop grid */
+@media (min-width:1024px){
   .page-grid{
-    max-width: var(--page-max);
-    margin: 0 auto;
-    padding: 0 var(--pad-x);
-
-    display: grid;
+    /* display:grid;
     grid-template-columns: var(--side-w) var(--center-w) var(--side-w);
     gap: var(--col-gap);
-    align-items: start;
-
-    border-left: 1px solid var(--rule);
-    border-right: 1px solid var(--rule);
+    align-items:start; */
+    display: flex;
+    flex-direction: row;
+    width: auto;
   }
 }
 
-/* LEFT ledger gutter column */
+/* =====================
+   LEFT LEDGER COLUMN
+   Only a RIGHT border line (divider).
+===================== */
 .left-rail{
-  display:none; /* shown on desktop only */
+  display:none;
 }
-@media (min-width: 1024px){
+
+@media (min-width:1024px){
   .left-rail{
-    display:block;
-    position: sticky;
-    top: var(--header-h);
-    align-self: start;
-    width: 100%;
+    display:flex;
 
-    /* this is the “gutter feeling”:
-       push ledger content toward the center slightly */
-    padding-right: 10px;
+    /* the divider line you want */
+    border-right:1px solid var(--rule);
+    /* padding-right:12px; */
+    /* position:sticky; */
+    /* top:var(--header-h);
+    align-self:start; */
   }
 }
 
-/* actual rail content */
-.rail{
-  width: 100%;
-}
-
-/* CENTER content column */
-.main{
-  width: 100%;
-  min-height: calc(100vh - (var(--header-h) + var(--footer-h)));
-  padding-bottom: var(--footer-h);
-}
-@media (min-width: 1024px){
-  .main{ width: var(--center-w); }
-}
-.page{
-  padding: var(--page-pad-y) var(--page-pad-x);
-}
-@media (max-width: 1023px){
-  .page{ padding: 28px 20px; }
-}
-
-/* RIGHT empty gutter column */
-.gutter-right{
-  display:none; /* shown on desktop only */
-}
-@media (min-width: 1024px){
-  .gutter-right{
-    display:block;
-    width: 100%;
-    min-height: 1px;
-  }
-}
-
-/* ===== LEDGER CARD / LINKS ===== */
+/* Rail content */
 .rail-card{
-  border: 1px solid var(--rule);
-  background: transparent;
+  /* border:1px solid var(--rule); */
+  background:transparent;
 }
 .rail-link{
   display:flex;
@@ -206,9 +171,9 @@ body{
   padding:14px 14px;
   border-bottom:1px solid var(--rule);
   text-decoration:none;
-  color: rgba(0,0,0,.85);
+  color:rgba(0,0,0,.85);
 }
-.rail-link:hover{ background: rgba(0,0,0,.04); }
+.rail-link:hover{ background:rgba(0,0,0,.04); }
 .rail-roman{
   width:26px;
   text-align:center;
@@ -219,29 +184,64 @@ body{
   line-height:1.25;
 }
 
-/* ===== OPTIONAL “RULES” LINES INSIDE PAGES ===== */
-.rules{ position: relative; }
-.rules::before,
+/* =====================
+   CENTER CONTENT
+===================== */
+.main{
+  border:none;
+  margin:0;
+  min-height:auto;
+  overflow:visible;
+  width: 100%;
+}
+.page{
+  padding: var(--page-pad-y) var(--page-pad-x);
+}
+
+/* Optional ledger-style internal rules inside the center page */
+.rules{ position:relative; }
+.rules::before{
+  content:"";
+  position:absolute;
+  top:0; bottom:0;
+  left:0;
+  width:1px;
+  background:var(--rule);
+}
 .rules::after{
   content:"";
   position:absolute;
-  top: var(--page-pad-y);
-  bottom: var(--page-pad-y);
+  top:0; bottom:0;
+  left:52px;
   width:1px;
-  background: var(--rule);
+  background:var(--rule);
 }
-.rules::before{ left: 0; }
-.rules::after{ left: 52px; }
 
-/* =========================================================
-   CARDS GRID — LOCKED 3 COLUMNS @ 200px (>=1024)
-========================================================= */
+/* =====================
+   RIGHT GUTTER (EMPTY)
+===================== */
+.gutter-right{
+  display:none;
+}
+@media (min-width:1024px){
+  .gutter-right{
+    display:block;
+    width:100%;
+    min-height:1px;
+  }
+}
+
+/* =====================
+   CARDS GRID
+   Locked: 3 columns at >=1024
+===================== */
 .grid{
-  display: grid;
+  display:grid;
   grid-template-columns: 1fr;
   gap: 14px;
 }
-@media (min-width: 1024px){
+
+@media (min-width:1024px){
   .grid{
     grid-template-columns: repeat(3, var(--card-w));
     gap: var(--card-gap);
@@ -251,48 +251,52 @@ body{
 
 .card{
   position:relative;
+  width: var(--card-w);
+  min-height: var(--card-min-h);
   border:1px solid rgba(0,0,0,.14);
   border-radius: var(--card-radius);
-  padding: 22px;
-  color: white;
+  padding:22px;
+  color:white;
   text-decoration:none;
   display:block;
-  min-height: var(--card-min-h);
-  transition: transform .12s ease;
+  transition:transform .12s ease;
 }
-.card:hover{ transform: translateY(-1px); }
+.card:hover{ transform:translateY(-1px); }
+
 .card-dot{
   position:absolute;
   left:-8px; top:-8px;
   width:12px; height:12px;
   border-radius:999px;
-  background: var(--dot);
+  background:var(--dot);
 }
 
-/* Clamp text so one long title doesn’t change row height drastically */
 .card h3{
   margin:0;
-  font-size: 26px;
-  line-height: 1.06;
-  font-weight: 500;
+  font-size:28px;
+  line-height:1.05;
+  font-weight:500;
 
+  /* prevent one long title from wrecking layout */
   display:-webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
   overflow:hidden;
 }
 .card p{
-  margin: 14px 0 0 0;
-  font-size: 13px;
-  color: rgba(255,255,255,.85);
+  margin:14px 0 0 0;
+  font-size:13px;
+  color:rgba(255,255,255,.85);
 
   display:-webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
   overflow:hidden;
 }
 
-/* ===== ARTICLE STYLES ===== */
+/* =====================
+   ARTICLE / TEXT
+===================== */
 .backpill{
   display:inline-flex;
   align-items:center;
@@ -301,41 +305,85 @@ body{
   border-radius:999px;
   padding:10px 16px;
   text-decoration:none;
-  color: rgba(0,0,0,.85);
+  color:rgba(0,0,0,.85);
 }
-.backpill:hover{ background: rgba(0,0,0,.04); }
+.backpill:hover{ background:rgba(0,0,0,.04); }
+
 .article-title{
   margin:26px 0 6px 0;
   font-size:34px;
   font-weight:600;
   letter-spacing:-0.01em;
 }
-.article-byline{ color: var(--muted); margin:0 0 20px 0; }
+.article-byline{ color:var(--muted); margin:0 0 20px 0; }
 .prose{
-  max-width: 70ch;
-  color: rgba(0,0,0,.82);
-  font-size: 15px;
-  line-height: 1.85;
+  max-width:70ch;
+  color:rgba(0,0,0,.82);
+  font-size:15px;
+  line-height:1.85;
 }
 .prose p{ margin:0 0 14px 0; }
 
-/* ===== FOOTER QUOTE ===== */
+/* =====================
+   FOOTER QUOTE
+   Sticky (NOT fixed) to avoid bottom dead-space
+===================== */
+/* ===== FOOTER TICKER (one-line scrolling quote) ===== */
 .quote{
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
+  position: sticky;
+  bottom: 0;
   background: var(--paper);
   border-top: 1px solid var(--rule);
   z-index: 30;
 }
+
 .quote-inner{
   max-width: var(--max);
   margin: 0 auto;
-  padding: 10px var(--pad-x);
-  text-align:center;
+  padding: 10px 16px;
+}
+
+/* The “window” */
+.ticker{
+  width: 100%;
+  overflow: hidden;          /* hides overflow so it never wraps */
+  white-space: nowrap;       /* force one line */
+}
+
+/* The moving track */
+.ticker-track{
+  display: inline-flex;
+  align-items: center;
+  gap: 64px;                 /* space between repeated quotes */
+  will-change: transform;
+  animation: thp-ticker 28s linear infinite;
+}
+
+/* One quote instance */
+.ticker-item{
+  display: inline-block;
+  font-style: italic;
   color: rgba(0,0,0,.75);
 }
 
-/* ===== MOBILE DRAWER ===== */
+/* Motion */
+@keyframes thp-ticker{
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .ticker-track{ animation: none; }
+}
+
+@media (hover:hover){
+  .ticker:hover .ticker-track{ animation-play-state: paused; }
+}
+
+/* =====================
+   MOBILE DRAWER
+===================== */
 .drawer{ display:none; }
 .drawer.open{ display:block; }
 .drawer-back{
@@ -347,16 +395,20 @@ body{
   position:fixed; left:0; top:0;
   height:100%;
   width:320px;
-  background: var(--paper);
-  border-right: 1px solid var(--rule);
+  background:var(--paper);
+  border-right:1px solid var(--rule);
   z-index:61;
-  padding: 16px;
+  padding:16px;
 }
 
-/* Hide hamburger on desktop, show on mobile */
-@media (min-width: 1024px){
+/* =====================
+   RESPONSIVE
+===================== */
+@media (min-width:1024px){
   .hamburger{ display:none; }
 }
-@media (max-width: 1023px){
-  .hamburger{ display:grid; }
+@media (max-width:1023px){
+  .left-rail{ display:none; }
+  .gutter-right{ display:none; }
+  .grid{ grid-template-columns:1fr; }
 }
