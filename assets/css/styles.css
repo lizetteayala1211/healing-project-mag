@@ -1,0 +1,228 @@
+:root{
+  --paper:#f3efe6;
+  --ink:#1a1a1a;
+  --rule:rgba(0,0,0,.22);
+  --muted:rgba(0,0,0,.7);
+  --dot:#1f2a7a;
+
+  --max:1300px;
+  --rail:220px;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  background:var(--paper);
+  color:var(--ink);
+}
+
+/* ===== Top bar ===== */
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:40;
+  background:var(--paper);
+  border-bottom:1px solid var(--rule);
+}
+.topbar-inner{
+  max-width:var(--max);
+  margin:0 auto;
+  padding:18px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.logo{
+  text-decoration:none;
+  color:var(--ink);
+  font-size:26px;
+  font-weight:600;
+  letter-spacing:-0.02em;
+}
+
+/* hamburger */
+.hamburger{
+  width:44px;
+  height:44px;
+  border:1px solid var(--rule);
+  background:transparent;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+.hamburger span{
+  display:block;
+  width:18px;
+  height:2px;
+  background:rgba(0,0,0,.8);
+  margin:2px 0;
+}
+
+/* ===== Shell layout ===== */
+.container{ max-width:var(--max); margin:0 auto; padding:0 16px; }
+.shell{ position:relative; display:block; }
+
+.rail{
+  position:fixed;
+  top:86px;
+  width:var(--rail);
+  display:none;
+}
+.main{
+  border-left:1px solid var(--rule);
+  border-right:1px solid var(--rule);
+  min-height:calc(100vh - 140px);
+}
+.page{ padding:28px 20px; }
+
+/* rules vibe (optional vertical lines inside pages) */
+.rules{
+  position:relative;
+}
+.rules::before{
+  content:"";
+  position:absolute;
+  top:0; bottom:0;
+  left:0;
+  width:1px;
+  background:var(--rule);
+}
+.rules::after{
+  content:"";
+  position:absolute;
+  top:0; bottom:0;
+  left:52px;
+  width:1px;
+  background:var(--rule);
+}
+
+/* ===== Side rail links ===== */
+.rail-card{
+  border:1px solid var(--rule);
+}
+.rail-link{
+  display:flex;
+  gap:12px;
+  padding:14px 14px;
+  border-bottom:1px solid var(--rule);
+  text-decoration:none;
+  color:rgba(0,0,0,.85);
+}
+.rail-link:hover{ background:rgba(0,0,0,.04); }
+.rail-roman{
+  width:26px;
+  text-align:center;
+  font-weight:700;
+}
+.rail-label{
+  font-size:13px;
+  line-height:1.25;
+}
+
+/* ===== Footer quote ===== */
+.quote{
+  position:sticky;
+  bottom:0;
+  background:var(--paper);
+  border-top:1px solid var(--rule);
+}
+.quote-inner{
+  max-width:var(--max);
+  margin:0 auto;
+  padding:10px 16px;
+  text-align:center;
+  color:rgba(0,0,0,.75);
+}
+
+/* ===== Cards grid ===== */
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+}
+.card{
+  position:relative;
+  border:1px solid rgba(0,0,0,.14);
+  border-radius:20px;
+  padding:22px;
+  color:white;
+  text-decoration:none;
+  display:block;
+  min-height:180px;
+  transition:transform .12s ease;
+}
+.card:hover{ transform:translateY(-1px); }
+.card-dot{
+  position:absolute;
+  left:-8px; top:-8px;
+  width:12px; height:12px;
+  border-radius:999px;
+  background:var(--dot);
+}
+.card h3{
+  margin:0;
+  font-size:28px;
+  line-height:1.05;
+  font-weight:500;
+}
+.card p{
+  margin:14px 0 0 0;
+  font-size:13px;
+  color:rgba(255,255,255,.85);
+}
+
+/* ===== Article ===== */
+.backpill{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  border:1px solid var(--rule);
+  border-radius:999px;
+  padding:10px 16px;
+  text-decoration:none;
+  color:rgba(0,0,0,.85);
+}
+.backpill:hover{ background:rgba(0,0,0,.04); }
+
+.article-title{
+  margin:26px 0 6px 0;
+  font-size:34px;
+  font-weight:600;
+  letter-spacing:-0.01em;
+}
+.article-byline{ color:var(--muted); margin:0 0 20px 0; }
+.prose{ max-width:70ch; color:rgba(0,0,0,.82); font-size:15px; line-height:1.85; }
+.prose p{ margin:0 0 14px 0; }
+
+/* ===== responsive ===== */
+@media (min-width: 1024px){
+  .rail{ display:block; }
+  .main{ margin-left:calc(var(--rail) + 20px); }
+  .page{ padding:42px 44px; }
+  .grid{ grid-template-columns:repeat(3, 1fr); gap:16px; }
+  .span-2{ grid-column:span 2; }
+}
+
+/* mobile drawer */
+.drawer{ display:none; }
+.drawer.open{ display:block; }
+.drawer-backdrop{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.3);
+  z-index:60;
+}
+.drawer-panel{
+  position:fixed; left:0; top:0;
+  height:100%;
+  width:320px;
+  background:var(--paper);
+  border-right:1px solid var(--rule);
+  z-index:61;
+  padding:16px;
+}
+@media (min-width: 1024px){
+  .hamburger{ display:none; }
+}

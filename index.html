@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Healing Project Magazine</title>
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+  </head>
+  <body class="thp-frame">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="logo" href="#/">The Healing Project Magazine</a>
+
+        <button class="hamburger" id="menuBtn" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Layout -->
+    <div class="container">
+      <div class="shell">
+        <!-- Side rail -->
+        <aside class="rail" id="sideRail"></aside>
+
+        <!-- Mobile rail drawer -->
+        <div class="drawer" id="drawer">
+          <div class="drawer-backdrop" id="drawerBackdrop"></div>
+          <div class="drawer-panel">
+            <div id="sideRailMobile"></div>
+          </div>
+        </div>
+
+        <!-- Main -->
+        <main class="main">
+          <div class="page" id="app"></div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Bottom quote -->
+    <footer class="quote">
+      <div class="quote-inner">
+        <em>
+          I realized it's not a one-size-fits-all here. You have to be able to adapt in your caregiving,
+          because, here, the method one day might not be the method the next.
+        </em>
+      </div>
+    </footer>
+
+    <script type="module" src="/assets/js/app.js"></script>
+  </body>
+</html>
