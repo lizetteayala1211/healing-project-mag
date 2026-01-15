@@ -17,7 +17,7 @@ export const cards = [
     byline: "By Liza Austria, Grant Aumell, Nieves Ayress, Vicky Ayress, Melissa Barber, Walter Bosque, Libertad Guerra, Mychal Johnson, and Monxo López",
     color: "#c54a36",
     path: "/article/this-is-a-place-of-vanguards",
-    span2: true,
+    span2: false,
   },
 
   { title: "Magnolia House", byline: "By Meagan Betances", color: "#3c8f92", path: "/article/magnolia-house" },

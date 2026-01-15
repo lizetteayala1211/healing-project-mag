@@ -61,9 +61,9 @@ window.THP = {
 
     grid.innerHTML = ordered
       .map((c) => {
-        const span = c.span2 ? "span-2" : "";
+        const span = "";
         return `
-          <a class="card ${span}" href="#${c.path}" style="background:${c.color}">
+          <a class="card" href="#${c.path}" style="background:${c.color}">
             <span class="card-dot"></span>
             <h3>${c.title}</h3>
             <p>${c.byline}</p>
