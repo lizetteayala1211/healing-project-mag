@@ -1,20 +1,30 @@
 :root{
+  /* palette */
   --paper:#f3efe6;
   --ink:#1a1a1a;
   --rule:rgba(0,0,0,.22);
   --muted:rgba(0,0,0,.7);
   --dot:#1f2a7a;
 
-  --max:1300px;
-  --rail:220px;
+  /* overall frame */
+  --page-max: 1328px;   /* overall bordered page area max width */
+  --pad-x: 16px;
 
-  --gutter: 260px; /* controls BOTH ledger width + right empty space */
-  --frame-gap: 20px; /* spacing between columns */
+  /* 3-column “page area” */
+  --ledger-w: 260px;    /* LEFT ledger width */
+  --center-w: 760px;    /* MIDDLE content width */
+  --col-gap: 24px;      /* spacing between columns */
 
-  --ledger: 260px; /* left column width */
-  --gap: 24px; /* space between columns */
+  /* header/footer */
+  --header-h: 86px;
+  --footer-h: 56px;     /* adjust if quote wraps */
+
+  /* cards */
+  --card-radius: 20px;
+  --card-min-h: 180px;
 }
 
+/* ===== BASE ===== */
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
 body{
@@ -33,9 +43,9 @@ body{
   border-bottom:1px solid var(--rule);
 }
 .home-bar-inner{
-  max-width:var(--max);
+  max-width:var(--page-max);
   margin:0 auto;
-  padding:18px 16px;
+  padding:18px var(--pad-x);
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -68,10 +78,10 @@ body{
 }
 
 /* ===== SHELL LAYOUT ===== */
-.layout-container{ 
-  max-width:var(--max); 
-  margin:0 auto; 
-  padding:0 16px; 
+.layout-container{
+  max-width:var(--page-max);
+  margin:0 auto;
+  padding:0 var(--pad-x);
 }
 
 /* Make the overall shell a 3-column grid */
@@ -91,60 +101,50 @@ body{
 
 /* The “page” area that’s divided into 3 vertical sections */
 .page-grid{
-  display: grid;
-  grid-template-columns: var(--ledger) minmax(0, 1fr) var(--ledger);
-  gap: var(--gap);
-  align-items: start;
+  max-width:var(--page-max);
+  margin:0 auto;
+  padding:0 var(--pad-x);
 
-  /* THIS becomes your “middle portion” frame */
-  border-left: 1px solid var(--rule);
-  border-right: 1px solid var(--rule);
+  display:grid;
+  grid-template-columns: var(--ledger-w) var(--center-w) var(--ledger-w);
+  gap: var(--col-gap);
+  align-items:start;
+
+  border-left:1px solid var(--rule);
+  border-right:1px solid var(--rule);
 }
 
 /* ===== SIDE RAIL ===== */
 
+/* Optional inner dividers (uncomment if you want visible column rules) */
+/*
+.page-grid > .rail{ border-right:1px solid var(--rule); padding-right:var(--col-gap); }
+.page-grid > .gutter-right{ border-left:1px solid var(--rule); padding-left:var(--col-gap); }
+*/
+
 /* The rail is now column 1, inside the middle frame */
 .rail{
-  position: sticky;
-  top: 86px; /* or use your --header-h if you set it */
-  width: 100%;
-  display: block;
+  position:sticky;
+  top:var(--header-h);
+  width:100%;
+  display:block;
 }
 
 /* Main is the center column */
 .main{
-  border-left: none;
-  border-right: none;
-  margin-left: 0;
-  min-height: calc(100vh - 140px);
+  width:100%;
+  margin-left:0;
+  min-height:calc(100vh - (var(--header-h) + var(--footer-h)));
+  padding-bottom:var(--footer-h);
 }
 
-/* Right column: intentionally empty but equal width to ledger */
+.page{
+  padding:42px 44px; 
+}
+
 .gutter-right{
-  width: 100%;
-}
-
-.page{ padding:28px 20px; }
-
-/* RULES VIBE (optional vertical lines inside pages) */
-.rules{
-  position:relative;
-}
-.rules::before{
-  content:"";
-  position:absolute;
-  top:0; bottom:0;
-  left:0;
-  width:1px;
-  background:var(--rule);
-}
-.rules::after{
-  content:"";
-  position:absolute;
-  top:0; bottom:0;
-  left:52px;
-  width:1px;
-  background:var(--rule);
+  width:100%;
+  min-height:1px;
 }
 
 /* ===== SIDE RAIL LINKS ===== */
@@ -167,20 +167,41 @@ body{
 }
 .rail-label{
   font-size:13px;
-  line-height:1.25;
+  line-height:1.25
+}
+
+/* RULES VIBE (optional vertical lines inside pages) */
+.rules{ 
+  position:relative; 
+}
+.rules::before,
+.rules::after{
+  content:"";
+  position:absolute;
+  top:44px;
+  bottom:44px;
+  width:1px;
+  background:var(--rule);
+}
+.rules::before{ 
+  left:0;
+}
+.rules::after{
+  left:52px; 
 }
 
 /* ===== (ROTATING) FOOTER QUOTE ===== */
 .quote{
-  position:sticky;
-  bottom:0;
+  position:fixed;
+  left:0; right:0; bottom:0;
   background:var(--paper);
   border-top:1px solid var(--rule);
+  z-index:30;
 }
 .quote-inner{
-  max-width:var(--max);
+  max-width:var(--page-max);
   margin:0 auto;
-  padding:10px 16px;
+  padding:10px var(--pad-x);
   text-align:center;
   color:rgba(0,0,0,.75);
 }
@@ -188,21 +209,23 @@ body{
 /* ===== CARDS GRID ===== */
 .grid{
   display:grid;
-  grid-template-columns:1fr;
-  gap:14px;
+  grid-template-columns:repeat(3, 1fr);
+  gap:16px;
 }
+
 .card{
   position:relative;
   border:1px solid rgba(0,0,0,.14);
-  border-radius:20px;
+  border-radius:var(--card-radius);
   padding:22px;
   color:white;
   text-decoration:none;
   display:block;
-  min-height:180px;
+  min-height:var(--card-min-h);
   transition:transform .12s ease;
 }
 .card:hover{ transform:translateY(-1px); }
+
 .card-dot{
   position:absolute;
   left:-8px; top:-8px;
@@ -211,20 +234,32 @@ body{
   background:var(--dot);
 }
 
-.card.is-featured{
-  min-height: 220px;
-}
-
-.card h3{
+card h3{
   margin:0;
   font-size:28px;
   line-height:1.05;
   font-weight:500;
+
+  /* prevents one long title from making row feel wildly tall */
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
 }
 .card p{
   margin:14px 0 0 0;
   font-size:13px;
   color:rgba(255,255,255,.85);
+
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+/* Optional featured styling (if you add .is-featured in JS) */
+.card.is-featured{
+  outline:1px solid rgba(255,255,255,.35);
 }
 
 /* ===== ARTICLE ===== */
@@ -250,18 +285,10 @@ body{
 .prose{ max-width:70ch; color:rgba(0,0,0,.82); font-size:15px; line-height:1.85; }
 .prose p{ margin:0 0 14px 0; }
 
-/* ===== RESPONSIVE ===== */
-
-@media (min-width: 1024px){
-  .rail{ display:block; }
-  .page{ padding:42px 44px; }
-  .grid{ grid-template-columns:repeat(3, 1fr); gap:16px; }
-  .span-2{ grid-column:span 2; }
-}
-
 /* MOBILE DRAWER */
 .drawer{ display:none; }
 .drawer.open{ display:block; }
+
 .drawer-back{
   position:fixed; inset:0;
   background:rgba(0,0,0,.3);
@@ -276,29 +303,26 @@ body{
   z-index:61;
   padding:16px;
 }
-@media (min-width: 1024px){
-  .hamburger{ display:none; }
-}
 
-/* On small screens, go back to a simple layout */
+/* ===== RESPONSIVE ===== */
+
+/* =============== Responsive =============== */
 @media (max-width: 1023px){
-  .shell{
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-  .rail{
-    display: none;
-  }
-  .shell::after{
-    display: none;
-  }
-
   .page-grid{
     grid-template-columns: 1fr;
-    border-left: 1px solid var(--rule);
-    border-right: 1px solid var(--rule);
+    gap:0;
   }
+  .rail{ display:none; }
+  .gutter-right{ display:none; }
 
-  .rail{ display: none; }
-  .gutter-right{ display: none; }
+  .page{ padding:28px 20px; }
+
+  .grid{
+    grid-template-columns:1fr;
+    gap:14px;
+  }
+}
+
+@media (min-width: 1024px){
+  .hamburger{ display:none; }
 }
