@@ -2,12 +2,12 @@ import { navItems, cards } from "./data.js";
 import { getPath, loadPage, setPath } from "./router.js";
 
 const app = document.getElementById("app");
-const sideRail = document.getElementById("sideRail");
-const sideRailMobile = document.getElementById("sideRailMobile");
+const sideRail = document.getElementById("side-rail");
+const sideRailMobile = document.getElementById("side-rail-mobile");
 
-const drawer = document.getElementById("drawer");
-const menuBtn = document.getElementById("menuBtn");
-const drawerBackdrop = document.getElementById("drawerBackdrop");
+const drawer = document.getElementById("mobile-drawer");
+const menuBtn = document.getElementById("menu-button");
+const drawerBackdrop = document.getElementById("drawer-backdrop");
 
 function renderRail(target) {
   target.innerHTML = `
@@ -39,7 +39,7 @@ sideRailMobile?.addEventListener("click", (e) => {
 // helper for templates to render the card grid
 window.THP = {
   renderCardsGrid: () => {
-    const grid = document.getElementById("cardsGrid");
+    const grid = document.getElementById("cards-grid");
     if (!grid) return;
 
     grid.innerHTML = cards

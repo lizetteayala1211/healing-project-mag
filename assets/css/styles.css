@@ -18,15 +18,15 @@ body{
   color:var(--ink);
 }
 
-/* ===== Top bar ===== */
-.topbar{
+/* ===== HOME BAR ===== */
+.home-bar{
   position:sticky;
   top:0;
   z-index:40;
   background:var(--paper);
   border-bottom:1px solid var(--rule);
 }
-.topbar-inner{
+.home-bar-inner{
   max-width:var(--max);
   margin:0 auto;
   padding:18px 16px;
@@ -42,7 +42,7 @@ body{
   letter-spacing:-0.02em;
 }
 
-/* hamburger */
+/* HAMBURGER MENU */
 .hamburger{
   width:44px;
   height:44px;
@@ -61,10 +61,11 @@ body{
   margin:2px 0;
 }
 
-/* ===== Shell layout ===== */
-.container{ max-width:var(--max); margin:0 auto; padding:0 16px; }
+/* ===== SHELL LAYOUT ===== */
+.layout-container{ max-width:var(--max); margin:0 auto; padding:0 16px; }
 .shell{ position:relative; display:block; }
 
+/* ===== SIDE RAIL ===== */
 .rail{
   position:fixed;
   top:86px;
@@ -78,7 +79,7 @@ body{
 }
 .page{ padding:28px 20px; }
 
-/* rules vibe (optional vertical lines inside pages) */
+/* RULES VIBE (optional vertical lines inside pages) */
 .rules{
   position:relative;
 }
@@ -99,7 +100,7 @@ body{
   background:var(--rule);
 }
 
-/* ===== Side rail links ===== */
+/* ===== SIDE RAIL LINKS ===== */
 .rail-card{
   border:1px solid var(--rule);
 }
@@ -122,7 +123,7 @@ body{
   line-height:1.25;
 }
 
-/* ===== Footer quote ===== */
+/* ===== (ROTATING) FOOTER QUOTE ===== */
 .quote{
   position:sticky;
   bottom:0;
@@ -137,7 +138,7 @@ body{
   color:rgba(0,0,0,.75);
 }
 
-/* ===== Cards grid ===== */
+/* ===== CARDS GRID ===== */
 .grid{
   display:grid;
   grid-template-columns:1fr;
@@ -174,7 +175,7 @@ body{
   color:rgba(255,255,255,.85);
 }
 
-/* ===== Article ===== */
+/* ===== ARTICLE ===== */
 .backpill{
   display:inline-flex;
   align-items:center;
@@ -197,7 +198,7 @@ body{
 .prose{ max-width:70ch; color:rgba(0,0,0,.82); font-size:15px; line-height:1.85; }
 .prose p{ margin:0 0 14px 0; }
 
-/* ===== responsive ===== */
+/* ===== RESPONSIVE ===== */
 @media (min-width: 1024px){
   .rail{ display:block; }
   .main{ margin-left:calc(var(--rail) + 20px); }
@@ -206,10 +207,10 @@ body{
   .span-2{ grid-column:span 2; }
 }
 
-/* mobile drawer */
+/* MOBILE DRAWER */
 .drawer{ display:none; }
 .drawer.open{ display:block; }
-.drawer-backdrop{
+.drawer-back{
   position:fixed; inset:0;
   background:rgba(0,0,0,.3);
   z-index:60;
