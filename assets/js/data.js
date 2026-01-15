@@ -1,8 +1,8 @@
 export const navItems = [
   { roman: "I", label: "Letter from The Healing Project", path: "/letter" },
   { roman: "II", label: "Call & Response", path: "/call-response" },
-  { roman: "III", label: "Community Board", path: "/call-response" },
-  { roman: "IV", label: "Processing", path: "/article/processing" },
+  { roman: "III", label: "Community Board", path: "/community-board" },
+  { roman: "IV", label: "Processing", path: "/processing" },
   { roman: "V", label: "Closing Prayer", path: "/closing-prayer" },
   { roman: "VI", label: "Collaborators", path: "/collaborators" },
 ];
@@ -26,3 +26,22 @@ export const cards = [
   { title: "The Hands That Help", byline: "By Sarah Sanchez", color: "#0f1832", path: "/article/the-hands-that-help" },
   { title: "We Deserve Wellness", byline: "By Members of The Liberation Program at Brotherhood Sister Sol", color: "#d8a6a3", path: "/article/we-deserve-wellness" },
 ];
+
+export const sectionFeatured = {
+  "call-response": [
+    "/article/finding-purpose-in-communities",
+    "/article/untitled-remy",
+    "/article/untitled-leonard",
+  ],
+  "community-board": [
+    "/article/the-bully-and-the-bullied",
+    "/article/the-community-i-see",
+    "/article/the-hands-that-help",
+  ],
+  "processing": [
+    "/article/this-is-a-place-of-vanguards",
+    "/article/magnolia-house",
+    "/article/we-deserve-wellness",
+  ],
+};
+

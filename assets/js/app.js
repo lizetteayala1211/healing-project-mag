@@ -1,4 +1,4 @@
-import { navItems, cards } from "./data.js";
+import { navItems, cards, sectionFeatured } from "./data.js";
 import { getPath, loadPage, setPath } from "./router.js";
 
 const app = document.getElementById("app");
@@ -10,15 +10,18 @@ const menuBtn = document.getElementById("menu-button");
 const drawerBackdrop = document.getElementById("drawer-backdrop");
 
 function renderRail(target) {
+  if (!target) return;
+
   target.innerHTML = `
     <div class="rail-card">
       ${navItems
         .map(
           (i) => `
-        <a class="rail-link" href="#${i.path}">
-          <div class="rail-roman">${i.roman}</div>
-          <div class="rail-label">${i.label}</div>
-        </a>`
+          <a class="rail-link" href="#${i.path}">
+            <div class="rail-roman">${i.roman}</div>
+            <div class="rail-label">${i.label}</div>
+          </a>
+        `
         )
         .join("")}
     </div>
@@ -29,20 +32,34 @@ renderRail(sideRail);
 renderRail(sideRailMobile);
 
 // mobile drawer toggles
-menuBtn?.addEventListener("click", () => drawer.classList.add("open"));
-drawerBackdrop?.addEventListener("click", () => drawer.classList.remove("open"));
+menuBtn?.addEventListener("click", () => drawer?.classList.add("open"));
+drawerBackdrop?.addEventListener("click", () => drawer?.classList.remove("open"));
+
+// close drawer when clicking a nav link on mobile
 sideRailMobile?.addEventListener("click", (e) => {
   const a = e.target.closest("a");
-  if (a) drawer.classList.remove("open");
+  if (a) drawer?.classList.remove("open");
 });
 
-// helper for templates to render the card grid
+// helpers used by page partials
 window.THP = {
-  renderCardsGrid: () => {
-    const grid = document.getElementById("cards-grid");
+  renderCardsGrid: (currentPath) => {
+    const grid = document.getElementById("cardsGrid");
     if (!grid) return;
 
-    grid.innerHTML = cards
+    // "/call-response" -> "call-response"
+    const key = (currentPath || "").replace("/", "");
+    const featuredPaths = sectionFeatured?.[key] || [];
+
+    const featured = featuredPaths
+      .map((p) => cards.find((c) => c.path === p))
+      .filter(Boolean);
+
+    const rest = cards.filter((c) => !featuredPaths.includes(c.path));
+
+    const ordered = [...featured, ...rest];
+
+    grid.innerHTML = ordered
       .map((c) => {
         const span = c.span2 ? "span-2" : "";
         return `
@@ -59,6 +76,8 @@ window.THP = {
 };
 
 async function render() {
+  if (!app) return;
+
   let path = getPath();
   if (path === "/") path = "/home";
 
@@ -66,13 +85,15 @@ async function render() {
     const html = await loadPage(path);
     app.innerHTML = html;
 
-    // run page hooks
-    window.THP?.renderCardsGrid?.();
+    // IMPORTANT: pass the current route so sorting works
+    window.THP?.renderCardsGrid?.(path);
   } catch (err) {
     app.innerHTML = `
       <div class="rules">
         <h1 class="article-title">Page not found</h1>
-        <p class="prose">Try going back <a class="backpill" href="#/home">← Home</a></p>
+        <p class="prose">
+          Try going back <a class="backpill" href="#/home">← Home</a>
+        </p>
       </div>
     `;
   }
