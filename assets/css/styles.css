@@ -349,37 +349,25 @@ body{
   padding: 10px 16px;
 }
 
-/* “window” */
-.ticker{
-  width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-}
+.ticker{ width:100%; overflow:hidden; white-space:nowrap; }
 
-/* moving layer */
 .ticker-track{
-  display: inline-block;
-  padding-left: 100%;              /* start off-screen right */
-  will-change: transform;
-  animation: thp-marquee 22s linear infinite;
+  display:inline-block;
+  padding-left:100%;
+  will-change:transform;
+  animation: thp-marquee 26s linear infinite !important;
 }
 
 .ticker-text{
-  display: inline-block;
-  padding-right: 64px;             /* breathing room before loop */
-  font-style: italic;
-  color: rgba(0,0,0,.75);
+  display:inline-block;
+  padding-right:64px;
+  font-style:italic;
+  color:rgba(0,0,0,.75);
 }
 
-/* move fully across */
 @keyframes thp-marquee{
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
-}
-
-/* accessibility */
-@media (prefers-reduced-motion: reduce){
-  .ticker-track{ animation: none; }
+  0%{ transform: translateX(0); }
+  100%{ transform: translateX(-100%); }
 }
 
 /* =====================
