@@ -36,6 +36,9 @@
   /* Center column width = 3 cards + 2 gaps + center padding */
   --center-inner: calc((var(--card-w) * 3) + (var(--card-gap) * 2)); /* 632 */
   --center-w: calc(var(--center-inner) + (var(--page-pad-x) * 2));   /* 680 */
+
+  --gutter: 260px;     /* left gutter (rail) and right gutter width */
+  --content: 760px;    /* center column width */
 }
 
 /* =====================
@@ -50,6 +53,8 @@ body{
   color:var(--ink);
   overflow:auto; /* only page scrolls */
 }
+
+html { scrollbar-gutter: stable !important; }
 
 /* =====================
    HEADER
@@ -427,3 +432,62 @@ body{
   .gutter-right{ display:none; }
   .grid{ grid-template-columns:1fr; }
 }
+
+/* ===== RAIL: HARD LOCK (prevents route/page CSS from reformatting it) ===== */
+
+.rail,
+.rail-card,
+.rail-link,
+.rail-roman,
+.rail-label {
+  font-family: ui-serif, Georgia, "Times New Roman", serif !important;
+  font-style: normal !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+/* kill weird inherited margins/padding from page styles */
+.rail-card,
+.rail-link,
+.rail-roman,
+.rail-label {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* lock row layout */
+.rail-link {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+
+  /* your intended padding + divider */
+  padding: 14px 14px !important;
+  border-bottom: 1px solid var(--rule) !important;
+
+  /* prevents weird “italic/underline” link states */
+  text-decoration: none !important;
+  color: rgba(0,0,0,.85) !important;
+}
+
+/* lock roman + label sizing so no page rules can change the first row */
+.rail-roman {
+  width: 26px !important;
+  text-align: center !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
+
+.rail-label {
+  font-weight: 400 !important;
+  font-size: 13px !important;
+  line-height: 1.25 !important;
+}
+
+/* keep hover consistent even if another page changes a:hover etc */
+.rail-link:hover {
+  background: rgba(0,0,0,.04) !important;
+}
+
