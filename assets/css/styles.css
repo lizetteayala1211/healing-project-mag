@@ -335,39 +335,65 @@ body{
 /* ===== FOOTER TICKER (guaranteed moving) ===== */
 
 /* ===== FOOTER TICKER (reliable marquee) ===== */
+/* =====================
+   INVERTED FOOTER TICKER
+===================== */
+
 .quote{
   position: sticky;
   bottom: 0;
-  background: var(--paper);
-  border-top: 1px solid var(--rule);
+  background: var(--ink);            /* inverted background */
+  color: var(--paper);               /* inverted text */
+  border-top: 1px solid rgba(255,255,255,.35);
+  /* box-shadow: 0 -6px 16px rgba(0,0,0,.25); */
   z-index: 50;
 }
 
+/* constrain width like the rest of the site */
 .quote-inner{
   max-width: var(--max);
   margin: 0 auto;
   padding: 10px 16px;
 }
 
-.ticker{ width:100%; overflow:hidden; white-space:nowrap; }
+/* ticker window */
+.ticker{
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
 
+/* animated track */
 .ticker-track{
-  display:inline-block;
-  padding-left:100%;
-  will-change:transform;
-  animation: thp-marquee 26s linear infinite !important;
+  display: inline-block;
+  padding-left: 100%;
+  will-change: transform;
+  animation: thp-marquee 25s linear infinite !important;
 }
 
+/* quote text */
 .ticker-text{
-  display:inline-block;
-  padding-right:64px;
-  font-style:italic;
-  color:rgba(0,0,0,.75);
+  display: inline-block;
+  padding-right: 64px;
+  font-style: italic;
+  color: rgba(255,255,255,.85);      /* soft white */
 }
 
+/* animation stays the same */
 @keyframes thp-marquee{
-  0%{ transform: translateX(0); }
-  100%{ transform: translateX(-100%); }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* accessibility */
+@media (prefers-reduced-motion: reduce){
+  .ticker-track{ animation: none; }
+}
+
+@media (hover:hover){
+  .ticker:hover .ticker-track{
+    animation-play-state: paused !important;
+  }
 }
 
 /* =====================
