@@ -10,6 +10,9 @@
 
   --gutter: 260px; /* controls BOTH ledger width + right empty space */
   --frame-gap: 20px; /* spacing between columns */
+
+  --ledger: 260px; /* left column width */
+  --gap: 24px; /* space between columns */
 }
 
 *{ box-sizing:border-box; }
@@ -86,19 +89,38 @@ body{
   height: 1px; /* doesn’t matter, it just occupies the right column */
 }
 
+/* The “page” area that’s divided into 3 vertical sections */
+.page-grid{
+  display: grid;
+  grid-template-columns: var(--ledger) minmax(0, 1fr) var(--ledger);
+  gap: var(--gap);
+  align-items: start;
+
+  /* THIS becomes your “middle portion” frame */
+  border-left: 1px solid var(--rule);
+  border-right: 1px solid var(--rule);
+}
+
 /* ===== SIDE RAIL ===== */
 
-/* Put the rail in the left column (no longer fixed) */
+/* The rail is now column 1, inside the middle frame */
 .rail{
   position: sticky;
-  top: var(--header-h, 86px);
+  top: 86px; /* or use your --header-h if you set it */
   width: 100%;
   display: block;
 }
 
-/* Main sits in the middle column */
+/* Main is the center column */
 .main{
-  margin-left: 0; /* undo old desktop offset */
+  border-left: none;
+  border-right: none;
+  margin-left: 0;
+  min-height: calc(100vh - 140px);
+}
+
+/* Right column: intentionally empty but equal width to ledger */
+.gutter-right{
   width: 100%;
 }
 
@@ -270,4 +292,13 @@ body{
   .shell::after{
     display: none;
   }
+
+  .page-grid{
+    grid-template-columns: 1fr;
+    border-left: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+  }
+
+  .rail{ display: none; }
+  .gutter-right{ display: none; }
 }
