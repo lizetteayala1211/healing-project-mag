@@ -163,6 +163,11 @@ body{
   border-radius:999px;
   background:var(--dot);
 }
+
+.card.is-featured{
+  min-height: 220px;
+}
+
 .card h3{
   margin:0;
   font-size:28px;

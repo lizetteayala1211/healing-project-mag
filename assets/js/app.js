@@ -62,6 +62,7 @@ window.THP = {
     grid.innerHTML = ordered
       .map((c) => {
         const span = "";
+        const featuredClass = idx < featured.length ? "is-featured" : "";
         return `
           <a class="card" href="#${c.path}" style="background:${c.color}">
             <span class="card-dot"></span>
@@ -101,3 +102,10 @@ async function render() {
 
 window.addEventListener("hashchange", render);
 render();
+
+const featuredClass = idx < featured.length ? "is-featured" : "";
+return `
+  <a class="card ${featuredClass}" href="#${c.path}" style="background:${c.color}">
+...
+`;
+
