@@ -9,7 +9,7 @@ export const navItems = [
 
 export const cards = [
   { title: "Finding Purpose in Communities", byline: "by Pamela Smart", color: "#3f5448", path: "/article/finding-purpose-in-communities" },
-  { title: "Untitled", byline: "by Remy Trail", color: "#9a775e", path: "/article/untitled-remy" },
+  { title: "My Community", byline: "by Remy Trail", color: "#9a775e", path: "/article/my-community" },
   { title: "Untitled", byline: "by Leonard Wilson", color: "#d2a100", path: "/article/untitled-leonard" },
 
   {
