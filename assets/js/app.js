@@ -1,4 +1,4 @@
-import { navItems, cards, sectionFeatured } from "./data.js";
+import { navItems, cards } from "./data.js";
 import { getPath, loadPage, setPath } from "./router.js";
 
 const app = document.getElementById("app");
@@ -41,35 +41,24 @@ sideRailMobile?.addEventListener("click", (e) => {
   if (a) drawer?.classList.remove("open");
 });
 
-// helpers used by page partials
 window.THP = {
-renderCardsGrid: (currentPath) => {
-  const grid = document.getElementById("cardsGrid");
-  if (!grid) return;
+  renderCardsGrid: () => {
+    const grid = document.getElementById("cardsGrid");
+    if (!grid) return;
 
-  const key = (currentPath || "").replace("/", "");
-  const featuredPaths = sectionFeatured?.[key] || [];
-
-  const featured = featuredPaths
-    .map((p) => cards.find((c) => c.path === p))
-    .filter(Boolean);
-
-  const rest = cards.filter((c) => !featuredPaths.includes(c.path));
-  const ordered = [...featured, ...rest];
-
-  grid.innerHTML = ordered
-    .map((c, idx) => {
-      const featuredClass = idx < featured.length ? "is-featured" : "";
-      return `
-        <a class="card ${featuredClass}" href="#${c.path}" style="background:${c.color}">
-          <span class="card-dot"></span>
-          <h3>${c.title}</h3>
-          <p>${c.byline}</p>
-        </a>
-      `;
-    })
-    .join("");
-},
+    grid.innerHTML = cards
+      .map((c) => {
+        const span = c.span2 ? "span-2" : "";
+        return `
+          <a class="card ${span}" href="#${c.path}" style="background:${c.color}">
+            <span class="card-dot"></span>
+            <h3>${c.title}</h3>
+            <p>${c.byline}</p>
+          </a>
+        `;
+      })
+      .join("");
+  },
   setPath,
 };
 

@@ -31,21 +31,21 @@ export const cards = [
   { title: "A Call to Save Our Schools", byline: "by Brotherhood Sister Sol", color: "#c54a36", path: "/article/a-call-to-save" },
 ];
 
-export const sectionFeatured = {
-  "call-response": [
-    "/article/finding-purpose-in-communities",
-    "/article/untitled-remy",
-    "/article/untitled-leonard",
-  ],
-  "community-board": [
-    "/article/the-bully-and-the-bullied",
-    "/article/the-community-i-see",
-    "/article/the-hands-that-help",
-  ],
-  "processing": [
-    "/article/this-is-a-place-of-vanguards",
-    "/article/magnolia-house",
-    "/article/we-deserve-wellness",
-  ],
-};
+// export const sectionFeatured = {
+//   "call-response": [
+//     "/article/finding-purpose-in-communities",
+//     "/article/untitled-remy",
+//     "/article/untitled-leonard",
+//   ],
+//   "community-board": [
+//     "/article/the-bully-and-the-bullied",
+//     "/article/the-community-i-see",
+//     "/article/the-hands-that-help",
+//   ],
+//   "processing": [
+//     "/article/this-is-a-place-of-vanguards",
+//     "/article/magnolia-house",
+//     "/article/we-deserve-wellness",
+//   ],
+// };
 
