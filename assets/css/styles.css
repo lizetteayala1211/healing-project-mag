@@ -202,12 +202,34 @@ html { scrollbar-gutter: stable !important; }
   overflow:visible;
   width: auto;
 }
-/* .page{
-  padding: var(--page-pad-y) var(--page-pad-x);
-} */
 
-/* Optional ledger-style internal rules inside the center page */
-.rules{ position:relative; }
+.page{
+  padding: var(--page-pad-y) var(--page-pad-x);
+}
+
+/* ---- Center the whole written-article column (title + byline + prose) ---- */
+/* This assumes your article pages are wrapped in .rules (they are in your 404 too). */
+
+.rules{
+  position:relative;
+}
+
+/* Center everything inside .rules, but keep the inner column width */
+.rules > *{
+  width:100%;
+  max-width:70ch;              /* SAME as prose */
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* If you want the column slightly wider (Magnolia feel), swap to 720px instead:
+.rules > *{ max-width:720px; }
+.prose{ max-width:720px; }
+*/
+
+
+/* ---- Decorative vertical rules (lines) ---- */
+
 .rules::before{
   content:"";
   position:absolute;
@@ -216,6 +238,7 @@ html { scrollbar-gutter: stable !important; }
   width:1px;
   background:var(--rule);
 }
+
 .rules::after{
   content:"";
   position:absolute;
@@ -317,20 +340,59 @@ html { scrollbar-gutter: stable !important; }
 }
 .backpill:hover{ background:rgba(0,0,0,.04); }
 
+/* ===== Article centering ===== */
+
+.article-page{
+  /* keep your rules positioning */
+  position: relative;
+
+  /* THIS centers the entire article block */
+  display: flex;
+  justify-content: center;
+
+  /* vertical rhythm */
+  padding: 26px 0 32px 0;
+
+  /* important: don't let this create its own scroll area */
+  overflow: visible;
+}
+
+/* this is the fixed “book column” width */
+.article-inner{
+  width: min(720px, 100%);
+  padding: 0 24px; /* small breathing room on narrow screens */
+  box-sizing: border-box;
+}
+
+/* your type stays left-aligned, but the whole column is centered */
 .article-title{
-  margin:26px 0 6px 0;
-  font-size:34px;
-  font-weight:600;
-  letter-spacing:-0.01em;
+  margin: 26px 0 6px 0;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-align: left;
 }
-.article-byline{ color:var(--muted); margin:0 0 20px 0; }
+
+.article-byline{
+  color: var(--muted);
+  margin: 0 0 20px 0;
+  text-align: left;
+}
+
 .prose{
-  max-width:70ch;
-  color:rgba(0,0,0,.82);
-  font-size:15px;
-  line-height:1.85;
+  color: rgba(0,0,0,.82);
+  font-size: 15px;
+  line-height: 1.85;
+
+  /* let the parent control width */
+  max-width: none;
+  width: 100%;
+
+  margin: 0;
+  text-align: left;
 }
-.prose p{ margin:0 0 14px 0; }
+
+.prose p{ margin: 0 0 14px 0; }
 
 /* =====================
    FOOTER QUOTE
