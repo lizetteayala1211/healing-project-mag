@@ -11,7 +11,7 @@
   --ink:#1a1a1a;
   --rule:rgba(0,0,0,.22);
   --muted:rgba(0,0,0,.7);
-  --dot:#1f2a7a;
+  --dot:#27398a;
 
   --max:1300px;
 
@@ -347,7 +347,7 @@ html { scrollbar-gutter: stable !important; }
 .quote{
   position: sticky;
   bottom: 0;
-  background: var(--ink);            /* inverted background */
+  background:var(--dot);         /* inverted background */
   color: var(--paper);               /* inverted text */
   border-top: 1px solid rgba(255,255,255,.35);
   /* box-shadow: 0 -6px 16px rgba(0,0,0,.25); */
