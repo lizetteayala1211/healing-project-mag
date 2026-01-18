@@ -394,15 +394,22 @@ html { scrollbar-gutter: stable !important; }
 
 .prose p{ margin: 0 0 14px 0; }
 
-.media-block{
-  margin: 22px 0;
+figure img {
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.30);
 }
 
-.media-img{
-  width: 100%;
-  height: auto;
+.media-block{
+  margin: 40px auto;
+  text-align: center;
+}
+
+.media-block img{
   display: block;
-  border-radius: 6px;          
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 6px; /* optional, remove if not desired */
 }
 
 .media-narrow{
@@ -412,10 +419,41 @@ html { scrollbar-gutter: stable !important; }
 }
 
 .media-caption{
-  margin-top: 10px;
+  margin: 12px auto 0 auto;
+  max-width: 52ch;          /* 👈 narrower than image */
   font-size: 13px;
   line-height: 1.5;
   color: rgba(0,0,0,.70);
+  text-align: center;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: rgba(0,0,0,0.3);
+  z-index: 9999;
+  padding: 6px;
+}
+
+.lightbox.is-open { display: grid; }
+
+.lightbox-img {
+  max-width: min(92vw, 1100px);
+  max-height: 92vh;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.60);
+  cursor: pointer;
+}
+
+html.lb-lock, body.lb-lock { overflow: hidden !important; }
+
+
+/* lock background scroll when open */
+html.lb-lock,
+body.lb-lock {
+  overflow: hidden !important;
 }
 
 /* =====================
