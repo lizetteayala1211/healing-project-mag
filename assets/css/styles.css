@@ -6,110 +6,139 @@
 /* =====================
    VARIABLES
 ===================== */
-:root{
-  --paper:#f3efe6;
-  --ink:#1a1a1a;
-  --rule:rgba(0,0,0,.22);
-  --muted:rgba(0,0,0,.7);
-  --dot:#27398a;
+:root {
+    --paper: #f3efe6;
+    --ink: #1a1a1a;
+    --rule: rgba(0, 0, 0, .22);
+    --muted: rgba(0, 0, 0, .7);
+    --dot: #27398a;
 
-  --max:1300px;
+    --max: 1300px;
 
-  /* Header / footer sizing */
-  --header-h: 86px;
-  --footer-h: 56px;
+    /* Header / footer sizing */
+    --header-h: 86px;
+    --footer-h: 56px;
 
-  /* 3-column layout */
-  --side-w: 400px;         /* left ledger gutter + right empty gutter */
-  --col-gap: 18px;
+    /* 3-column layout */
+    --side-w: 400px;
+    /* left ledger gutter + right empty gutter */
+    --col-gap: 18px;
 
-  /* Center content sizing */
-  --page-pad-x: 24px;
-  --page-pad-y: 28px;
+    /* Center content sizing */
+    --page-pad-x: 24px;
+    --page-pad-y: 28px;
 
-  /* Cards */
-  --card-w: 340px;         /* locked per your request */
-  --card-gap: 16px;
-  --card-min-h: 205px;     /* makes cards “longer” */
-  --card-radius: 20px;
+    /* Cards */
+    --card-w: 340px;
+    /* locked per your request */
+    --card-gap: 16px;
+    --card-min-h: 205px;
+    /* makes cards “longer” */
+    --card-radius: 20px;
 
-  /* Center column width = 3 cards + 2 gaps + center padding */
-  --center-inner: calc((var(--card-w) * 3) + (var(--card-gap) * 2)); /* 632 */
-  --center-w: calc(var(--center-inner) + (var(--page-pad-x) * 2));   /* 680 */
+    /* Center column width = 3 cards + 2 gaps + center padding */
+    --center-inner: calc((var(--card-w) * 3) + (var(--card-gap) * 2));
+    /* 632 */
+    --center-w: calc(var(--center-inner) + (var(--page-pad-x) * 2));
+    /* 680 */
 
-  --gutter: 260px;     /* left gutter (rail) and right gutter width */
-  --content: 760px;    /* center column width */
+    /* One consistent “center column max width” for EVERYTHING */
+    --center-max: 720px;
+    /* match your article max width */
+    --center-pad: 56px;
+    /* whatever breathing room you like */
+
+    --gutter: 260px;
+    /* left gutter (rail) and right gutter width */
+    --content: 760px;
+    /* center column width */
 }
 
 /* =====================
    RESET
 ===================== */
-*{ box-sizing:border-box; }
-html,body{ height:auto; }
-body{
-  margin:0;
-  font-family: ui-serif, Georgia, "Times New Roman", serif;
-  background:var(--paper);
-  color:var(--ink);
-  overflow:auto; /* only page scrolls */
+* {
+    box-sizing: border-box;
 }
 
-html { scrollbar-gutter: stable !important; }
+html,
+body {
+    height: auto;
+}
+
+body {
+    margin: 0;
+    font-family: ui-serif, Georgia, "Times New Roman", serif;
+    background: var(--paper);
+    color: var(--ink);
+    overflow: auto;
+    /* only page scrolls */
+}
+
+html {
+    scrollbar-gutter: stable !important;
+}
 
 /* =====================
    HEADER
 ===================== */
-.home-bar{
-  position:sticky;
-  top:0;
-  z-index:40;
-  background:var(--paper);
-  border-bottom:1px solid var(--rule);
+.home-bar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
 }
-.home-bar-inner{
-  max-width:var(--max);
-  margin:0 auto;
-  padding:18px 16px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+
+.home-bar-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 18px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
-.logo{
-  text-decoration:none;
-  color:var(--ink);
-  font-size:26px;
-  font-weight:600;
-  letter-spacing:-0.02em;
+
+.logo {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
 }
 
 /* Hamburger */
-.hamburger{
-  width:44px;
-  height:44px;
-  border:1px solid var(--rule);
-  background:transparent;
-  border-radius:10px;
-  display:grid;
-  place-items:center;
-  cursor:pointer;
+.hamburger {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
 }
-.hamburger span{
-  display:block;
-  width:18px;
-  height:2px;
-  background:rgba(0,0,0,.8);
-  margin:2px 0;
+
+.hamburger span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: rgba(0, 0, 0, .8);
+    margin: 2px 0;
 }
 
 /* =====================
    OUTER WRAPPERS
 ===================== */
-.layout-container{
-  max-width:var(--max);
-  margin:0;
-  /* padding:0 16px; */
+.layout-container {
+    max-width: var(--max);
+    margin: 0;
+    /* padding:0 16px; */
 }
-.shell{ position:relative; }
+
+.shell {
+    position: relative;
+}
 
 /* =====================
    MAIN 3-COLUMN GRID
@@ -117,109 +146,116 @@ html { scrollbar-gutter: stable !important; }
    Center = content
    Right = empty gutter
 ===================== */
-.page-grid{
-  /* NO far-left line */
-  border-left:none;
+.page-grid {
+    /* NO far-left line */
+    border-left: none;
 
-  /* YES far-right line */
-  border-right:1px solid var(--rule);
+    /* YES far-right line */
+    border-right: 1px solid var(--rule);
 
-  /* Frame reaches footer */
-  min-height: calc(100vh - var(--header-h) - var(--footer-h));
+    /* Frame reaches footer */
+    min-height: calc(100vh - var(--header-h) - var(--footer-h));
 
-  /* ensure the content doesn't create its own scroll panel */
-  overflow: visible;
+    /* ensure the content doesn't create its own scroll panel */
+    overflow: visible;
 }
 
 /* Desktop grid */
-@media (min-width:1024px){
-  .page-grid{
-    /* display:grid;
+@media (min-width:1024px) {
+    .page-grid {
+        /* display:grid;
     grid-template-columns: var(--side-w) var(--center-w) var(--side-w);
     gap: var(--col-gap);
     align-items:start; */
-    display: flex;
-    flex-direction: row;
-    width: auto;
-  }
+        display: flex;
+        flex-direction: row;
+        width: auto;
+    }
 }
 
 /* =====================
    LEFT LEDGER COLUMN
    Only a RIGHT border line (divider).
 ===================== */
-.left-rail{
-  display:none;
+.left-rail {
+    display: none;
 }
 
-@media (min-width:1024px){
-  .left-rail{
-    display:flex;
+@media (min-width:1024px) {
+    .left-rail {
+        display: flex;
 
-    /* the divider line you want */
-    border-right:1px solid var(--rule);
-    /* padding-right:12px; */
-    /* position:sticky; */
-    /* top:var(--header-h);
+        /* the divider line you want */
+        border-right: 1px solid var(--rule);
+        /* padding-right:12px; */
+        /* position:sticky; */
+        /* top:var(--header-h);
     align-self:start; */
-  }
+    }
 }
 
 /* Rail content */
-.rail-card{
-  /* border:1px solid var(--rule); */
-  background:transparent;
+.rail-card {
+    /* border:1px solid var(--rule); */
+    background: transparent;
 }
-.rail-link{
-  display:flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap:12px;
-  padding:14px 14px;
-  border-bottom:1px solid var(--rule);
-  text-decoration:none;
-  color:rgba(0,0,0,.85);
+
+.rail-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 14px 14px;
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+    color: rgba(0, 0, 0, .85);
 }
-.rail-link:hover{ background:rgba(0,0,0,.04); }
-.rail-roman{
-  width:26px;
-  text-align:center;
-  font-weight:700;
+
+.rail-link:hover {
+    background: rgba(0, 0, 0, .04);
 }
-.rail-label{
-  font-size:13px;
-  line-height:1.25;
+
+.rail-roman {
+    width: 26px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.rail-label {
+    font-size: 13px;
+    line-height: 1.25;
 }
 
 /* =====================
    CENTER CONTENT
 ===================== */
-.main{
-  border:none;
-  margin: 24px 24px;
-  height:auto;
-  overflow:visible;
-  width: auto;
+.main {
+    border: none;
+    margin: 24px 24px;
+    height: auto;
+    overflow: visible;
+    width: auto;
 }
 
-.page{
-  padding: var(--page-pad-y) var(--page-pad-x);
+.page {
+    padding: var(--page-pad-y) var(--page-pad-x);
 }
 
 /* ---- Center the whole written-article column (title + byline + prose) ---- */
 /* This assumes your article pages are wrapped in .rules (they are in your 404 too). */
 
-.rules{
-  position:relative;
+.rules {
+    position: relative;
 }
 
 /* Center everything inside .rules, but keep the inner column width */
-.rules > *{
-  width:100%;
-  max-width:70ch;              /* SAME as prose */
-  margin-left:auto;
-  margin-right:auto;
+.rules>* {
+    width: 100%;
+    max-width: 70ch;
+    /* SAME as prose */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* If you want the column slightly wider (Magnolia feel), swap to 720px instead:
@@ -230,230 +266,269 @@ html { scrollbar-gutter: stable !important; }
 
 /* ---- Decorative vertical rules (lines) ---- */
 
-.rules::before{
-  content:"";
-  position:absolute;
-  top:0; bottom:0;
-  left:0;
-  width:1px;
-  background:var(--rule);
+.rules::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    background: var(--rule);
 }
 
-.rules::after{
-  content:"";
-  position:absolute;
-  top:0; bottom:0;
-  left:52px;
-  width:1px;
-  background:var(--rule);
+.rules::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 52px;
+    width: 1px;
+    background: var(--rule);
 }
 
 /* =====================
    RIGHT GUTTER (EMPTY)
 ===================== */
-.gutter-right{
-  display:none;
+.gutter-right {
+    display: none;
 }
-@media (min-width:1024px){
-  .gutter-right{
-    display:block;
-    width:100%;
-    min-height:1px;
-  }
+
+@media (min-width:1024px) {
+    .gutter-right {
+        display: block;
+        width: 100%;
+        min-height: 1px;
+    }
 }
 
 /* =====================
    CARDS GRID
    Locked: 3 columns at >=1024
 ===================== */
-.grid{
-  display:grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
 }
 
-@media (min-width:1024px){
-  .grid{
-    grid-template-columns: repeat(3, var(--card-w));
-    gap: var(--card-gap);
-    justify-content: start;
-  }
+@media (min-width:1024px) {
+    .grid {
+        grid-template-columns: repeat(3, var(--card-w));
+        gap: var(--card-gap);
+        justify-content: start;
+    }
 }
 
-.card{
-  position:relative;
-  width: var(--card-w);
-  min-height: var(--card-min-h);
-  border:1px solid rgba(0,0,0,.14);
-  border-radius: var(--card-radius);
-  padding:22px;
-  color:white;
-  text-decoration:none;
-  display:block;
-  transition:transform .12s ease;
-}
-.card:hover{ transform:translateY(-1px); }
-
-.card-dot{
-  position:absolute;
-  left:-8px; top:-8px;
-  width:12px; height:12px;
-  border-radius:999px;
-  background:var(--dot);
+.card {
+    position: relative;
+    width: var(--card-w);
+    min-height: var(--card-min-h);
+    border: 1px solid rgba(0, 0, 0, .14);
+    border-radius: var(--card-radius);
+    padding: 22px;
+    color: white;
+    text-decoration: none;
+    display: block;
+    transition: transform .12s ease;
 }
 
-.card h3{
-  margin:0;
-  font-size:28px;
-  line-height:1.05;
-  font-weight:500;
-
-  /* prevent one long title from wrecking layout */
-  display:-webkit-box;
-  -webkit-line-clamp:3;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
+.card:hover {
+    transform: translateY(-1px);
 }
-.card p{
-  margin:14px 0 0 0;
-  font-size:13px;
-  color:rgba(255,255,255,.85);
 
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
+.card-dot {
+    position: absolute;
+    left: -8px;
+    top: -8px;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background: var(--dot);
+}
+
+.card h3 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.05;
+    font-weight: 500;
+
+    /* prevent one long title from wrecking layout */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card p {
+    margin: 14px 0 0 0;
+    font-size: 13px;
+    color: rgba(255, 255, 255, .85);
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* =====================
    ARTICLE / TEXT
 ===================== */
-.backpill{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  border:1px solid var(--rule);
-  border-radius:999px;
-  padding:10px 16px;
-  text-decoration:none;
-  color:rgba(0,0,0,.85);
+.backpill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 10px 16px;
+    text-decoration: none;
+    color: rgba(0, 0, 0, .85);
 }
-.backpill:hover{ background:rgba(0,0,0,.04); }
+
+.backpill:hover {
+    background: rgba(0, 0, 0, .04);
+}
 
 /* ===== Article centering ===== */
 
-.article-page{
-  /* keep your rules positioning */
-  position: relative;
+.article-page,
+.non-article-page {
+    /* keep your rules positioning */
+    position: relative;
 
-  /* THIS centers the entire article block */
-  display: flex;
-  justify-content: center;
+    /* THIS centers the entire article block */
+    display: flex;
+    justify-content: center;
 
-  /* vertical rhythm */
-  padding: 26px 0 32px 0;
+    /* vertical rhythm */
+    padding: 26px 0 32px 0;
 
-  /* important: don't let this create its own scroll area */
-  overflow: visible;
+    /* important: don't let this create its own scroll area */
+    overflow: visible;
 }
 
 /* this is the fixed “book column” width */
-.article-inner{
-  width: min(720px, 100%);
-  padding: 0 24px; /* small breathing room on narrow screens */
-  box-sizing: border-box;
+.article-inner,
+.non-article-inner {
+    width: min(720px, 100%);
+    padding: 0 24px;
+    /* small breathing room on narrow screens */
+    box-sizing: border-box;
 }
 
 /* your type stays left-aligned, but the whole column is centered */
-.article-title{
-  margin: 26px 0 6px 0;
-  font-size: 34px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  text-align: left;
+.article-title {
+    margin: 26px 0 6px 0;
+    font-size: 34px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-align: left;
 }
 
-.article-byline{
-  color: var(--muted);
-  margin: 0 0 20px 0;
-  text-align: left;
+.article-byline {
+    color: var(--muted);
+    margin: 0 0 20px 0;
+    text-align: left;
 }
 
-.prose{
-  color: rgba(0,0,0,.82);
-  font-size: 15px;
-  line-height: 1.85;
-
-  /* let the parent control width */
-  max-width: none;
-  width: 100%;
-
-  margin: 0;
-  text-align: left;
+/* This is the key: center the content within the middle column */
+.center-inner {
+    width: 100%;
+    max-width: var(--center-max);
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.prose p{ margin: 0 0 14px 0; }
+.prose {
+    color: rgba(0, 0, 0, .82);
+    font-size: 15px;
+    line-height: 1.85;
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    text-align: left;
+}
+
+.prose p {
+    margin: 0 0 14px 0;
+}
+
+.card {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+}
 
 figure img {
-  cursor: pointer;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.30);
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.30);
 }
 
-.media-block{
-  margin: 40px auto;
-  text-align: center;
+.media-block {
+    margin: 40px auto;
+    text-align: center;
 }
 
-.media-block img{
-  display: block;
-  max-width: 100%;
-  height: auto;
-  margin: 0 auto;
-  border-radius: 6px; /* optional, remove if not desired */
+.media-block img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 6px;
+    /* optional, remove if not desired */
 }
 
-.media-narrow{
-  max-width: 560px;
-  margin-left: auto;
-  margin-right: auto;
+.media-narrow {
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.media-caption{
-  margin: 12px auto 0 auto;
-  max-width: 52ch;          /* 👈 narrower than image */
-  font-size: 13px;
-  line-height: 1.5;
-  color: rgba(0,0,0,.70);
-  text-align: center;
+.media-caption {
+    margin: 12px auto 0 auto;
+    max-width: 52ch;
+    /* 👈 narrower than image */
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(0, 0, 0, .70);
+    text-align: center;
 }
 
 .lightbox {
-  position: fixed;
-  inset: 0;
-  display: none;
-  place-items: center;
-  background: rgba(0,0,0,0.3);
-  z-index: 9999;
-  padding: 6px;
+    position: fixed;
+    inset: 0;
+    display: none;
+    place-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    padding: 6px;
 }
 
-.lightbox.is-open { display: grid; }
+.lightbox.is-open {
+    display: grid;
+}
 
 .lightbox-img {
-  max-width: min(92vw, 1100px);
-  max-height: 92vh;
-  border-radius: 14px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.60);
-  cursor: pointer;
+    max-width: min(92vw, 1100px);
+    max-height: 92vh;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.60);
+    cursor: pointer;
 }
 
-html.lb-lock, body.lb-lock { overflow: hidden !important; }
+html.lb-lock,
+body.lb-lock {
+    overflow: hidden !important;
+}
 
 
 /* lock background scroll when open */
 html.lb-lock,
 body.lb-lock {
-  overflow: hidden !important;
+    overflow: hidden !important;
 }
 
 /* =====================
@@ -468,93 +543,124 @@ body.lb-lock {
    INVERTED FOOTER TICKER
 ===================== */
 
-.quote{
-  position: sticky;
-  bottom: 0;
-  background:var(--dot);         /* inverted background */
-  color: var(--paper);               /* inverted text */
-  border-top: 1px solid rgba(255,255,255,.35);
-  /* box-shadow: 0 -6px 16px rgba(0,0,0,.25); */
-  z-index: 50;
+.quote {
+    position: sticky;
+    bottom: 0;
+    background: var(--dot);
+    /* inverted background */
+    color: var(--paper);
+    /* inverted text */
+    border-top: 1px solid rgba(255, 255, 255, .35);
+    /* box-shadow: 0 -6px 16px rgba(0,0,0,.25); */
+    z-index: 50;
 }
 
 /* constrain width like the rest of the site */
-.quote-inner{
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: 10px 16px;
+.quote-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 10px 16px;
 }
 
 /* ticker window */
-.ticker{
-  width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
+.ticker {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 /* animated track */
-.ticker-track{
-  display: inline-block;
-  padding-left: 100%;
-  will-change: transform;
-  animation: thp-marquee 25s linear infinite !important;
+.ticker-track {
+    display: inline-block;
+    padding-left: 100%;
+    will-change: transform;
+    animation: thp-marquee 25s linear infinite !important;
 }
 
 /* quote text */
-.ticker-text{
-  display: inline-block;
-  padding-right: 64px;
-  font-style: italic;
-  color: rgba(255,255,255,.85);      /* soft white */
+.ticker-text {
+    display: inline-block;
+    padding-right: 64px;
+    font-style: italic;
+    color: rgba(255, 255, 255, .85);
+    /* soft white */
 }
 
 /* animation stays the same */
-@keyframes thp-marquee{
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
+@keyframes thp-marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
 }
 
 /* accessibility */
-@media (prefers-reduced-motion: reduce){
-  .ticker-track{ animation: none; }
+@media (prefers-reduced-motion: reduce) {
+    .ticker-track {
+        animation: none;
+    }
 }
 
-@media (hover:hover){
-  .ticker:hover .ticker-track{
-    animation-play-state: paused !important;
-  }
+@media (hover:hover) {
+    .ticker:hover .ticker-track {
+        animation-play-state: paused !important;
+    }
 }
 
 /* =====================
    MOBILE DRAWER
 ===================== */
-.drawer{ display:none; }
-.drawer.open{ display:block; }
-.drawer-back{
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.3);
-  z-index:60;
+.drawer {
+    display: none;
 }
-.drawer-panel{
-  position:fixed; left:0; top:0;
-  height:100%;
-  width:320px;
-  background:var(--paper);
-  border-right:1px solid var(--rule);
-  z-index:61;
-  padding:16px;
+
+.drawer.open {
+    display: block;
+}
+
+.drawer-back {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .3);
+    z-index: 60;
+}
+
+.drawer-panel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 320px;
+    background: var(--paper);
+    border-right: 1px solid var(--rule);
+    z-index: 61;
+    padding: 16px;
 }
 
 /* =====================
    RESPONSIVE
 ===================== */
-@media (min-width:1024px){
-  .hamburger{ display:none; }
+@media (min-width:1024px) {
+    .hamburger {
+        display: none;
+    }
 }
-@media (max-width:1023px){
-  .left-rail{ display:none; }
-  .gutter-right{ display:none; }
-  .grid{ grid-template-columns:1fr; }
+
+@media (max-width:1023px) {
+    .left-rail {
+        display: none;
+    }
+
+    .gutter-right {
+        display: none;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ===== RAIL: HARD LOCK (prevents route/page CSS from reformatting it) ===== */
@@ -564,10 +670,10 @@ body.lb-lock {
 .rail-link,
 .rail-roman,
 .rail-label {
-  font-family: ui-serif, Georgia, "Times New Roman", serif !important;
-  font-style: normal !important;
-  letter-spacing: normal !important;
-  text-transform: none !important;
+    font-family: ui-serif, Georgia, "Times New Roman", serif !important;
+    font-style: normal !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
 }
 
 /* kill weird inherited margins/padding from page styles */
@@ -575,43 +681,42 @@ body.lb-lock {
 .rail-link,
 .rail-roman,
 .rail-label {
-  margin: 0 !important;
-  padding: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 /* lock row layout */
 .rail-link {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  gap: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
 
-  /* your intended padding + divider */
-  padding: 14px 14px !important;
-  border-bottom: 1px solid var(--rule) !important;
+    /* your intended padding + divider */
+    padding: 14px 14px !important;
+    border-bottom: 1px solid var(--rule) !important;
 
-  /* prevents weird “italic/underline” link states */
-  text-decoration: none !important;
-  color: rgba(0,0,0,.85) !important;
+    /* prevents weird “italic/underline” link states */
+    text-decoration: none !important;
+    color: rgba(0, 0, 0, .85) !important;
 }
 
 /* lock roman + label sizing so no page rules can change the first row */
 .rail-roman {
-  width: 26px !important;
-  text-align: center !important;
-  font-weight: 700 !important;
-  font-size: 18px !important;
-  line-height: 1 !important;
+    width: 26px !important;
+    text-align: center !important;
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
 }
 
 .rail-label {
-  font-weight: 400 !important;
-  font-size: 13px !important;
-  line-height: 1.25 !important;
+    font-weight: 400 !important;
+    font-size: 13px !important;
+    line-height: 1.25 !important;
 }
 
 /* keep hover consistent even if another page changes a:hover etc */
 .rail-link:hover {
-  background: rgba(0,0,0,.04) !important;
+    background: rgba(0, 0, 0, .04) !important;
 }
-

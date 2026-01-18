@@ -1,70 +1,72 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Healing Project Magazine</title>
     <link rel="stylesheet" href="/assets/css/styles.css" />
     <script src="/assets/js/script.js"></script>
-  </head>
+</head>
 
-  <body class="thp-frame">
+<body class="thp-frame">
     <!-- HOME BAR -->
     <header class="home-bar">
-      <div class="home-bar-inner">
-        <a class="logo" href="#/">The Healing Project Magazine</a>
+        <div class="home-bar-inner">
+            <a class="logo" href="#/">The Healing Project Magazine</a>
 
-        <button class="hamburger" id="menu-button" aria-label="Open menu">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
+            <button class="hamburger" id="menu-button" aria-label="Open menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
     </header>
 
     <!-- OVERALL LAYOUT -->
-<div class="layout-container">
-  <div class="shell">
+    <div class="layout-container">
+        <div class="shell">
 
-    <div class="page-grid">
-      <!-- LEFT GUTTER = LEDGER -->
-      <div class="left-rail" id="side-rail"></div>
+            <div class="page-grid">
+                <!-- LEFT GUTTER = LEDGER -->
+                <div class="left-rail" id="side-rail"></div>
 
-      <!-- CENTER = CONTENT -->
-      <main class="main">
+                <!-- CENTER = CONTENT -->
+                <main class="main">
+                    <div class="page" id="app"></div>
+                </main>
+
+                <!-- RIGHT GUTTER = EMPTY -->
+                <!-- <div class="gutter-right" aria-hidden="true"></div> -->
+            </div>
+
+            <!-- MOBILE DRAWER stays separate -->
+            <div class="drawer" id="mobile-drawer">
+                <div class="drawer-back" id="drawer-backdrop"></div>
+                <div class="drawer-panel">
+                    <div id="side-rail-mobile"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- MAIN -->
+    <main class="main">
         <div class="page" id="app"></div>
-      </main>
-
-      <!-- RIGHT GUTTER = EMPTY -->
-      <!-- <div class="gutter-right" aria-hidden="true"></div> -->
+    </main>
     </div>
-
-    <!-- MOBILE DRAWER stays separate -->
-    <div class="drawer" id="mobile-drawer">
-      <div class="drawer-back" id="drawer-backdrop"></div>
-      <div class="drawer-panel">
-        <div id="side-rail-mobile"></div>
-      </div>
-    </div>
-
-  </div>
-</div>
-        <!-- MAIN -->
-        <main class="main">
-          <div class="page" id="app"></div>
-        </main>
-      </div>
     </div>
 
     <!-- (ROTATING) FOOTER QUOTE -->
-<footer class="quote">
-  <div class="quote-inner">
-    <div class="ticker" aria-label="Quote ticker">
-      <div class="ticker-track" id="tickerTrack">
-        <span class="ticker-text" id="tickerText"></span>
-      </div>
-    </div>
-  </div>
-</footer>
+    <footer class="quote">
+        <div class="quote-inner">
+            <div class="ticker" aria-label="Quote ticker">
+                <div class="ticker-track" id="tickerTrack">
+                    <span class="ticker-text" id="tickerText"></span>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script type="module" src="/assets/js/app.js"></script>
-  </body>
+</body>
+
 </html>
