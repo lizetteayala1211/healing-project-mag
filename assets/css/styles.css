@@ -402,7 +402,7 @@ html { scrollbar-gutter: stable !important; }
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 12px;          /* optional */
+  border-radius: 6px;          
 }
 
 .media-caption{
