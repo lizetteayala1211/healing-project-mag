@@ -394,6 +394,25 @@ html { scrollbar-gutter: stable !important; }
 
 .prose p{ margin: 0 0 14px 0; }
 
+.media-block{
+  margin: 22px 0;
+}
+
+.media-img{
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;          /* optional */
+}
+
+.media-caption{
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(0,0,0,.70);
+}
+
+
 /* =====================
    FOOTER QUOTE
    Sticky (NOT fixed) to avoid bottom dead-space
