@@ -405,13 +405,18 @@ html { scrollbar-gutter: stable !important; }
   border-radius: 6px;          
 }
 
+.media-narrow{
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .media-caption{
   margin-top: 10px;
   font-size: 13px;
   line-height: 1.5;
   color: rgba(0,0,0,.70);
 }
-
 
 /* =====================
    FOOTER QUOTE
