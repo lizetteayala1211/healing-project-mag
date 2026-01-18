@@ -61,10 +61,7 @@
     box-sizing: border-box;
 }
 
-html,
-body {
-    height: auto;
-}
+html, body { height: 100%; }
 
 body {
     margin: 0;
@@ -140,33 +137,30 @@ html {
     position: relative;
 }
 
+.shell,
+.layout-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 /* =====================
    MAIN 3-COLUMN GRID
    Left = ledger gutter
    Center = content
    Right = empty gutter
 ===================== */
-.page-grid {
-    /* NO far-left line */
-    border-left: none;
 
-    /* YES far-right line */
-    border-right: 1px solid var(--rule);
-
-    /* Frame reaches footer */
-    min-height: calc(100vh - var(--header-h) - var(--footer-h));
-
-    /* ensure the content doesn't create its own scroll panel */
-    overflow: visible;
+.page-grid{
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto; /* header, content, footer */
+  border-right: 1px solid var(--rule);
 }
 
 /* Desktop grid */
 @media (min-width:1024px) {
     .page-grid {
-        /* display:grid;
-    grid-template-columns: var(--side-w) var(--center-w) var(--side-w);
-    gap: var(--col-gap);
-    align-items:start; */
         display: flex;
         flex-direction: row;
         width: auto;
@@ -187,16 +181,11 @@ html {
 
         /* the divider line you want */
         border-right: 1px solid var(--rule);
-        /* padding-right:12px; */
-        /* position:sticky; */
-        /* top:var(--header-h);
-    align-self:start; */
     }
 }
 
 /* Rail content */
 .rail-card {
-    /* border:1px solid var(--rule); */
     background: transparent;
 }
 
@@ -232,59 +221,54 @@ html {
 ===================== */
 .main {
     border: none;
-    margin: 24px 24px;
-    height: auto;
+    /* margin: 24px 24px; */
+    /* height: auto !important; */
     overflow: visible;
     width: auto;
+
+    /* ===== FIX: make middle column stretch so rules can reach bottom ===== */
+    flex: 1;           /* fill remaining height */
+    display: flex;     /* allow children to stretch */
+    min-height: 0;     /* prevent flex overflow issues */
 }
 
 .page {
-    padding: var(--page-pad-y) var(--page-pad-x);
+    padding: var(--page-pad-y) var(--page-pad-x) 0; /* top | left/right | bottom */
+
+    /* ===== FIX: stretch page inside .main ===== */
+    flex: 1;
+    min-height: 0;
+    /* min-height: calc(100svh - var(--header-h) - var(--footer-h) - 48px);  */
 }
 
-/* ---- Center the whole written-article column (title + byline + prose) ---- */
-/* This assumes your article pages are wrapped in .rules (they are in your 404 too). */
+/* =====================
+   RULES (VERTICAL LINES)
+   Fix "dead space" by making rules always reach bottom
+===================== */
 
-.rules {
-    position: relative;
+.rules{
+  position: relative;
+
+  /* Always reach the bottom of the visible viewport area */
+  min-height: calc(100svh - var(--header-h) - var(--footer-h));
+
+  /* breathing room so content never hides under ticker */
+  padding-bottom: calc(var(--footer-h) + 24px);
 }
 
-/* Center everything inside .rules, but keep the inner column width */
-.rules>* {
-    width: 100%;
-    max-width: 70ch;
-    /* SAME as prose */
-    margin-left: auto;
-    margin-right: auto;
+/* Decorative vertical rules */
+.rules::before,
+.rules::after{
+  content:"";
+  position:absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--rule);
 }
 
-/* If you want the column slightly wider (Magnolia feel), swap to 720px instead:
-.rules > *{ max-width:720px; }
-.prose{ max-width:720px; }
-*/
-
-
-/* ---- Decorative vertical rules (lines) ---- */
-
-.rules::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 1px;
-    background: var(--rule);
-}
-
-.rules::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 52px;
-    width: 1px;
-    background: var(--rule);
-}
+.rules::before{ left: 0; }
+.rules::after{ left: 52px; }
 
 /* =====================
    RIGHT GUTTER (EMPTY)
@@ -392,30 +376,25 @@ html {
 
 .article-page,
 .non-article-page {
-    /* keep your rules positioning */
-    position: relative;
+  position: relative;
+  padding: 26px 0 32px 0;
+  overflow: visible;
 
-    /* THIS centers the entire article block */
-    display: flex;
-    justify-content: center;
-
-    /* vertical rhythm */
-    padding: 26px 0 32px 0;
-
-    /* important: don't let this create its own scroll area */
-    overflow: visible;
+  display: block;
+  width: 100%;
 }
 
-/* this is the fixed “book column” width */
+/* fixed “book column” width */
 .article-inner,
 .non-article-inner {
-    width: min(720px, 100%);
-    padding: 0 24px;
-    /* small breathing room on narrow screens */
-    box-sizing: border-box;
+  width: min(720px, 100%);
+  padding: 0 24px;
+  box-sizing: border-box;
+
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* your type stays left-aligned, but the whole column is centered */
 .article-title {
     margin: 26px 0 6px 0;
     font-size: 34px;
@@ -478,7 +457,6 @@ figure img {
     height: auto;
     margin: 0 auto;
     border-radius: 6px;
-    /* optional, remove if not desired */
 }
 
 .media-narrow {
@@ -490,7 +468,6 @@ figure img {
 .media-caption {
     margin: 12px auto 0 auto;
     max-width: 52ch;
-    /* 👈 narrower than image */
     font-size: 13px;
     line-height: 1.5;
     color: rgba(0, 0, 0, .70);
@@ -524,42 +501,25 @@ body.lb-lock {
     overflow: hidden !important;
 }
 
-
-/* lock background scroll when open */
-html.lb-lock,
-body.lb-lock {
-    overflow: hidden !important;
-}
-
 /* =====================
    FOOTER QUOTE
    Sticky (NOT fixed) to avoid bottom dead-space
-===================== */
-/* ===== FOOTER TICKER (one-line scrolling quote) ===== */
-/* ===== FOOTER TICKER (guaranteed moving) ===== */
-
-/* ===== FOOTER TICKER (reliable marquee) ===== */
-/* =====================
-   INVERTED FOOTER TICKER
 ===================== */
 
 .quote {
     position: sticky;
     bottom: 0;
     background: var(--dot);
-    /* inverted background */
     color: var(--paper);
-    /* inverted text */
     border-top: 1px solid rgba(255, 255, 255, .35);
-    /* box-shadow: 0 -6px 16px rgba(0,0,0,.25); */
     z-index: 50;
 }
 
-/* constrain width like the rest of the site */
 .quote-inner {
-    max-width: var(--max);
+    /* max-width: var(--max); */
+    width: 100vw;
     margin: 0 auto;
-    padding: 10px 16px;
+    padding: 16px 16px;
 }
 
 /* ticker window */
@@ -583,25 +543,15 @@ body.lb-lock {
     padding-right: 64px;
     font-style: italic;
     color: rgba(255, 255, 255, .85);
-    /* soft white */
 }
 
-/* animation stays the same */
 @keyframes thp-marquee {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(-100%);
-    }
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
 }
 
-/* accessibility */
 @media (prefers-reduced-motion: reduce) {
-    .ticker-track {
-        animation: none;
-    }
+    .ticker-track { animation: none; }
 }
 
 @media (hover:hover) {
@@ -692,16 +642,13 @@ body.lb-lock {
     justify-content: flex-start !important;
     gap: 12px !important;
 
-    /* your intended padding + divider */
     padding: 14px 14px !important;
     border-bottom: 1px solid var(--rule) !important;
 
-    /* prevents weird “italic/underline” link states */
     text-decoration: none !important;
     color: rgba(0, 0, 0, .85) !important;
 }
 
-/* lock roman + label sizing so no page rules can change the first row */
 .rail-roman {
     width: 26px !important;
     text-align: center !important;
@@ -716,7 +663,6 @@ body.lb-lock {
     line-height: 1.25 !important;
 }
 
-/* keep hover consistent even if another page changes a:hover etc */
 .rail-link:hover {
     background: rgba(0, 0, 0, .04) !important;
 }
