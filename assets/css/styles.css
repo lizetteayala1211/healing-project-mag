@@ -431,6 +431,28 @@ html {
     margin: 0 0 14px 0;
 }
 
+/* ===== Side-by-side text block (2 columns) ===== */
+.two-col{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+  margin: 28px 0;
+}
+
+/* keep the paragraphs inside tight + consistent */
+.two-col p{
+  margin: 0 0 14px 0;
+}
+
+/* stack on small screens */
+@media (max-width: 700px){
+  .two-col{
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
 .card {
     transition: transform 180ms ease, box-shadow 180ms ease;
 }
