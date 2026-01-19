@@ -123,6 +123,19 @@ function initTicker() {
     return;
   }
 
+  // pause on hover (only bind once)
+if (!ticker.dataset.pauseBound) {
+  ticker.dataset.pauseBound = "1";
+
+  ticker.addEventListener("mouseenter", () => {
+    if (anim) anim.pause();
+  });
+
+  ticker.addEventListener("mouseleave", () => {
+    if (anim) anim.play();
+  });
+}
+
   // If we already started and the element still exists, don't restart.
   if (tickerStarted) {
     // but if no animation exists, restart anyway
