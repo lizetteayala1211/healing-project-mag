@@ -20,7 +20,7 @@ export const cards = [
   },
 
   { title: "Magnolia House", byline: "by Meagan Betances", color: "#3c8f92", path: "/article/magnolia-house" },
-  { title: "The Bully and the Bullied", byline: "By Urhiiness Hill", color: "#7faa86", path: "/article/the-bully-and-the-bullied" },
+  { title: "The Bully and the Bullied", byline: "by Urhiiness Hill", color: "#7faa86", path: "/article/the-bully-and-the-bullied" },
   { title: "The Community I See", byline: "by Aminata Konate", color: "#a9c9d6", path: "/article/the-community-i-see" },
   { title: "The Hands That Help", byline: "by Sarah Sanchez", color: "#0f1832", path: "/article/the-hands-that-help" },
   { title: "We Deserve Wellness", byline: "by Members of The Liberation Program at Brotherhood Sister Sol", color: "#d8a6a3", path: "/article/we-deserve-wellness" },
