@@ -9,7 +9,7 @@
 :root {
     --paper: #f3efe6;
     --ink: #1a1a1a;
-    --rule: rgba(0, 0, 0, .22);
+    --rule: rgba(0, 0, 0, 0.7);
     --muted: rgba(0, 0, 0, .7);
     --dot: #27398a;
 
@@ -165,9 +165,10 @@ html {
 /* Desktop grid */
 @media (min-width:1024px) {
     .page-grid {
-        display: flex;
-        flex-direction: row;
-        width: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;   /* keep columns same height */
+    width: 100%;
     }
 }
 
@@ -722,4 +723,58 @@ body.lb-lock {
 
 .rail-link:hover {
     background: rgba(0, 0, 0, .04) !important;
+}
+
+/* ===== LEDGER WIDTH: stop grow/shrink across pages ===== */
+@media (min-width: 1024px) {
+  .left-rail{
+    flex: 0 0 200px;
+    /* width: var(--side-w);
+    min-width: var(--side-w);
+    max-width: var(--side-w); */
+  }
+
+  .rail-link{
+    width: 100%;              /* makes the link fill the fixed rail */
+  }
+
+  .rail-label{
+    max-width: 220px;         /* pick a consistent text box width */
+    white-space: normal;      /* allow wrapping */
+    overflow-wrap: anywhere;  /* prevents “unbreakable” words from widening rail */
+    word-break: normal;
+  }
+}
+
+/* =====================
+   COLLABORATORS PAGE GRID
+===================== */
+.collab-grid{
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+  column-gap: 28px;
+  align-items: start;
+  margin: 20px 0;
+}
+
+.collab-col p{
+  margin: 0 0 5px 0;
+}
+
+.collab-divider{
+  width: 1px;
+  background: rgba(0,0,0,.55);
+  height: 100%;
+}
+
+/* stack nicely on smaller screens */
+@media (max-width: 900px){
+  .collab-grid{
+    grid-template-columns: 1fr;
+    row-gap: 18px;
+  }
+
+  .collab-divider{
+    display: none;
+  }
 }
