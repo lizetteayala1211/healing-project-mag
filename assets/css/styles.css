@@ -61,7 +61,10 @@
     box-sizing: border-box;
 }
 
-html, body { height: 100%; }
+html,
+body {
+    height: 100%;
+}
 
 body {
     margin: 0;
@@ -88,7 +91,7 @@ html {
 }
 
 .home-bar-inner {
-    max-width: var(--max);
+    max-width: 98%;
     margin: 0 auto;
     padding: 18px 16px;
     display: flex;
@@ -139,9 +142,9 @@ html {
 
 .shell,
 .layout-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* =====================
@@ -151,11 +154,12 @@ html {
    Right = empty gutter
 ===================== */
 
-.page-grid{
-  min-height: 100vh;
-  display: grid;
-  grid-template-rows: auto 1fr auto; /* header, content, footer */
-  border-right: 1px solid var(--rule);
+.page-grid {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    /* header, content, footer */
+    border-right: 1px solid var(--rule);
 }
 
 /* Desktop grid */
@@ -227,13 +231,17 @@ html {
     width: auto;
 
     /* ===== FIX: make middle column stretch so rules can reach bottom ===== */
-    flex: 1;           /* fill remaining height */
-    display: flex;     /* allow children to stretch */
-    min-height: 0;     /* prevent flex overflow issues */
+    flex: 1;
+    /* fill remaining height */
+    display: flex;
+    /* allow children to stretch */
+    min-height: 0;
+    /* prevent flex overflow issues */
 }
 
 .page {
-    padding: var(--page-pad-y) var(--page-pad-x) 0; /* top | left/right | bottom */
+    padding: var(--page-pad-y) var(--page-pad-x) 0;
+    /* top | left/right | bottom */
 
     /* ===== FIX: stretch page inside .main ===== */
     flex: 1;
@@ -246,29 +254,34 @@ html {
    Fix "dead space" by making rules always reach bottom
 ===================== */
 
-.rules{
-  position: relative;
+.rules {
+    position: relative;
 
-  /* Always reach the bottom of the visible viewport area */
-  min-height: calc(100svh - var(--header-h) - var(--footer-h));
+    /* Always reach the bottom of the visible viewport area */
+    min-height: calc(100svh - var(--header-h) - var(--footer-h));
 
-  /* breathing room so content never hides under ticker */
-  padding-bottom: calc(var(--footer-h) + 24px);
+    /* breathing room so content never hides under ticker */
+    padding-bottom: calc(var(--footer-h) + 24px);
 }
 
 /* Decorative vertical rules */
 .rules::before,
-.rules::after{
-  content:"";
-  position:absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--rule);
+.rules::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--rule);
 }
 
-.rules::before{ left: 0; }
-.rules::after{ left: 52px; }
+.rules::before {
+    left: 0;
+}
+
+.rules::after {
+    left: 52px;
+}
 
 /* =====================
    RIGHT GUTTER (EMPTY)
@@ -314,6 +327,7 @@ html {
     text-decoration: none;
     display: block;
     transition: transform .12s ease;
+    overflow: visible;
 }
 
 .card:hover {
@@ -321,13 +335,33 @@ html {
 }
 
 .card-dot {
-    position: absolute;
+    /* position: absolute;
     left: -8px;
     top: -8px;
     width: 12px;
     height: 12px;
     border-radius: 999px;
     background: var(--dot);
+    pointer-events: none; */
+    position: absolute;
+
+  /* center dot inside the gap between cards */
+  left: calc(var(--card-gap) / -1.25);
+  top:  calc(var(--card-gap) / -1);
+
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--dot);
+
+  pointer-events: none;
+  z-index: 5;
+}
+
+@media (min-width: 1024px){
+  .card-dot{
+    display: block;
+  }
 }
 
 .card h3 {
@@ -376,23 +410,23 @@ html {
 
 .article-page,
 .non-article-page {
-  position: relative;
-  padding: 26px 0 32px 0;
-  overflow: visible;
+    position: relative;
+    padding: 26px 0 32px 0;
+    overflow: visible;
 
-  display: block;
-  width: 100%;
+    display: block;
+    width: 100%;
 }
 
 /* fixed “book column” width */
 .article-inner,
 .non-article-inner {
-  width: min(720px, 100%);
-  padding: 0 24px;
-  box-sizing: border-box;
+    width: min(720px, 100%);
+    padding: 0 24px;
+    box-sizing: border-box;
 
-  margin-left: auto;
-  margin-right: auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .article-title {
@@ -432,29 +466,55 @@ html {
 }
 
 /* ===== Side-by-side text block (2 columns) ===== */
-.two-col{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px;
-  align-items: start;
-  margin: 28px 0;
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+    margin: 28px 0;
 }
 
 /* keep the paragraphs inside tight + consistent */
-.two-col p{
-  margin: 0 0 14px 0;
+.two-col p {
+    margin: 0 0 14px 0;
 }
 
 /* stack on small screens */
-@media (max-width: 700px){
-  .two-col{
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
+@media (max-width: 700px) {
+    .two-col {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
 }
 
 .card {
     transition: transform 180ms ease, box-shadow 180ms ease;
+    position: relative;
+    width: var(--card-w);
+    min-height: var(--card-min-h);
+    border: 1px solid rgba(0, 0, 0, .14);
+    border-radius: var(--card-radius);
+    padding: 22px;
+    padding-bottom: 34px;
+    /* tweak this */
+    display: flex;
+    flex-direction: column;
+}
+
+.card h3 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.05;
+    font-weight: 500;
+}
+
+.card p {
+    margin-top: auto;
+    padding-top: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .card:hover {
@@ -544,42 +604,17 @@ body.lb-lock {
     padding: 16px 16px;
 }
 
-/* ticker window */
 .ticker {
-    width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-/* animated track */
-.ticker-track {
-    display: inline-block;
-    padding-left: 100%;
-    will-change: transform;
-    animation: thp-marquee 25s linear infinite !important;
-}
-
-/* quote text */
 .ticker-text {
-    display: inline-block;
-    padding-right: 64px;
-    font-style: italic;
-    color: rgba(255, 255, 255, .85);
-}
-
-@keyframes thp-marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .ticker-track { animation: none; }
-}
-
-@media (hover:hover) {
-    .ticker:hover .ticker-track {
-        animation-play-state: paused !important;
-    }
+  display: inline-block;
+  white-space: nowrap;
+  will-change: transform;
+  font-style: italic;
+  color: rgba(255,255,255,.85);
 }
 
 /* =====================

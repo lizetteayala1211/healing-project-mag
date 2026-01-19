@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Healing Project Magazine</title>
     <link rel="stylesheet" href="/assets/css/styles.css" />
-    <script src="/assets/js/script.js"></script>
+    <!-- <script src="/assets/js/script.js"></script> -->
+
+    <script type="module" src="/assets/js/app.js"></script>
 </head>
 
 <body class="thp-frame">
@@ -58,15 +60,11 @@
     <!-- (ROTATING) FOOTER QUOTE -->
     <footer class="quote">
         <div class="quote-inner">
-            <div class="ticker" aria-label="Quote ticker">
-                <div class="ticker-track" id="tickerTrack">
-                    <span class="ticker-text" id="tickerText"></span>
-                </div>
+            <div class="ticker" id="ticker">
+                <span class="ticker-text" id="tickerText"></span>
             </div>
         </div>
     </footer>
-
-    <script type="module" src="/assets/js/app.js"></script>
 </body>
 
 </html>

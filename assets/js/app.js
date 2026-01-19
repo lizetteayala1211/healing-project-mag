@@ -1,3 +1,7 @@
+console.log("app.js loaded ✅");
+
+console.log("[ticker] code reached");
+
 import { navItems, cards } from "./data.js";
 import { getPath, loadPage, setPath } from "./router.js";
 
@@ -90,10 +94,8 @@ window.addEventListener("hashchange", render);
 render();
 
 // ===== Footer ticker rotation (dynamic speed) =====
-const tickerTextEl = document.getElementById("tickerText");
-const tickerTrackEl = document.getElementById("tickerTrack");
 
-const tickerLines = [
+const quotes = [
   "I realized it's not a one-size-fits-all here. You have to be able to adapt in your caregiving, because the method one day might not be the method the next.",
   "I find that my cup is filled when I’m giving, and my healing happens when I'm helping with somebody else's healing.",
   "I don't want a revolution if I can't dance in it.",
@@ -108,50 +110,80 @@ const tickerLines = [
   "Along the way, we learn to cup beauty and grief in the palms of our hands."
 ];
 
-let tickerIndex = 0;
+let tickerStarted = false;
+let anim = null;
+let index = 0;
 
-// Tune these to taste:
-const MIN_SECONDS = 16;          // shortest quote speed
-const MAX_SECONDS = 34;          // longest quote speed
-const CHARS_FOR_MAX = 220;       // around where you want "max" duration to kick in
+function initTicker() {
+  const ticker = document.getElementById("ticker");
+  const textEl = document.getElementById("tickerText");
 
-function restartMarqueeWithDuration(seconds) {
-  if (!tickerTrackEl) return;
+  if (!ticker || !textEl) {
+    console.log("[ticker] missing elements", { ticker: !!ticker, textEl: !!textEl });
+    return;
+  }
 
-  // set duration for this pass
-  tickerTrackEl.style.animationDuration = `${seconds}s`;
+  // If we already started and the element still exists, don't restart.
+  if (tickerStarted) {
+    // but if no animation exists, restart anyway
+    if (textEl.getAnimations().length === 0) tickerStarted = false;
+    else return;
+  }
 
-  // restart animation
-  tickerTrackEl.style.animation = "none";
-  void tickerTrackEl.offsetHeight;
-  tickerTrackEl.style.animation = "";
+  console.log("[ticker] init ✓");
+  tickerStarted = true;
+
+  function runQuote(q) {
+    if (anim) anim.cancel();
+
+    textEl.style.display = "inline-block";
+    textEl.style.whiteSpace = "nowrap";
+
+    textEl.textContent = q;
+
+    requestAnimationFrame(() => {
+      const tickerW = ticker.clientWidth;
+      const textW = textEl.scrollWidth;
+
+      console.log("[ticker] measure", { tickerW, textW });
+
+      if (!tickerW || !textW) return;
+
+      const startX = tickerW;
+      const endX = -textW;
+
+      const speed = 90; // px/sec
+      const distance = tickerW + textW;
+      const duration = Math.max(6000, (distance / speed) * 1000);
+
+      anim = textEl.animate(
+        [
+          { transform: `translateX(${startX}px)` },
+          { transform: `translateX(${endX}px)` }
+        ],
+        { duration, easing: "linear", fill: "forwards" }
+      );
+
+      anim.onfinish = () => {
+        index = (index + 1) % quotes.length;
+        runQuote(quotes[index]);
+      };
+    });
+  }
+
+  runQuote(quotes[index]);
 }
 
-function durationForLine(line) {
-  const len = (line || "").length;
-  const t = Math.min(len / CHARS_FOR_MAX, 1); // 0..1
-  return MIN_SECONDS + (MAX_SECONDS - MIN_SECONDS) * t;
-}
+// run on first load
+window.addEventListener("DOMContentLoaded", initTicker);
 
-function setTickerLine(line) {
-  if (!tickerTextEl || !tickerTrackEl) return;
-  tickerTextEl.textContent = line;
+// run again when navigating between hash routes
+window.addEventListener("hashchange", () => {
+  tickerStarted = false;
+  initTicker();
+});
 
-  const seconds = durationForLine(line);
-  restartMarqueeWithDuration(seconds);
+// (optional) also retry shortly after load in case footer injects late
+setTimeout(initTicker, 150);
+setTimeout(initTicker, 500);
 
-  // schedule the next swap slightly before the animation completes
-  const nextInMs = Math.max((seconds * 1000) - 400, 8000);
-  window.clearTimeout(window.__thpTickerTimeout);
-  window.__thpTickerTimeout = window.setTimeout(nextTicker, nextInMs);
-}
-
-function nextTicker() {
-  tickerIndex = (tickerIndex + 1) % tickerLines.length;
-  setTickerLine(tickerLines[tickerIndex]);
-}
-
-// init
-if (tickerTextEl && tickerTrackEl && tickerLines.length) {
-  setTickerLine(tickerLines[0]);
-}
