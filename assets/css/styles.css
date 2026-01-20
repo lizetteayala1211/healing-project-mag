@@ -650,6 +650,24 @@ body.lb-lock {
   width: 100%;
 }
 
+/* When lightbox is open, don’t let the sticky footer affect layout */
+html.lb-lock .quote{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Lightbox open: ticker is fixed, so don't reserve footer space */
+html.lb-lock .rules{
+  padding-bottom: 0 !important;
+}
+
+/* (optional) also remove any bottom padding on the page wrapper if you have it */
+html.lb-lock .page{
+  padding-bottom: 0 !important;
+}
+
 /* =====================
    FOOTER QUOTE
    Sticky (NOT fixed) to avoid bottom dead-space

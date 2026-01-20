@@ -114,53 +114,67 @@ let tickerStarted = false;
 let anim = null;
 let index = 0;
 
-function initTicker() {
+// Guard against multiple init attempts
+let initAttempted = false;
+
+function initTickerOnce() {
+  if (tickerStarted) return;
+
   const ticker = document.getElementById("ticker");
   const textEl = document.getElementById("tickerText");
 
   if (!ticker || !textEl) {
-    console.log("[ticker] missing elements", { ticker: !!ticker, textEl: !!textEl });
+    // footer might not be in DOM yet — allow a couple retries
+    if (!initAttempted) {
+      initAttempted = true;
+      setTimeout(initTickerOnce, 150);
+      setTimeout(initTickerOnce, 500);
+    }
     return;
   }
 
-  // pause on hover (only bind once)
-if (!ticker.dataset.pauseBound) {
-  ticker.dataset.pauseBound = "1";
+  // Bind pause on hover ONCE
+  if (!ticker.dataset.pauseBound) {
+    ticker.dataset.pauseBound = "1";
 
-  ticker.addEventListener("mouseenter", () => {
-    if (anim) anim.pause();
-  });
+    ticker.addEventListener("mouseenter", () => {
+      if (anim) anim.pause();
+    });
 
-  ticker.addEventListener("mouseleave", () => {
-    if (anim) anim.play();
-  });
-}
-
-  // If we already started and the element still exists, don't restart.
-  if (tickerStarted) {
-    // but if no animation exists, restart anyway
-    if (textEl.getAnimations().length === 0) tickerStarted = false;
-    else return;
+    ticker.addEventListener("mouseleave", () => {
+      if (anim) anim.play();
+    });
   }
 
-  console.log("[ticker] init ✓");
   tickerStarted = true;
 
   function runQuote(q) {
+    if (!tickerStarted) return;
+
     if (anim) anim.cancel();
 
     textEl.style.display = "inline-block";
     textEl.style.whiteSpace = "nowrap";
-
     textEl.textContent = q;
 
+    // Measure after layout has updated
     requestAnimationFrame(() => {
-      const tickerW = ticker.clientWidth;
-      const textW = textEl.scrollWidth;
+      // If ticker got removed/replaced somehow, bail safely
+      const tickerNow = document.getElementById("ticker");
+      const textNow = document.getElementById("tickerText");
+      if (!tickerNow || !textNow) {
+        tickerStarted = false;
+        return;
+      }
 
-      console.log("[ticker] measure", { tickerW, textW });
+      const tickerW = tickerNow.clientWidth;
+      const textW = textNow.scrollWidth;
 
-      if (!tickerW || !textW) return;
+      if (!tickerW || !textW) {
+        // try again next frame if fonts/layout not ready yet
+        requestAnimationFrame(() => runQuote(q));
+        return;
+      }
 
       const startX = tickerW;
       const endX = -textW;
@@ -169,7 +183,7 @@ if (!ticker.dataset.pauseBound) {
       const distance = tickerW + textW;
       const duration = Math.max(6000, (distance / speed) * 1000);
 
-      anim = textEl.animate(
+      anim = textNow.animate(
         [
           { transform: `translateX(${startX}px)` },
           { transform: `translateX(${endX}px)` }
@@ -187,16 +201,20 @@ if (!ticker.dataset.pauseBound) {
   runQuote(quotes[index]);
 }
 
-// run on first load
-window.addEventListener("DOMContentLoaded", initTicker);
+// ✅ Start ONCE on initial load
+window.addEventListener("DOMContentLoaded", initTickerOnce);
 
-// run again when navigating between hash routes
-window.addEventListener("hashchange", () => {
+// ✅ Do NOT restart on route changes.
+// If you resize the window, we can re-measure *without changing the quote index*:
+window.addEventListener("resize", () => {
+  if (!tickerStarted) return;
+  // just re-run the current quote so it recalculates duration/width
+  const textEl = document.getElementById("tickerText");
+  if (!textEl) return;
+
+  // cancel + restart current animation at current index (no reset)
+  if (anim) anim.cancel();
+  // re-init is safe because tickerStarted stays true; we just want a re-measure
   tickerStarted = false;
-  initTicker();
+  initTickerOnce();
 });
-
-// (optional) also retry shortly after load in case footer injects late
-setTimeout(initTicker, 150);
-setTimeout(initTicker, 500);
-
