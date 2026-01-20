@@ -293,7 +293,7 @@ html {
 }
 
 #side-rail-mobile .rail-roman {
-  font-family: "Exposure", serif !important;
+  font-family: "ExposureLedger", serif !important;
   letter-spacing: -0.07em;
 }
 
@@ -1015,5 +1015,8 @@ html.lb-lock .page{
     box-shadow: 0 6px 0 rgba(0, 0, 0, 0.22);
   }
 
-  .rail-roman { font-size: 60px; }
+  #side-rail-mobile .rail-roman {
+  font-family: "ExposureLedger", serif !important;
+  letter-spacing: -0.07em;
+}
 }
