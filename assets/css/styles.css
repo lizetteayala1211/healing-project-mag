@@ -639,9 +639,15 @@ figure img {
     cursor: pointer;
 }
 
+/* Lock page scroll WITHOUT losing scroll position */
 html.lb-lock,
 body.lb-lock {
-    overflow: hidden !important;
+  overflow: hidden !important;
+}
+
+body.lb-lock {
+  position: fixed;
+  width: 100%;
 }
 
 /* =====================
