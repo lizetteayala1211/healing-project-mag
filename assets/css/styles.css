@@ -531,6 +531,82 @@ html {
     margin: 0 0 14px 0;
 }
 
+/* =====================
+   WE DESERVE WELLNESS — PROSE CAROUSEL
+===================== */
+
+.prose-carousel {
+  margin: 34px 0 0 0;
+}
+
+.prose-carousel__frame {
+  width: 100%;
+  max-width: 720px;       /* match your article-inner width */
+  margin: 0 auto;
+}
+
+.prose-carousel__meta {
+  font-family: "Inter Tight", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  opacity: 0.75;
+  margin: 0 0 14px 0;
+}
+
+.prose-carousel__body {
+  /* keep it feeling like “page prose” */
+  font-size: 15px;
+  line-height: 1.9;
+  /* font-weight: 500; */
+  color: rgba(0,0,0,.82);
+}
+
+/* make contributor name feel editorial */
+.prose-carousel__body .wdw-author {
+  font-family: "Inter Tight";
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  opacity: 0.75;
+  margin: 0 0 18px 0;
+}
+
+.prose-carousel__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 26px;
+  gap: 14px;
+}
+
+.wdw-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: transform 120ms ease, opacity 120ms ease;
+  border: 1px solid var(--rule);
+  background: transparent;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.wdw-nav-btn:hover {
+  transform: translateY(-1px);
+}
+
+.wdw-nav-btn:active {
+  transform: translateY(0px);
+  opacity: 0.85;
+}
+
+.wdw-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 /* ===== Side-by-side text block (2 columns) ===== */
 .two-col {
     display: grid;
