@@ -75,6 +75,10 @@ async function render() {
   try {
     const html = await loadPage(path);
     app.innerHTML = html;
+
+     // ✅ always start new route at the top
+    window.scrollTo(0, 0);
+    
   } catch (err) {
     console.error("loadPage failed:", err);
     app.innerHTML = `
