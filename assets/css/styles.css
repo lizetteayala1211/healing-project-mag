@@ -89,7 +89,7 @@
 /* Exposure Italic -70 (ledger) */
 @font-face {
     font-family: "ExposureLedger";
-    src: url("/assets/fonts/ExposureItalicTrial[-70].otf") format("opentype");
+    src: url("/assets/fonts/ExposureTrial[-70].otf") format("opentype");
     font-weight: 400;
     font-style: italic;
     font-display: swap;
@@ -887,6 +887,7 @@ html.lb-lock .page{
 }
 
 .rail-roman {
+    font-family: "ExposureLedger" !important;
     width: 26px !important;
     text-align: center !important;
     font-weight: 700 !important;
