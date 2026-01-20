@@ -518,6 +518,7 @@ html {
     color: var(--muted);
     margin: 0 0 20px 0;
     text-align: left;
+    line-height: 1.45;
 }
 
 /* This is the key: center the content within the middle column */
@@ -887,7 +888,7 @@ html.lb-lock .page{
 }
 
 .rail-roman {
-    font-family: "ExposureLedger" !important;
+    font-family: "ExposureLedger", serif !important;
     width: 26px !important;
     text-align: center !important;
     font-weight: 700 !important;
@@ -1001,6 +1002,7 @@ html.lb-lock .page{
   .card {
     box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
     transform: translateY(-1px);
+    transition: transform 140ms ease, box-shadow 140ms ease;
   }
 
   .card:active {
