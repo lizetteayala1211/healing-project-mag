@@ -32,7 +32,7 @@
     --card-w: 340px;
     /* locked per your request */
     --card-gap: 16px;
-    --card-min-h: 205px;
+    --card-min-h: 260px;
     /* makes cards “longer” */
     --card-radius: 20px;
 
@@ -433,16 +433,16 @@ html {
     /* font-family: var(--font-display); */
     /* prevent one long title from wrecking layout */
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
 .card p {
     margin: 14px 0 0 0;
-    font-size: 13px;
-    color: rgba(255, 255, 255, .85);
-
+    font-size: 14px;
+    color: rgba(255, 255, 255);
+    line-height: 1.45; /* ← increase this (try 1.35–1.5) */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -497,6 +497,11 @@ html {
     letter-spacing: -0.01em;
     text-align: left;
 }
+
+.article-title.sue {
+    line-height: 1.2; /* try 1.12–1.2 */
+}
+
 
 .article-byline {
     color: var(--muted);
