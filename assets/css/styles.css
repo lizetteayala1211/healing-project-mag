@@ -962,3 +962,43 @@ html.lb-lock .page{
         display: none;
     }
 }
+
+@media (max-width: 520px) {
+  .home-bar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .logo {
+    font-size: 22px;          /* tweak down until perfect */
+    line-height: 1.05;
+    max-width: calc(100% - 64px); /* leaves room for hamburger */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #menu-button {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .non-article-inner {
+    padding: 0 12px; /* was 24px */
+  }
+
+  .cards-grid {
+    width: 100%;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  .card-dot {
+    display: none !important;
+  }
+}
