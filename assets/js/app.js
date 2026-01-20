@@ -18,15 +18,15 @@ function renderRail(target) {
   target.innerHTML = `
     <div class="rail-card">
       ${navItems
-        .map(
-          (i) => `
+      .map(
+        (i) => `
           <a class="rail-link" href="#${i.path}">
             <div class="rail-roman">${i.roman}</div>
             <div class="rail-label">${i.label}</div>
           </a>
         `
-        )
-        .join("")}
+      )
+      .join("")}
     </div>
   `;
 }
@@ -53,7 +53,12 @@ window.THP = {
       .map((c) => {
         const span = c.span2 ? "span-2" : "";
         return `
-          <a class="card ${span}" href="#${c.path}" style="background:${c.color}">
+          <a
+  class="card ${span}"
+  href="#${c.path}"
+  style="background:${c.color}"
+  ${c.scrollId ? `id="${c.scrollId}"` : ""}>
+
             <span class="card-dot"></span>
             <h3>${c.title}</h3>
             <p>${c.byline}</p>
@@ -68,17 +73,19 @@ window.THP = {
 async function render() {
   if (!app) return;
 
-  let path = getPath();
-  if (path === "/") path = "/home";
+  // ✅ Support routes like:
+  //   #/call-response
+  //   #/call-response#community-board
+  //   #/call-response#processing
+  const raw = window.location.hash.replace(/^#/, ""); // "/call-response#processing"
+  let [path, anchor] = raw.split("#");                // path="/call-response", anchor="processing"
+
+  if (!path || path === "/") path = "/home";
 
   // ✅ Only loadPage() belongs in the main try/catch
   try {
     const html = await loadPage(path);
     app.innerHTML = html;
-
-     // ✅ always start new route at the top
-    window.scrollTo(0, 0);
-    
   } catch (err) {
     console.error("loadPage failed:", err);
     app.innerHTML = `
@@ -98,6 +105,20 @@ async function render() {
   } catch (e) {
     console.error("renderCardsGrid failed:", e);
   }
+
+  // ✅ Scroll behavior:
+  // - if anchor exists, scroll to it (after cards are rendered)
+  // - otherwise scroll to top
+  requestAnimationFrame(() => {
+    if (anchor) {
+      const el = document.getElementById(anchor);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  });
 
   // ✅ Mount reflections carousel safely (only runs if elements exist)
   try {
@@ -242,27 +263,34 @@ const WDW_REFLECTIONS = [
     author: "Member 3",
     text: `Students are constantly helping each other, learning and protecting each other’s feelings, but they are always painted as disruptive and disrespectful. Black and Brown students face so many challenges that go beyond the classroom. We need people who actually see us, listen to us and advocate for us; not just academically, but mentally and emotionally.`
   },
-  { author: "Member 4", 
-  text: `We are the generation that spent important years of our lives in the COVID-19 lockdown, then released back into the world without the tools to cope. As teenagers we see what's going on in the world, from the climate disaster to gun violence in our own neighborhoods.` 
-},
-  { author: "Member 5", 
-  text: `We deserve safe spaces, real mentorship, and opportunities that reflect our full potential. We need support systems and people who understand the life of a Black child in this world. We need solutions, not suspensions. We need to be set up for success.` 
-},
-  { author: "Member 6", 
-  text: `The truth is that law and compassion have failed us. We are stones placed in a graveyard of broken hearts and empty promises. We need opportunities and trust. `
- },
-  { author: "Member 7", 
-  text: `It is time that the City Council invests in the education budget to fund more school counselors. It is time to invest in our wellness. We have waited long enough.` 
-},
-  { author: "Member 8", 
-  text: `My community and neighbors are struggling with confidence, mental health issues, suicide, substance use, overdose, inflation, gentrification, and police brutality. I see that this world still has a bias towards my people. I see discrimination, Black fathers being painted as deadbeats. I don’t see the police having a good impact. My generation is fighting to survive without enough people to look up to or lift them up. We’re still crying out for accessible resources, housing, and job opportunities. For racism to end.`
-},
-  { author: "Member 9", 
-  text: `We need to think globally to understand our struggle. To see that people in other places go through similar issues. I see people living in famine, constant problems on the news, that our taxes are not being used to help us, but towards bombings and killings that we see on social media. Until Palestine is free, for example, America is not going to succeed. There will be no feeling of peace.` 
-},
-  { author: "Member 10", 
-  text: `When we see how others fight back and support each other, it gives us ideas, hope, and strength to fight back too. We learn that we are not alone and that together we are stronger. We understand where we can use our peace to start solving problems. We are strong and we will rise. We will transfer the hate that they have given us and use it to unify the people. There can be no true community until all of us are free.` 
-}
+  {
+    author: "Member 4",
+    text: `We are the generation that spent important years of our lives in the COVID-19 lockdown, then released back into the world without the tools to cope. As teenagers we see what's going on in the world, from the climate disaster to gun violence in our own neighborhoods.`
+  },
+  {
+    author: "Member 5",
+    text: `We deserve safe spaces, real mentorship, and opportunities that reflect our full potential. We need support systems and people who understand the life of a Black child in this world. We need solutions, not suspensions. We need to be set up for success.`
+  },
+  {
+    author: "Member 6",
+    text: `The truth is that law and compassion have failed us. We are stones placed in a graveyard of broken hearts and empty promises. We need opportunities and trust. `
+  },
+  {
+    author: "Member 7",
+    text: `It is time that the City Council invests in the education budget to fund more school counselors. It is time to invest in our wellness. We have waited long enough.`
+  },
+  {
+    author: "Member 8",
+    text: `My community and neighbors are struggling with confidence, mental health issues, suicide, substance use, overdose, inflation, gentrification, and police brutality. I see that this world still has a bias towards my people. I see discrimination, Black fathers being painted as deadbeats. I don’t see the police having a good impact. My generation is fighting to survive without enough people to look up to or lift them up. We’re still crying out for accessible resources, housing, and job opportunities. For racism to end.`
+  },
+  {
+    author: "Member 9",
+    text: `We need to think globally to understand our struggle. To see that people in other places go through similar issues. I see people living in famine, constant problems on the news, that our taxes are not being used to help us, but towards bombings and killings that we see on social media. Until Palestine is free, for example, America is not going to succeed. There will be no feeling of peace.`
+  },
+  {
+    author: "Member 10",
+    text: `When we see how others fight back and support each other, it gives us ideas, hope, and strength to fight back too. We learn that we are not alone and that together we are stronger. We understand where we can use our peace to start solving problems. We are strong and we will rise. We will transfer the hate that they have given us and use it to unify the people. There can be no true community until all of us are free.`
+  }
 ];
 
 let wdwIndex = 0;

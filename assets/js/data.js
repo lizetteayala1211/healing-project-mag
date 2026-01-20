@@ -1,8 +1,8 @@
 export const navItems = [
   { roman: "I", label: "Letter from The Healing Project", path: "/letter" },
   { roman: "II", label: "Call & Response", path: "/call-response" },
-  { roman: "III", label: "Community Board", path: "/community-board" },
-  { roman: "IV", label: "Processing", path: "/processing" },
+  { roman: "III", label: "Community Board", path: "/community-board#community-board" },
+  { roman: "IV", label: "Processing", path: "/processing#processing" },
   { roman: "V", label: "Closing Prayer", path: "/closing-prayer" },
   { roman: "VI", label: "Collaborators", path: "/collaborators" },
 ];
@@ -25,12 +25,12 @@ export const cards = [
   { title: "The Hands That Help", byline: "by Sarah Sanchez", color: "#0f1832", path: "/article/the-hands-that-help" },
   { title: "We Deserve Wellness", byline: "by Members of The Liberation Program at Brotherhood Sister Sol", color: "#d8a6a3", path: "/article/we-deserve-wellness" },
 
-  { title: "A Call to Join Forces with Incarcerated Artists", byline: "by Parole Prep", color: " #d2a100", path: "/article/a-call-to-join" },
+  { title: "A Call to Join Forces with Incarcerated Artists", byline: "by Parole Prep", color: " #d2a100", path: "/article/a-call-to-join", scrollId: "community-board" },
   { title: "A Call to Breathe Land Back to Life", byline: "by South Bronx Unite/The Land Stewards", color: "#c54a36", path: "/article/a-call-to-breathe" },
   { title: "A Call To Language & Practitioners", byline: "by The Fortune Society", color: "#3f5448", path: "/article/a-call-to-language" },
   { title: "A Call to Save Our Schools", byline: "by Brotherhood Sister Sol", color: "#7faa86", path: "/article/a-call-to-save" },
 
-  { title: "Ago Amee", byline: "by Mahogany L. Browne", color: "#9a775e", path: "/article/ago-amee" }
+  { title: "Ago Amee", byline: "by Mahogany L. Browne", color: "#9a775e", path: "/article/ago-amee", scrollId: "processing" }
 ];
 
 // export const sectionFeatured = {

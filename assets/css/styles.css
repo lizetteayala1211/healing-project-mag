@@ -957,6 +957,11 @@ html.lb-lock .page{
     height: 100%;
 }
 
+#community-board,
+#processing {
+  scroll-margin-top: 50px;
+}
+
 /* stack nicely on smaller screens */
 @media (max-width: 900px) {
     .collab-grid {
