@@ -292,6 +292,11 @@ html {
     line-height: 1.25;
 }
 
+#side-rail-mobile .rail-roman {
+  font-family: "Exposure", serif !important;
+  letter-spacing: -0.07em;
+}
+
 /* =====================
    CENTER CONTENT
 ===================== */
@@ -1009,4 +1014,6 @@ html.lb-lock .page{
     transform: translateY(1px);
     box-shadow: 0 6px 0 rgba(0, 0, 0, 0.22);
   }
+
+  .rail-roman { font-size: 60px; }
 }
