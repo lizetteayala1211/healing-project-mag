@@ -972,12 +972,10 @@ html.lb-lock .page{
   }
 
   .logo {
-    font-size: 20px;          /* tweak down until perfect */
+    font-size: 22px;          /* tweak down until perfect */
     line-height: 1.05;
     max-width: calc(100% - 64px); /* leaves room for hamburger */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
   }
 
   #menu-button {
@@ -999,10 +997,9 @@ html.lb-lock .page{
   .card-dot {
     display: none !important;
   }
-
+  
   .card {
-    /* ✅ permanent lift on mobile */
-    box-shadow: 0 10px 0 rgba(0, 0, 0, 0.35);
+    box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
     transform: translateY(-1px);
   }
 
