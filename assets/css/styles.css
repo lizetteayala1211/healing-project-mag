@@ -972,7 +972,7 @@ html.lb-lock .page{
   }
 
   .logo {
-    font-size: 22px;          /* tweak down until perfect */
+    font-size: 20px;          /* tweak down until perfect */
     line-height: 1.05;
     max-width: calc(100% - 64px); /* leaves room for hamburger */
     white-space: nowrap;
@@ -983,9 +983,7 @@ html.lb-lock .page{
   #menu-button {
     flex: 0 0 auto;
   }
-}
 
-@media (max-width: 520px) {
   .non-article-inner {
     padding: 0 12px; /* was 24px */
   }
@@ -1000,5 +998,16 @@ html.lb-lock .page{
 
   .card-dot {
     display: none !important;
+  }
+
+  .card {
+    /* ✅ permanent lift on mobile */
+    box-shadow: 0 10px 0 rgba(0, 0, 0, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .card:active {
+    transform: translateY(1px);
+    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.22);
   }
 }
