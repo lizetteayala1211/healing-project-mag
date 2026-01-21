@@ -133,6 +133,14 @@ body {
     /* only page scrolls */
 }
 
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .rail-label,
 .card p,
 .media-caption {
@@ -547,6 +555,26 @@ html {
 .prose p {
     margin: 0 0 14px 0;
 }
+
+.pullquote {
+  margin: 28px 30px 28px 24px; /* 👈 adds left indent */
+  padding: 0 18px 0 18px;
+  border-left: 1px solid rgba(0,0,0,0.60);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.55;
+  color: rgba(0,0,0,0.8);
+  max-width: 680px;
+}
+
+.pullquote p {
+  margin: 0;
+}
+
+.pullquote p + p {
+  margin-top: 14px;
+}
+
 
 /* =====================
    WE DESERVE WELLNESS — PROSE CAROUSEL
