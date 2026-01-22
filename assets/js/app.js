@@ -134,18 +134,18 @@ render();
 // ===== Footer ticker rotation (dynamic speed) =====
 
 const quotes = [
-  "I realized it's not a one-size-fits-all here. You have to be able to adapt in your caregiving, because the method one day might not be the method the next.",
-  "I find that my cup is filled when I’m giving, and my healing happens when I'm helping with somebody else's healing.",
-  "I don't want a revolution if I can't dance in it.",
-  "But it was a bunch of new radicals in the South Bronx who brought us here.",
-  "A eso le llamamos el poder popular: cuando la gente se reconoce como dueña de su destino, no como víctima.",
-  "My mother wanted a magnolia tree. She fell in love with their large flowers. This was until she saw the mess they make when their petals fall, covering the surrounding area in mold.",
-  "The truth is, the way stories are gathered in this country often resembles a raid.",
-  "But we cannot be merely oppositional; if all we do is speak back to the wound, we risk shaping our entire conversation around the injury and becoming fluent only in describing what hurts us.",
-  "We are more than decoration; we are infrastructure.",
-  "We honor the wisdom carried by those whose lives have too often been dismissed, and the trust it takes to place that wisdom in the hands of others.",
-  "For the courage to dream together of futures shaped by care rather than cages, by belonging rather than banishment, by systems that nourish our inherent worth instead of managing loss.",
-  "Along the way, we learn to cup beauty and grief in the palms of our hands."
+  "I realized it's not a one-size-fits-all here. You have to be able to adapt in your caregiving, because the method one day might not be the method the next. —Pamela Smart",
+  "I find that my cup is filled when I’m giving, and my healing happens when I'm helping with somebody else's healing.—Pamela Smart",
+  "I don't want a revolution if I can't dance in it. —Libertad Guerra",
+  "But it was a bunch of new radicals in the South Bronx who brought us here. —Walter Bosque",
+  "A eso le llamamos el poder popular: cuando la gente se reconoce como dueña de su destino, no como víctima. —Nieves Ayress",
+  "My mother wanted a magnolia tree. She fell in love with their large flowers. This was until she saw the mess they make when their petals fall, covering the surrounding area in mold. —Meagan Betances",
+  "The truth is, the way stories are gathered in this country often resembles a raid. —Mahogany L. Browne",
+  "But we cannot be merely oppositional; if all we do is speak back to the wound, we risk shaping our entire conversation around the injury and becoming fluent only in describing what hurts us. —Mahogany L. Browne",
+  "We are more than decoration; we are infrastructure. —Mahogany L. Browne",
+  "We honor the wisdom carried by those whose lives have too often been dismissed, and the trust it takes to place that wisdom in the hands of others. —Sue Ariza",
+  "For the courage to dream together of futures shaped by care rather than cages, by belonging rather than banishment, by systems that nourish our inherent worth instead of managing loss. —Sue Ariza",
+  "Along the way, we learn to cup beauty and grief in the palms of our hands. —Sue Ariza"
 ];
 
 let tickerStarted = false;
