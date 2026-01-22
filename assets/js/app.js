@@ -135,7 +135,7 @@ render();
 
 const quotes = [
   "I realized it's not a one-size-fits-all here. You have to be able to adapt in your caregiving, because the method one day might not be the method the next. —Pamela Smart",
-  "I find that my cup is filled when I’m giving, and my healing happens when I'm helping with somebody else's healing.—Pamela Smart",
+  "I find that my cup is filled when I’m giving, and my healing happens when I'm helping with somebody else's healing. —Pamela Smart",
   "I don't want a revolution if I can't dance in it. —Libertad Guerra",
   "But it was a bunch of new radicals in the South Bronx who brought us here. —Walter Bosque",
   "A eso le llamamos el poder popular: cuando la gente se reconoce como dueña de su destino, no como víctima. —Nieves Ayress",
