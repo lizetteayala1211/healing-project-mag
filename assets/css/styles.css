@@ -743,9 +743,44 @@ html {
     cursor: pointer;
 }
 
-figure img {
-    cursor: pointer;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.30);
+.media-grid-figure{
+  margin: 0;
+}
+
+.media-grid-4{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.media-grid-figure .media-caption{
+  margin: 12px auto 28px auto;
+  max-width: 680px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* mobile = 1 column */
+@media (max-width: 640px){
+  .media-grid-4{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* make sure figures don’t add extra spacing that fights the grid */
+.media-grid-4 .media-block{
+  margin: 0;
+}
+
+/* make images crop nicely into a clean grid */
+.media-grid-4 .media-img{
+  width: 100%;
+  height: auto;        /* ✅ key */
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  border-radius: 6px; /* optional - only if your cards are rounded */
+  object-fit: cover; /* ✅ extra safety */
 }
 
 .media-block {
@@ -759,6 +794,11 @@ figure img {
     height: auto;
     margin: 0 auto;
     border-radius: 6px;
+}
+
+figure img {
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.30);
 }
 
 .media-narrow {
