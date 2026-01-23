@@ -12,21 +12,24 @@ const drawer = document.getElementById("mobile-drawer");
 const menuBtn = document.getElementById("menu-button");
 const drawerBackdrop = document.getElementById("drawer-backdrop");
 
+/* =========================
+   Side rail render
+========================= */
 function renderRail(target) {
   if (!target) return;
 
   target.innerHTML = `
     <div class="rail-card">
       ${navItems
-      .map(
-        (i) => `
+        .map(
+          (i) => `
           <a class="rail-link" href="#${i.path}">
             <div class="rail-roman">${i.roman}</div>
             <div class="rail-label">${i.label}</div>
           </a>
         `
-      )
-      .join("")}
+        )
+        .join("")}
     </div>
   `;
 }
@@ -44,21 +47,36 @@ sideRailMobile?.addEventListener("click", (e) => {
   if (a) drawer?.classList.remove("open");
 });
 
-window.THP = {
-  renderCardsGrid: () => {
-    const grid = document.getElementById("cardsGrid");
-    if (!grid) return;
+/* =========================
+   THP namespace (ONE time)
+========================= */
+window.THP = window.THP || {};
 
-    grid.innerHTML = cards
+/**
+ * Renders cards into *any* element with `.cards-grid`.
+ * - If grid has data-section, filters by c.section
+ * - Otherwise renders all cards
+ *
+ * IMPORTANT: your cards in data.js must include:
+ *   section: "call-response" | "community-board" | "processing"
+ */
+window.THP.renderCardsGrid = function renderCardsGrid() {
+  const grids = document.querySelectorAll(".cards-grid");
+  if (!grids.length) return;
+
+  grids.forEach((gridEl) => {
+    const section = gridEl.dataset.section; // e.g. "community-board"
+    const filtered = section ? cards.filter((c) => c.section === section) : cards;
+
+    gridEl.innerHTML = filtered
       .map((c) => {
         const span = c.span2 ? "span-2" : "";
         return `
           <a
-  class="card ${span}"
-  href="#${c.path}"
-  style="background:${c.color}"
-  ${c.scrollId ? `id="${c.scrollId}"` : ""}>
-
+            class="card ${span}"
+            href="#${c.path}"
+            style="background:${c.color}"
+            ${c.scrollId ? `id="${c.scrollId}"` : ""}>
             <span class="card-dot"></span>
             <h3>${c.title}</h3>
             <p>${c.byline}</p>
@@ -66,23 +84,52 @@ window.THP = {
         `;
       })
       .join("");
-  },
-  setPath,
+  });
 };
 
+window.THP.setPath = setPath;
+
+/* =========================
+   Partials injector (ONE time)
+========================= */
+window.THP.injectPartials =
+  window.THP.injectPartials ||
+  async function injectPartials(root = document) {
+    const slots = root.querySelectorAll("[data-include]");
+    if (!slots.length) return;
+
+    await Promise.all(
+      Array.from(slots).map(async (el) => {
+        const url = el.getAttribute("data-include");
+        if (!url) return;
+
+        try {
+          const res = await fetch(url, { cache: "no-cache" });
+          if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+          el.innerHTML = await res.text();
+        } catch (e) {
+          console.error("Partial failed:", url, e);
+          el.innerHTML = `<p class="prose" style="opacity:.7;">Content failed to load.</p>`;
+        }
+      })
+    );
+  };
+
+/* =========================
+   Router render
+========================= */
 async function render() {
   if (!app) return;
 
-  // ✅ Support routes like:
-  //   #/call-response
-  //   #/call-response#community-board
-  //   #/call-response#processing
-  const raw = window.location.hash.replace(/^#/, ""); // "/call-response#processing"
-  let [path, anchor] = raw.split("#");                // path="/call-response", anchor="processing"
+  // Supports:
+  //   #/scroll
+  //   #/scroll#community-board
+  //   #/article/...
+  const raw = window.location.hash.replace(/^#/, ""); // "/scroll#community-board"
+  let [path, anchor] = raw.split("#"); // path="/scroll", anchor="community-board"
 
   if (!path || path === "/") path = "/home";
 
-  // ✅ Only loadPage() belongs in the main try/catch
   try {
     const html = await loadPage(path);
     app.innerHTML = html;
@@ -96,28 +143,37 @@ async function render() {
         </p>
       </div>
     `;
-    return; // stop here
+    return;
   }
 
-  // ✅ Anything below should NOT be able to break routing
+  // ✅ Inject partials only on scroll route
+  if (path === "/scroll") {
+    try {
+      await window.THP.injectPartials(app);
+    } catch (e) {
+      console.error("injectPartials failed:", e);
+    }
+  }
+
+  // ✅ Render any cards grids present on the newly loaded DOM
   try {
-    window.THP?.renderCardsGrid?.(path);
+    window.THP.renderCardsGrid();
   } catch (e) {
     console.error("renderCardsGrid failed:", e);
   }
 
   // ✅ Scroll behavior:
-  // - if anchor exists, scroll to it (after cards are rendered)
-  // - otherwise scroll to top
+  // - scroll route: scroll to section anchor if present
+  // - all other routes: start at top
   requestAnimationFrame(() => {
-    if (anchor) {
+    if (path === "/scroll" && anchor) {
       const el = document.getElementById(anchor);
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "start" });
         return;
       }
     }
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    window.scrollTo(0, 0);
   });
 
   // ✅ Mount reflections carousel safely (only runs if elements exist)
@@ -131,8 +187,9 @@ async function render() {
 window.addEventListener("hashchange", render);
 render();
 
-// ===== Footer ticker rotation (dynamic speed) =====
-
+/* =========================
+   Footer ticker rotation (dynamic speed)
+========================= */
 const quotes = [
   "I realized it's not a one-size-fits-all here. You have to be able to adapt in your caregiving, because the method one day might not be the method the next. —Pamela Smart",
   "I find that my cup is filled when I’m giving, and my healing happens when I'm helping with somebody else's healing. —Pamela Smart",
@@ -219,10 +276,7 @@ function initTickerOnce() {
       const duration = Math.max(6000, (distance / speed) * 1000);
 
       anim = textNow.animate(
-        [
-          { transform: `translateX(${startX}px)` },
-          { transform: `translateX(${endX}px)` }
-        ],
+        [{ transform: `translateX(${startX}px)` }, { transform: `translateX(${endX}px)` }],
         { duration, easing: "linear", fill: "forwards" }
       );
 
@@ -248,49 +302,20 @@ window.addEventListener("resize", () => {
   initTickerOnce();
 });
 
-// ===== We Deserve Wellness: reflection carousel =====
-
+/* =========================
+   We Deserve Wellness: reflection carousel
+========================= */
 const WDW_REFLECTIONS = [
-  {
-    author: "Member 1",
-    text: `We need to be heard in schools. We need to learn about our culture. We need more staff that understand us. We need safety, not security. We need community.`
-  },
-  {
-    author: "Member 2",
-    text: `Many of us have no one to talk to or express our feelings to. A lot of kids struggle to maintain their mental health because of the lack of social workers and support staff in schools. Every student should have access to a person they feel comfortable talking to and expressing themselves with.`
-  },
-  {
-    author: "Member 3",
-    text: `Students are constantly helping each other, learning and protecting each other’s feelings, but they are always painted as disruptive and disrespectful. Black and Brown students face so many challenges that go beyond the classroom. We need people who actually see us, listen to us and advocate for us; not just academically, but mentally and emotionally.`
-  },
-  {
-    author: "Member 4",
-    text: `We are the generation that spent important years of our lives in the COVID-19 lockdown, then released back into the world without the tools to cope. As teenagers we see what's going on in the world, from the climate disaster to gun violence in our own neighborhoods.`
-  },
-  {
-    author: "Member 5",
-    text: `We deserve safe spaces, real mentorship, and opportunities that reflect our full potential. We need support systems and people who understand the life of a Black child in this world. We need solutions, not suspensions. We need to be set up for success.`
-  },
-  {
-    author: "Member 6",
-    text: `The truth is that law and compassion have failed us. We are stones placed in a graveyard of broken hearts and empty promises. We need opportunities and trust. `
-  },
-  {
-    author: "Member 7",
-    text: `It is time that the City Council invests in the education budget to fund more school counselors. It is time to invest in our wellness. We have waited long enough.`
-  },
-  {
-    author: "Member 8",
-    text: `My community and neighbors are struggling with confidence, mental health issues, suicide, substance use, overdose, inflation, gentrification, and police brutality. I see that this world still has a bias towards my people. I see discrimination, Black fathers being painted as deadbeats. I don’t see the police having a good impact. My generation is fighting to survive without enough people to look up to or lift them up. We’re still crying out for accessible resources, housing, and job opportunities. For racism to end.`
-  },
-  {
-    author: "Member 9",
-    text: `We need to think globally to understand our struggle. To see that people in other places go through similar issues. I see people living in famine, constant problems on the news, that our taxes are not being used to help us, but towards bombings and killings that we see on social media. Until Palestine is free, for example, America is not going to succeed. There will be no feeling of peace.`
-  },
-  {
-    author: "Member 10",
-    text: `When we see how others fight back and support each other, it gives us ideas, hope, and strength to fight back too. We learn that we are not alone and that together we are stronger. We understand where we can use our peace to start solving problems. We are strong and we will rise. We will transfer the hate that they have given us and use it to unify the people. There can be no true community until all of us are free.`
-  }
+  { author: "Member 1", text: `We need to be heard in schools. We need to learn about our culture. We need more staff that understand us. We need safety, not security. We need community.` },
+  { author: "Member 2", text: `Many of us have no one to talk to or express our feelings to. A lot of kids struggle to maintain their mental health because of the lack of social workers and support staff in schools. Every student should have access to a person they feel comfortable talking to and expressing themselves with.` },
+  { author: "Member 3", text: `Students are constantly helping each other, learning and protecting each other’s feelings, but they are always painted as disruptive and disrespectful. Black and Brown students face so many challenges that go beyond the classroom. We need people who actually see us, listen to us and advocate for us; not just academically, but mentally and emotionally.` },
+  { author: "Member 4", text: `We are the generation that spent important years of our lives in the COVID-19 lockdown, then released back into the world without the tools to cope. As teenagers we see what's going on in the world, from the climate disaster to gun violence in our own neighborhoods.` },
+  { author: "Member 5", text: `We deserve safe spaces, real mentorship, and opportunities that reflect our full potential. We need support systems and people who understand the life of a Black child in this world. We need solutions, not suspensions. We need to be set up for success.` },
+  { author: "Member 6", text: `The truth is that law and compassion have failed us. We are stones placed in a graveyard of broken hearts and empty promises. We need opportunities and trust.` },
+  { author: "Member 7", text: `It is time that the City Council invests in the education budget to fund more school counselors. It is time to invest in our wellness. We have waited long enough.` },
+  { author: "Member 8", text: `My community and neighbors are struggling with confidence, mental health issues, suicide, substance use, overdose, inflation, gentrification, and police brutality. I see that this world still has a bias towards my people. I see discrimination, Black fathers being painted as deadbeats. I don’t see the police having a good impact. My generation is fighting to survive without enough people to look up to or lift them up. We’re still crying out for accessible resources, housing, and job opportunities. For racism to end.` },
+  { author: "Member 9", text: `We need to think globally to understand our struggle. To see that people in other places go through similar issues. I see people living in famine, constant problems on the news, that our taxes are not being used to help us, but towards bombings and killings that we see on social media. Until Palestine is free, for example, America is not going to succeed. There will be no feeling of peace.` },
+  { author: "Member 10", text: `When we see how others fight back and support each other, it gives us ideas, hope, and strength to fight back too. We learn that we are not alone and that together we are stronger. We understand where we can use our peace to start solving problems. We are strong and we will rise. We will transfer the hate that they have given us and use it to unify the people. There can be no true community until all of us are free.` }
 ];
 
 let wdwIndex = 0;
@@ -327,7 +352,6 @@ function mountWDWCarousel() {
 
     if (metaEl) metaEl.textContent = "";
 
-    // Convert \n\n to paragraphs
     const paragraphs = String(item.text || "")
       .split(/\n\s*\n/g)
       .map((p) => p.trim())
@@ -335,10 +359,7 @@ function mountWDWCarousel() {
       .map((p) => `<p>${escapeHTML(p)}</p>`)
       .join("");
 
-    bodyEl.innerHTML = `
-      ${paragraphs}
-    `;
-
+    bodyEl.innerHTML = `${paragraphs}`;
     countEl.textContent = `${wdwIndex + 1} / ${WDW_REFLECTIONS.length}`;
 
     prevBtn.disabled = WDW_REFLECTIONS.length <= 1;
@@ -355,7 +376,7 @@ function mountWDWCarousel() {
   prevBtn.addEventListener("click", () => go(-1));
   nextBtn.addEventListener("click", () => go(1));
 
-  // keyboard support (bind once per mount)
+  // keyboard support (bind once globally)
   if (!document.documentElement.dataset.wdwKeysBound) {
     document.documentElement.dataset.wdwKeysBound = "1";
     document.addEventListener("keydown", (e) => {
@@ -364,7 +385,6 @@ function mountWDWCarousel() {
         t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
       if (isTyping) return;
 
-      // only act if carousel is present on the current route
       const onPage = document.getElementById("wdwBody");
       if (!onPage) return;
 
