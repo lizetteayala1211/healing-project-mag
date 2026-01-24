@@ -67,3 +67,10 @@ export const cards = [
   // ===== PROCESSING =====
   { title: "Ago Amee", byline: "by Mahogany L. Browne", color: "#9a775e", path: "/article/ago-amee", scrollId: "processing", section: "processing" }
 ];
+
+const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+
+const formatByline = (byline = "") => {
+  if (!isMobile) return byline;           // keep formatting on desktop
+  return cleanByline(byline);             // flatten on mobile
+};

@@ -266,7 +266,8 @@ body {
         top: 0;
         /* <-- key change (was var(--header-h)) */
         max-height: calc(100vh - var(--footer-h));
-       overflow: visible; /* ✅ no scrollbar */
+        overflow: visible;
+        /* ✅ no scrollbar */
         padding-top: 0;
         /* <-- header clearance happens INSIDE, not as empty space */
     }
@@ -325,12 +326,8 @@ body {
     font-size: 12px;
     line-height: 1.25;
     opacity: 0.85;
-    max-width: 24ch;
+    max-width: 36ch;
     margin: 0;
-}
-
-@media (max-width: 1023px) {
-  .rail-byline br { display: none; }
 }
 
 @media (min-width: 1024px) {
@@ -350,15 +347,28 @@ body {
         font-size: 13px;
         cursor: pointer;
         width: fit-content;
-        margin: 16px auto 18px auto; /* centers it inside the rail */
+        margin: 16px auto 18px auto;
+        /* centers it inside the rail */
         padding: 10px 16px;
-          border: 1px solid var(--rule);
-  border-radius: 999px;
+        border: 1px solid var(--rule);
+        border-radius: 999px;
     }
 
     .rail-toggle:hover {
         background: rgba(0, 0, 0, 0.04);
     }
+
+/* hide ledger open/close button on mobile */
+@media (max-width: 1023px) {
+  .rail-toggle,
+  button.rail-toggle,
+  .rail-toggle-btn,
+  button.rail-toggle-btn {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
 
     /* When collapsed: keep the left column width, but hide the nav links */
     body.rail-collapsed .rail-link {
