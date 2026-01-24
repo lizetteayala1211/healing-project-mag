@@ -20,19 +20,33 @@ function renderRail(target) {
 
   target.innerHTML = `
     <div class="rail-card">
-      ${navItems
-        .map(
-          (i) => `
-          <a class="rail-link" href="#${i.path}">
-            <div class="rail-roman">${i.roman}</div>
+      ${navItems.map((i) => `
+        <a class="rail-link" href="#${i.path}">
+          <div class="rail-roman">${i.roman}</div>
+          <div class="rail-text">
             <div class="rail-label">${i.label}</div>
-          </a>
-        `
-        )
-        .join("")}
+            ${i.byline ? `<p class="rail-byline">${i.byline}</p>` : ""}
+          </div>
+        </a>
+      `).join("")}
+
+      <button class="rail-toggle" type="button" aria-expanded="true">
+        Hide ledger
+      </button>
     </div>
   `;
 }
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".rail-toggle");
+  if (!btn) return;
+
+  document.body.classList.toggle("rail-collapsed");
+  const collapsed = document.body.classList.contains("rail-collapsed");
+
+  btn.setAttribute("aria-expanded", String(!collapsed));
+  btn.textContent = collapsed ? "Show ledger" : "Hide ledger";
+});
 
 renderRail(sideRail);
 renderRail(sideRailMobile);

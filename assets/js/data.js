@@ -1,13 +1,42 @@
 export const navItems = [
-  // { roman: "I",   label: "Home",              path: "/home" },
-
-  { roman: "I",  label: "Letter from The Healing Project", path: "/scroll#letter" },
-  { roman: "II", label: "Call & Response",   path: "/scroll#call-response" },
-  { roman: "III",  label: "Community Board",   path: "/scroll#community-board" },
-  { roman: "IV",   label: "Processing",        path: "/scroll#processing" },
-  { roman: "V",  label: "Closing Prayer",    path: "/scroll#closing-prayer" },
-  { roman: "VI", label: "Collaborators",     path: "/scroll#collaborators" },
+  {
+    roman: "I",
+    label: "Letter from The Healing Project",
+    byline: "A look at the artistic and collaborative <br> process by Samora Pinderhughes.",
+    path: "/scroll#letter",
+  },
+  {
+    roman: "II",
+    label: "Call & Response",
+    byline: "Written and visual offerings by community members from Parole Prep, Brotherhood Sister Sol, The Fortune Society, and South Bronx Unite/The Land Stewards.",
+    path: "/scroll#call-response",
+  },
+  {
+    roman: "III",
+    label: "Community Board",
+    byline: "Invitations from each of the <br> aforementioned New York-based <br> organizations to join their work.",
+    path: "/scroll#community-board",
+  },
+  {
+    roman: "IV",
+    label: "Processing",
+    byline: "A reflection by Mahogany L. Browne on <br> this issue’s theme, counter-narratives, and what it means to tell the whole truth.",
+    path: "/scroll#processing",
+  },
+  {
+    roman: "V",
+    label: "Closing Prayer",
+    byline: "A moment of gratitude and <br> grounding by Sue Ariza.",
+    path: "/scroll#closing-prayer",
+  },
+  {
+    roman: "VI",
+    label: "Collaborators",
+    byline: "A list of this issue’s contributors <br> across editorial, design, and artwork.",
+    path: "/scroll#collaborators",
+  },
 ];
+
 
 export const cards = [
   // ===== CALL & RESPONSE =====
