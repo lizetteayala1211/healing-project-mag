@@ -17,6 +17,11 @@
     /* soft green-gray */
     --ledger-sage-tint: color-mix(in srgb, var(--ledger-sage) 18%, #f3efe6 82%);
 
+    /* NEW: active/hover washes derived from ledger sage */
+    --ledger-hover: color-mix(in srgb, var(--ledger-sage) 22%, transparent 78%);
+    --ledger-active: color-mix(in srgb, var(--ledger-sage) 42%, transparent 58%);
+    --ledger-active-outline: color-mix(in srgb, var(--ledger-sage) 62%, #000 38%);
+
     --max: 1300px;
 
     /* Header / footer sizing */
@@ -253,7 +258,10 @@ body {
         height: auto;
         overflow: visible;
         align-self: flex-start;
-        background: var(--paper);
+
+        /* UPDATED: ledger sage tint on the column */
+        background: var(--ledger-sage-tint);
+
         /* border-right: 1px solid var(--rule); */
         z-index: 20;
         padding-top: 0;
@@ -276,7 +284,10 @@ body {
 .rail-card {
     display: flex;
     flex-direction: column;
-    background: transparent;
+
+    /* UPDATED: sage tint on the card itself */
+    background: var(--ledger-sage-tint);
+
     width: 100%;
     /* align-items: stretch; */
 }
@@ -291,14 +302,36 @@ body {
     border-bottom: 1px solid var(--rule);
     text-decoration: none;
     color: rgba(0, 0, 0, 0.85);
+    /* NEW: smoother interaction */
+    /* transition: background 180ms ease, color 180ms ease, outline-color 180ms ease; */
+    /* transition: background 240ms ease, outline-color 240ms ease, color 240ms ease; */
+    transition: background-color 260ms ease, color 260ms ease, outline-color 260ms ease;
 }
 
 .rail-link:hover {
-    background: rgba(0, 0, 0, 0.04);
+    /* UPDATED: sage hover instead of gray */
+    background: var(--ledger-hover);
 }
 
 .rail-link:last-child {
     border-bottom: none;
+}
+
+/* NEW: active state — shows “you are here” */
+.rail-link.is-active {
+    background: var(--ledger-active);
+    outline: 1px solid var(--ledger-active-outline);
+    outline-offset: -1px;
+    transition: background 320ms ease, outline-color 320ms ease, color 320ms ease;
+}
+
+.rail-link.is-active .rail-roman {
+    font-weight: 800;
+}
+
+.rail-link.is-active .rail-label {
+    text-decoration: underline;
+    text-underline-offset: 4px;
 }
 
 .rail-roman {
@@ -341,8 +374,10 @@ body {
         width: 100%;
         border: 0;
         /* border-top: 1px solid var(--rule); */
+
+        /* UPDATED: keep it sitting on sage */
         background: transparent;
-        /* padding: 16px 14px; */
+
         font-family: var(--font-display);
         font-size: 13px;
         cursor: pointer;
@@ -355,20 +390,21 @@ body {
     }
 
     .rail-toggle:hover {
-        background: rgba(0, 0, 0, 0.04);
+        /* UPDATED: sage hover */
+        background: var(--ledger-hover);
     }
 
-/* hide ledger open/close button on mobile */
-@media (max-width: 1023px) {
-  .rail-toggle,
-  button.rail-toggle,
-  .rail-toggle-btn,
-  button.rail-toggle-btn {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-  }
-}
+    /* hide ledger open/close button on mobile */
+    @media (max-width: 1023px) {
+        .rail-toggle,
+        button.rail-toggle,
+        .rail-toggle-btn,
+        button.rail-toggle-btn {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+    }
 
     /* When collapsed: keep the left column width, but hide the nav links */
     body.rail-collapsed .rail-link {
@@ -498,6 +534,13 @@ body {
 .scroll-section {
   opacity: 0.25;
   transition: opacity 500ms ease;
+  padding-bottom: 20vh; /* adjust */
+}
+
+@media (min-width:1024px){
+  .scroll-section{
+    min-height: 82vh;
+  }
 }
 
 .scroll-section.is-visible {
@@ -511,19 +554,6 @@ body {
 }
 
 @media (min-width: 1024px) {
-    /* .gutter-right {
-    display: block;
-    width: 100%;
-    min-height: 1px;
-  } */
-
-    /* .gutter-right{
-    display: block;
-    flex: 0 0 var(--gutter-w);
-    width: var(--gutter-w);
-    min-height: 1px;
-  } */
-
     /* RIGHT GUTTER (must match ledger width) */
     .gutter-right {
         display: block;
@@ -545,7 +575,6 @@ body {
     padding: 40px 0px;
 }
 
-
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .scroll-section {
@@ -554,7 +583,6 @@ body {
   }
 }
 
-
 /* Ensure anchored sections don't hide under header */
 #call-response,
 #community-board,
@@ -562,7 +590,7 @@ body {
 #closing-prayer,
 #collaborators,
 #letter {
-    scroll-margin-top: var(--header-h);
+    scroll-margin-top: 0px;
 }
 
 /* =====================
@@ -576,23 +604,12 @@ body {
 
 @media (min-width: 1024px) {
     .cards-grid {
-        /* grid-template-columns: repeat(3, var(--card-w));
-    gap: var(--card-gap);
-    justify-content: center;
-    align-items: stretch; */
-
         grid-template-columns: repeat(2, var(--card-w));
         gap: var(--card-gap);
         justify-content: center;
         align-items: stretch;
     }
 }
-
-/* @media (min-width: 1440px) {
-  .cards-grid {
-    grid-template-columns: repeat(3, var(--card-w));
-  }
-} */
 
 .card {
     position: relative;
@@ -637,14 +654,14 @@ body {
 }
 
 .card p {
-  margin-top: 12px;      /* brings it up under title */
-  padding-top: 0;        /* remove extra spacing */
+  margin-top: 12px;
+  padding-top: 0;
   font-size: 14px;
   color: rgba(255, 255, 255, 1);
   line-height: 1.45;
 
   display: -webkit-box;
-  -webkit-line-clamp: 4;   /* optional: keeps it tighter */
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

@@ -4,6 +4,10 @@
    - Mobile drawer behavior preserved
    - Route-safe partial injection + cards render
    - TRUE opacity fade between scroll sections (works for long sections)
+   - ✅ Ledger highlights current scroll section (.rail-link.is-active)
+   - ✅ Intentional (slight) delay on scroll-driven ledger changes
+   - ✅ Fix: “Letter” reliably re-activates when you scroll back to top
+   - ✅ Fix: boundary flicker (single update source + dwell/hysteresis + click lock)
 ========================================================= */
 
 console.log("app.js loaded ✅");
@@ -99,8 +103,101 @@ function bindRailToggleOnce() {
   });
 }
 
-/* ---------- 5C) Initial mount ---------- */
+/* ---------- 5C) Active ledger highlight ---------- */
+function setActiveLedger(sectionId) {
+  if (!sectionId) return;
+  const links = document.querySelectorAll(".rail-link");
+  links.forEach((a) => {
+    const href = a.getAttribute("href") || "";
+    // Your ledger hrefs are like "#/scroll#closing-prayer"
+    const isMatch = href.includes(`/scroll#${sectionId}`);
+    a.classList.toggle("is-active", isMatch);
+  });
+}
+
+/* ---------- 5D) Intentional delay + dwell (anti-flicker) ---------- */
+const LEDGER_SCROLL_DELAY_MS = 140; // the "intentional" feel (120–220)
+const LEDGER_DWELL_MS = 160;        // must remain winner before scheduling (120–240)
+
+let ledgerTimer = null;
+let lastLedgerId = null;
+
+// new: "candidate" tracking to prevent boundary ping-pong
+let pendingLedgerId = null;
+let pendingSince = 0;
+
+// new: lock scroll-driven changes briefly after click / smooth scroll
+let scrollLockUntil = 0;
+
+function nowMs() {
+  return (window.performance && performance.now) ? performance.now() : Date.now();
+}
+
+function scheduleLedgerActive(sectionId) {
+  if (!sectionId) return;
+
+  // If we're in a click-lock window, do nothing
+  if (nowMs() < scrollLockUntil) return;
+
+  // Already active? clear pending and exit
+  if (sectionId === lastLedgerId) {
+    pendingLedgerId = null;
+    return;
+  }
+
+  const t = nowMs();
+
+  // If candidate changed, start dwell timer (don’t schedule yet)
+  if (pendingLedgerId !== sectionId) {
+    pendingLedgerId = sectionId;
+    pendingSince = t;
+    return;
+  }
+
+  // Candidate is the same — has it "stayed winning" long enough?
+  if (t - pendingSince < LEDGER_DWELL_MS) return;
+
+  // Now schedule the actual visual change (with your intentional delay)
+  clearTimeout(ledgerTimer);
+  ledgerTimer = setTimeout(() => {
+    setActiveLedger(sectionId);
+    lastLedgerId = sectionId;
+    pendingLedgerId = null;
+  }, LEDGER_SCROLL_DELAY_MS);
+}
+
+// Clicks should feel immediate (no delay)
+function setLedgerActiveImmediate(sectionId) {
+  clearTimeout(ledgerTimer);
+  pendingLedgerId = null;
+
+  if (!sectionId) return;
+  setActiveLedger(sectionId);
+  lastLedgerId = sectionId;
+}
+
+/* ---------- 5E) Ledger click → immediate active + lock scroll updates ---------- */
+function bindLedgerClickActiveOnce() {
+  if (document.documentElement.dataset.ledgerClickBound === "1") return;
+  document.documentElement.dataset.ledgerClickBound = "1";
+
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest(".rail-link");
+    if (!a) return;
+
+    const href = a.getAttribute("href") || "";
+    const m = href.match(/^#\/scroll#(.+)$/);
+    if (m && m[1]) {
+      // lock scroll-driven highlight briefly while smooth scrolling happens
+      scrollLockUntil = nowMs() + 650;
+      setLedgerActiveImmediate(m[1]);
+    }
+  });
+}
+
+/* ---------- 5F) Initial mount ---------- */
 bindRailToggleOnce();
+bindLedgerClickActiveOnce();
 renderRail(sideRail);
 renderRail(sideRailMobile);
 
@@ -117,60 +214,127 @@ sideRailMobile?.addEventListener("click", (e) => {
 });
 
 /* =========================================================
-   7) SECTION FADE (TRUE OPACITY FADE)
-   - Observes a tiny sentinel inside each .scroll-section
-   - Works for long sections (Letter, Poem, etc.)
+   7) SECTION FADE (TRUE OPACITY FADE) + LEDGER SYNC
+   - Single source of truth: scroll rAF loop
+   - Largest visible area decides active section
+   - Dwell + delay prevents boundary flicker
 ========================================================= */
-let sectionFadeIO = null;
+
+// Global function used by scroll-sync (replaced on each setup)
+let updateScrollStateFn = null;
+let ledgerRAF = null;
+
+function bindLedgerScrollSyncOnce() {
+  if (document.documentElement.dataset.ledgerScrollSyncBound === "1") return;
+  document.documentElement.dataset.ledgerScrollSyncBound = "1";
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (!updateScrollStateFn) return;
+
+      if (ledgerRAF) return;
+      ledgerRAF = requestAnimationFrame(() => {
+        ledgerRAF = null;
+        updateScrollStateFn();
+      });
+    },
+    { passive: true }
+  );
+}
 
 function setupSectionFade(root = document) {
-  // disconnect previous observer on route changes
-  if (sectionFadeIO) sectionFadeIO.disconnect();
-
   const sections = Array.from(root.querySelectorAll(".scroll-section"));
-  if (!sections.length) return;
+  if (!sections.length) {
+    updateScrollStateFn = null;
+    return;
+  }
 
-  // Ensure each section has a sentinel
+  // Ensure each section has a sentinel (still useful for structure; not used for decision now)
   sections.forEach((section) => {
     if (section.querySelector(".fade-sentinel")) return;
     const sentinel = document.createElement("span");
     sentinel.className = "fade-sentinel";
     sentinel.setAttribute("aria-hidden", "true");
-    // put it at the very top of the section
     section.prepend(sentinel);
   });
 
   // Default: first section visible
   sections.forEach((s, idx) => s.classList.toggle("is-visible", idx === 0));
 
-  // Observe sentinels, not the full section (fixes "long section never hits threshold")
-  const sentinels = sections.map((s) => s.querySelector(".fade-sentinel"));
+  // Persistent active id for hysteresis
+  let currentActiveId = lastLedgerId || sections[0]?.id || null;
 
-  sectionFadeIO = new IntersectionObserver(
-    (entries) => {
-      // pick the entry that is intersecting (or closest to intersecting)
-      // and make THAT section visible
-      const intersecting = entries
-        .filter((e) => e.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+  function visibleArea(rect, vh, vw) {
+    const top = Math.max(0, rect.top);
+    const bottom = Math.min(vh, rect.bottom);
+    const left = Math.max(0, rect.left);
+    const right = Math.min(vw, rect.right);
 
-      if (!intersecting) return;
+    const w = Math.max(0, right - left);
+    const h = Math.max(0, bottom - top);
+    return w * h;
+  }
 
-      const activeSection = intersecting.target.closest(".scroll-section");
-      if (!activeSection) return;
+  function computeActiveSectionId() {
+    // Force the first section when you're basically at the top
+    if (window.scrollY <= 6) return sections[0]?.id || null;
 
-      sections.forEach((s) => s.classList.toggle("is-visible", s === activeSection));
-    },
-    {
-      // This creates a "middle band" of the viewport.
-      // When the sentinel enters that band, it becomes the active section.
-      root: null,
-      threshold: 0,
-      rootMargin: "-45% 0px -45% 0px",
+    const vh = window.innerHeight || 0;
+    const vw = window.innerWidth || 0;
+    if (!vh || !vw) return currentActiveId;
+
+    // Find section with the largest visible area
+    let bestId = currentActiveId;
+    let bestArea = -1;
+    let currentArea = -1;
+
+    for (const s of sections) {
+      const rect = s.getBoundingClientRect();
+      const area = visibleArea(rect, vh, vw);
+
+      if (s.id === currentActiveId) currentArea = area;
+
+      if (area > bestArea) {
+        bestArea = area;
+        bestId = s.id || bestId;
+      }
     }
-  );
 
-  sentinels.forEach((el) => el && sectionFadeIO.observe(el));
+    // Hysteresis: don’t switch unless the new winner is meaningfully larger
+    const SWITCH_RATIO = 1.22; // stronger than 1.15 to kill boundary jitter
+    if (currentActiveId && bestId && bestId !== currentActiveId) {
+      if (currentArea >= 0 && bestArea < currentArea * SWITCH_RATIO) {
+        return currentActiveId;
+      }
+    }
+
+    currentActiveId = bestId;
+    return bestId;
+  }
+
+  // One function that updates BOTH:
+  // - fades (.is-visible)
+  // - ledger highlight (with dwell + delay)
+  updateScrollStateFn = function updateScrollState() {
+    const id = computeActiveSectionId();
+    if (!id) return;
+
+    const activeSection = sections.find((s) => s.id === id);
+    if (activeSection) {
+      sections.forEach((s) => s.classList.toggle("is-visible", s === activeSection));
+    }
+
+    scheduleLedgerActive(id);
+  };
+
+  // Bind scroll sync once
+  bindLedgerScrollSyncOnce();
+
+  // Initial sync (immediate on load)
+  const initialId = computeActiveSectionId();
+  if (initialId) setLedgerActiveImmediate(initialId);
+  updateScrollStateFn();
 }
 
 /* =========================================================
@@ -192,7 +356,7 @@ window.THP.renderCardsGrid = function renderCardsGrid() {
             class="card ${span}"
             href="#${c.path}"
             style="background:${c.color}"
-            ${c.scrollId ? `id="${c.scrollId}"` : ""}>
+            ${c.scrollId ? `id="card-${c.scrollId}"` : ""}>
             <span class="card-dot"></span>
             <h3>${c.title}</h3>
             <p>${c.byline}</p>
@@ -268,28 +432,29 @@ async function render() {
     }
   }
 
-  // ✅ Render cards (works on scroll page + anywhere else you place a grid)
+  // ✅ Render cards
   try {
     window.THP.renderCardsGrid();
   } catch (e) {
     console.error("renderCardsGrid failed:", e);
   }
 
-  // ✅ Re-init fades AFTER scroll DOM exists and partials are injected
+  // ✅ Setup fades + ledger sync after DOM exists
   if (path === "/scroll") {
     requestAnimationFrame(() => setupSectionFade(app));
   } else {
-    // leaving scroll route: cleanup observer
-    if (sectionFadeIO) sectionFadeIO.disconnect();
+    updateScrollStateFn = null;
   }
 
-  // ✅ Scroll behavior:
-  // - scroll route: scroll to section anchor if present
-  // - all other routes: start at top
+  // ✅ Scroll behavior
   requestAnimationFrame(() => {
     if (path === "/scroll" && anchor) {
       const el = document.getElementById(anchor);
       if (el) {
+        // lock scroll-driven highlight briefly while smooth scrolling happens
+        scrollLockUntil = nowMs() + 650;
+
+        setLedgerActiveImmediate(anchor);
         el.scrollIntoView({ behavior: "smooth", block: "start" });
         return;
       }
@@ -297,7 +462,7 @@ async function render() {
     window.scrollTo(0, 0);
   });
 
-  // ✅ Mount reflections carousel safely (only runs if elements exist)
+  // ✅ Mount reflections carousel safely
   try {
     mountWDWCarousel();
   } catch (e) {
@@ -315,7 +480,8 @@ window.addEventListener("resize", () => {
 
   // re-evaluate fades on resize (only if scroll page exists)
   try {
-    setupSectionFade(app);
+    if (updateScrollStateFn) updateScrollStateFn();
+    else setupSectionFade(app);
   } catch (_) {}
 });
 
