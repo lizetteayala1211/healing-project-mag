@@ -611,16 +611,16 @@ body {
 }
 
 .card p {
-    margin-top: auto;
-    padding-top: 10px;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 1);
-    line-height: 1.45;
+  margin-top: 12px;      /* brings it up under title */
+  padding-top: 0;        /* remove extra spacing */
+  font-size: 14px;
+  color: rgba(255, 255, 255, 1);
+  line-height: 1.45;
 
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;   /* optional: keeps it tighter */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* The blue dot (currently hidden everywhere, you can re-enable later if desired) */
@@ -1094,7 +1094,7 @@ html.lb-lock .page {
     }
 
     .logo {
-        font-size: 22px;
+        font-size: 20px;
         line-height: 1.05;
         max-width: calc(100% - 64px);
         white-space: normal;
