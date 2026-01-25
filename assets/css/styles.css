@@ -123,6 +123,37 @@ body {
     }
 }
 
+/* Text-only hyperlinks (inside article + section prose) */
+.prose a:link,
+.prose a:visited,
+.pullquote a:link,
+.pullquote a:visited,
+.article-inner a:link,
+.article-inner a:visited,
+.non-article-inner a:link,
+.non-article-inner a:visited {
+  color: #5f856d;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Hover/focus (still text-only) */
+.prose a:hover,
+.pullquote a:hover,
+.article-inner a:hover,
+.non-article-inner a:hover {
+  opacity: 0.75;
+}
+
+/* IMPORTANT: exclude button-like links */
+.prose a.backpill,
+.article-inner a.backpill,
+.non-article-inner a.backpill {
+  color: inherit;
+  text-decoration: none;
+}
+
+
 /* Typography helpers */
 .rail-label,
 .card p,
@@ -396,6 +427,7 @@ body {
 
     /* hide ledger open/close button on mobile */
     @media (max-width: 1023px) {
+
         .rail-toggle,
         button.rail-toggle,
         .rail-toggle-btn,
@@ -487,14 +519,30 @@ body {
     width: 100%;
     margin: 0;
     padding: 0;
+
+    display: grid;
+    place-items: center;
+
+    /* gives us a reliable height target on desktop */
+    min-height: calc(100vh - var(--header-h) - var(--footer-h));
 }
 
 .home-hero-img {
-    width: 100%;
+    /* width: 100%;
     height: auto;
     display: block;
+    border-radius: 12px; */
+
+    display: block;
+    width: min(100%, 860px);
+    height: auto;
+    object-fit: contain;
+
+    /* keep a little softness on mobile by default */
     border-radius: 12px;
 }
+
+
 
 /* =====================
    RULES (VERTICAL LINES)
@@ -532,32 +580,34 @@ body {
 
 /* section fade baseline */
 .scroll-section {
-  opacity: 0.25;
-  transition: opacity 500ms ease;
-  padding-bottom: 20vh; /* adjust */
+    opacity: 0.25;
+    transition: opacity 500ms ease;
+    padding-bottom: 20vh;
+    /* adjust */
 }
 
 .scroll-section:last-child {
     padding-bottom: 0vh !important;
 }
 
-@media (min-width:1024px){
-  .scroll-section{
-    min-height: 82vh;
-  }
+@media (min-width:1024px) {
+    .scroll-section {
+        min-height: 82vh;
+    }
 }
 
 .scroll-section.is-visible {
-  opacity: 1;
+    opacity: 1;
 }
 
 /* sentinel can be invisible */
 .fade-sentinel {
-  display: block;
-  height: 1px;
+    display: block;
+    height: 1px;
 }
 
 @media (min-width: 1024px) {
+
     /* RIGHT GUTTER (must match ledger width) */
     .gutter-right {
         display: block;
@@ -581,10 +631,10 @@ body {
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .scroll-section {
-    opacity: 1;
-    transition: none;
-  }
+    .scroll-section {
+        opacity: 1;
+        transition: none;
+    }
 }
 
 /* Ensure anchored sections don't hide under header */
@@ -662,16 +712,16 @@ body {
 }
 
 .card p {
-  margin-top: 12px;
-  padding-top: 0;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 1);
-  line-height: 1.45;
+    margin-top: 12px;
+    padding-top: 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 1);
+    line-height: 1.45;
 
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* The blue dot (currently hidden everywhere, you can re-enable later if desired) */
@@ -1159,75 +1209,3 @@ html.lb-lock .page {
         padding: 0 12px;
     }
 }
-
-/* =========================================================
-   HOME HERO — FULL-BLEED CENTERED (DESKTOP), CENTERED (MOBILE)
-   Paste at bottom of styles.css
-========================================================= */
-
-/* Make the home page content area behave like a “stage” */
-.home-hero-wrap {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-
-  display: grid;
-  place-items: center;
-
-  /* gives us a reliable height target on desktop */
-  min-height: calc(100vh - var(--header-h) - var(--footer-h));
-}
-
-/* Default hero image behavior (mobile/tablet): centered + contained */
-.home-hero-img {
-  display: block;
-  width: min(100%, 860px);
-  height: auto;
-  object-fit: contain;
-
-  /* keep a little softness on mobile by default */
-  border-radius: 18px;
-}
-
-/* DESKTOP: full-bleed inside the center column container */
-@media (min-width: 1024px) {
-  /* remove page padding so the hero can truly fill */
-  .page:has(.home-hero-wrap) {
-    padding: 0 !important;
-  }
-
-  .home-hero-wrap {
-    min-height: calc(100vh - var(--header-h) - var(--footer-h));
-    height: calc(100vh - var(--header-h) - var(--footer-h));
-  }
-
-  .home-hero-img {
-    width: 100%;
-    height: 100%;
-
-    /* cinematic fill */
-    object-fit: cover;
-
-    /* remove rounded edges */
-    border-radius: 0;
-  }
-}
-
-/* MOBILE: keep it centered and not weirdly full-height */
-@media (max-width: 1023px) {
-  .home-hero-wrap {
-    min-height: auto;
-    padding: 24px 0;
-  }
-
-  .home-hero-img {
-    width: 100%;
-    max-width: 92vw;
-    height: auto;
-    object-fit: contain;
-
-    /* if you want NO rounding on mobile too, change to 0 */
-    border-radius: 18px;
-  }
-}
-
