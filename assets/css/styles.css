@@ -302,11 +302,11 @@ body {
     border-bottom: 1px solid var(--rule);
     text-decoration: none;
     color: rgba(0, 0, 0, 0.85);
+
     /* NEW: smoother interaction */
-    /* transition: background 180ms ease, color 180ms ease, outline-color 180ms ease; */
-    /* transition: background 240ms ease, outline-color 240ms ease, color 240ms ease; */
     transition: background-color 260ms ease, color 260ms ease, outline-color 260ms ease;
 }
+
 
 .rail-link:hover {
     /* UPDATED: sage hover instead of gray */
@@ -535,6 +535,10 @@ body {
   opacity: 0.25;
   transition: opacity 500ms ease;
   padding-bottom: 20vh; /* adjust */
+}
+
+.scroll-section:last-child {
+    padding-bottom: 0vh !important;
 }
 
 @media (min-width:1024px){
