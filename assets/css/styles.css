@@ -207,22 +207,28 @@ body {
 
 /* Hamburger */
 .hamburger {
-    width: 44px;
-    height: 44px;
-    border: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    width: 50px;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+    height: 50px;
+    border: 1.5px solid var(--rule);
     background: transparent;
     border-radius: 10px;
-    display: grid;
-    place-items: center;
+    /* display: grid; */
+    /* place-items: center; */
     cursor: pointer;
 }
 
 .hamburger span {
     display: block;
-    width: 18px;
-    height: 2px;
+    width: 25px;
+    height: 2.75px;
     background: rgba(0, 0, 0, 0.8);
     margin: 2px 0;
+    border-radius: 999px; /* pill ends */
 }
 
 /* =====================
@@ -548,7 +554,7 @@ body {
 @media (max-width: 1023px) {
   .home-hero-img {
     width: 100%;
-    height: 70vh;
+    height: 68vh;
     object-fit: cover;   /* ✅ cover, not contain */
     border-radius: 12px; /* keep if you like; set to 0 if you want it flush */
   }
@@ -1184,6 +1190,23 @@ html.lb-lock .page {
     .hamburger {
         display: none;
     }
+}
+
+/* Mobile hamburger button = ticker inversion */
+@media (max-width: 1023px) {
+  .hamburger {
+    background: var(--dot);
+    border: 1px solid rgba(243, 239, 230, 0.65); /* paper-ish */
+    border-radius: 12px; /* keep your shape */
+  }
+
+  .hamburger:hover {
+    filter: brightness(1.05);
+  }
+
+  .hamburger span {
+    background: rgba(243, 239, 230, 0.9); /* paper lines */
+  }
 }
 
 @media (max-width: 1023px) {
