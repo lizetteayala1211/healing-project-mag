@@ -524,7 +524,9 @@ body {
     place-items: center;
 
     /* gives us a reliable height target on desktop */
-    min-height: calc(100vh - var(--header-h) - var(--footer-h));
+    /* min-height: calc(100vh - var(--header-h) - var(--footer-h)); */
+    /* make it behave like a full “frame” */
+  min-height: calc(100svh - var(--header-h) - var(--footer-h));
 }
 
 .home-hero-img {
@@ -542,7 +544,15 @@ body {
     border-radius: 12px;
 }
 
-
+/* Mobile: make the image feel full/intentional */
+@media (max-width: 1023px) {
+  .home-hero-img {
+    width: 100%;
+    height: 70vh;
+    object-fit: cover;   /* ✅ cover, not contain */
+    border-radius: 12px; /* keep if you like; set to 0 if you want it flush */
+  }
+}
 
 /* =====================
    RULES (VERTICAL LINES)
