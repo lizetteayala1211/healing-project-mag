@@ -1,10 +1,25 @@
+/* =========================================================
+   THE HEALING PROJECT MAGAZINE — app.js (CLEAN + LABELED)
+   - Desktop-only ledger toggle button (JS-rendered)
+   - Mobile drawer behavior preserved
+   - Route-safe partial injection + cards render
+   - TRUE opacity fade between scroll sections (works for long sections)
+========================================================= */
+
 console.log("app.js loaded ✅");
 console.log("[ticker] code reached");
 
+/* =========================
+   1) IMPORTS
+========================= */
 import { navItems, cards } from "./data.js";
-import { getPath, loadPage, setPath } from "./router.js";
+import { loadPage, setPath } from "./router.js";
 
+/* =========================
+   2) DOM REFS
+========================= */
 const app = document.getElementById("app");
+
 const sideRail = document.getElementById("side-rail");
 const sideRailMobile = document.getElementById("side-rail-mobile");
 
@@ -13,14 +28,36 @@ const menuBtn = document.getElementById("menu-button");
 const drawerBackdrop = document.getElementById("drawer-backdrop");
 
 /* =========================
-   Side rail render
+   3) RESPONSIVE HELPERS
 ========================= */
+function isDesktop() {
+  return window.matchMedia("(min-width: 1024px)").matches;
+}
+function isMobile() {
+  return window.matchMedia("(max-width: 1023px)").matches;
+}
+
+/* =========================
+   4) THP NAMESPACE (ONE TIME)
+========================= */
+window.THP = window.THP || {};
+window.THP.setPath = setPath;
+
+/* =========================================================
+   5) LEDGER / SIDE RAIL
+========================================================= */
+
+/* ---------- 5A) Render rail (desktop + mobile) ---------- */
 function renderRail(target) {
   if (!target) return;
 
+  const showToggleBtn = isDesktop(); // ✅ only on desktop
+
   target.innerHTML = `
     <div class="rail-card">
-      ${navItems.map((i) => `
+      ${navItems
+        .map(
+          (i) => `
         <a class="rail-link" href="#${i.path}">
           <div class="rail-roman">${i.roman}</div>
           <div class="rail-text">
@@ -28,30 +65,48 @@ function renderRail(target) {
             ${i.byline ? `<p class="rail-byline">${i.byline}</p>` : ""}
           </div>
         </a>
-      `).join("")}
+      `
+        )
+        .join("")}
 
-      <button class="rail-toggle" type="button" aria-expanded="true">
-        Hide ledger
-      </button>
+      ${
+        showToggleBtn
+          ? `
+        <button class="rail-toggle" type="button" aria-expanded="true">
+          Hide ledger
+        </button>
+      `
+          : ""
+      }
     </div>
   `;
 }
 
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest(".rail-toggle");
-  if (!btn) return;
+/* ---------- 5B) Bind rail toggle (delegated; binds once) ---------- */
+function bindRailToggleOnce() {
+  if (document.documentElement.dataset.railToggleBound === "1") return;
+  document.documentElement.dataset.railToggleBound = "1";
 
-  document.body.classList.toggle("rail-collapsed");
-  const collapsed = document.body.classList.contains("rail-collapsed");
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".rail-toggle");
+    if (!btn) return;
 
-  btn.setAttribute("aria-expanded", String(!collapsed));
-  btn.textContent = collapsed ? "Show ledger" : "Hide ledger";
-});
+    document.body.classList.toggle("rail-collapsed");
+    const collapsed = document.body.classList.contains("rail-collapsed");
 
+    btn.setAttribute("aria-expanded", String(!collapsed));
+    btn.textContent = collapsed ? "Show ledger" : "Hide ledger";
+  });
+}
+
+/* ---------- 5C) Initial mount ---------- */
+bindRailToggleOnce();
 renderRail(sideRail);
 renderRail(sideRailMobile);
 
-// mobile drawer toggles
+/* =========================================================
+   6) MOBILE DRAWER
+========================================================= */
 menuBtn?.addEventListener("click", () => drawer?.classList.add("open"));
 drawerBackdrop?.addEventListener("click", () => drawer?.classList.remove("open"));
 
@@ -61,19 +116,66 @@ sideRailMobile?.addEventListener("click", (e) => {
   if (a) drawer?.classList.remove("open");
 });
 
-/* =========================
-   THP namespace (ONE time)
-========================= */
-window.THP = window.THP || {};
+/* =========================================================
+   7) SECTION FADE (TRUE OPACITY FADE)
+   - Observes a tiny sentinel inside each .scroll-section
+   - Works for long sections (Letter, Poem, etc.)
+========================================================= */
+let sectionFadeIO = null;
 
-/**
- * Renders cards into *any* element with `.cards-grid`.
- * - If grid has data-section, filters by c.section
- * - Otherwise renders all cards
- *
- * IMPORTANT: your cards in data.js must include:
- *   section: "call-response" | "community-board" | "processing"
- */
+function setupSectionFade(root = document) {
+  // disconnect previous observer on route changes
+  if (sectionFadeIO) sectionFadeIO.disconnect();
+
+  const sections = Array.from(root.querySelectorAll(".scroll-section"));
+  if (!sections.length) return;
+
+  // Ensure each section has a sentinel
+  sections.forEach((section) => {
+    if (section.querySelector(".fade-sentinel")) return;
+    const sentinel = document.createElement("span");
+    sentinel.className = "fade-sentinel";
+    sentinel.setAttribute("aria-hidden", "true");
+    // put it at the very top of the section
+    section.prepend(sentinel);
+  });
+
+  // Default: first section visible
+  sections.forEach((s, idx) => s.classList.toggle("is-visible", idx === 0));
+
+  // Observe sentinels, not the full section (fixes "long section never hits threshold")
+  const sentinels = sections.map((s) => s.querySelector(".fade-sentinel"));
+
+  sectionFadeIO = new IntersectionObserver(
+    (entries) => {
+      // pick the entry that is intersecting (or closest to intersecting)
+      // and make THAT section visible
+      const intersecting = entries
+        .filter((e) => e.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      if (!intersecting) return;
+
+      const activeSection = intersecting.target.closest(".scroll-section");
+      if (!activeSection) return;
+
+      sections.forEach((s) => s.classList.toggle("is-visible", s === activeSection));
+    },
+    {
+      // This creates a "middle band" of the viewport.
+      // When the sentinel enters that band, it becomes the active section.
+      root: null,
+      threshold: 0,
+      rootMargin: "-45% 0px -45% 0px",
+    }
+  );
+
+  sentinels.forEach((el) => el && sectionFadeIO.observe(el));
+}
+
+/* =========================================================
+   8) CARDS GRID RENDERER
+========================================================= */
 window.THP.renderCardsGrid = function renderCardsGrid() {
   const grids = document.querySelectorAll(".cards-grid");
   if (!grids.length) return;
@@ -101,11 +203,9 @@ window.THP.renderCardsGrid = function renderCardsGrid() {
   });
 };
 
-window.THP.setPath = setPath;
-
-/* =========================
-   Partials injector (ONE time)
-========================= */
+/* =========================================================
+   9) PARTIALS INJECTOR
+========================================================= */
 window.THP.injectPartials =
   window.THP.injectPartials ||
   async function injectPartials(root = document) {
@@ -129,9 +229,9 @@ window.THP.injectPartials =
     );
   };
 
-/* =========================
-   Router render
-========================= */
+/* =========================================================
+   10) ROUTER RENDER (MAIN APP MOUNT)
+========================================================= */
 async function render() {
   if (!app) return;
 
@@ -141,7 +241,6 @@ async function render() {
   //   #/article/...
   const raw = window.location.hash.replace(/^#/, ""); // "/scroll#community-board"
   let [path, anchor] = raw.split("#"); // path="/scroll", anchor="community-board"
-
   if (!path || path === "/") path = "/home";
 
   try {
@@ -160,7 +259,7 @@ async function render() {
     return;
   }
 
-  // ✅ Inject partials only on scroll route
+  // ✅ Inject partials only on /scroll
   if (path === "/scroll") {
     try {
       await window.THP.injectPartials(app);
@@ -169,11 +268,19 @@ async function render() {
     }
   }
 
-  // ✅ Render any cards grids present on the newly loaded DOM
+  // ✅ Render cards (works on scroll page + anywhere else you place a grid)
   try {
     window.THP.renderCardsGrid();
   } catch (e) {
     console.error("renderCardsGrid failed:", e);
+  }
+
+  // ✅ Re-init fades AFTER scroll DOM exists and partials are injected
+  if (path === "/scroll") {
+    requestAnimationFrame(() => setupSectionFade(app));
+  } else {
+    // leaving scroll route: cleanup observer
+    if (sectionFadeIO) sectionFadeIO.disconnect();
   }
 
   // ✅ Scroll behavior:
@@ -201,9 +308,20 @@ async function render() {
 window.addEventListener("hashchange", render);
 render();
 
-/* =========================
-   Footer ticker rotation (dynamic speed)
-========================= */
+/* ---------- 10B) Re-render rails on breakpoint changes ---------- */
+window.addEventListener("resize", () => {
+  renderRail(sideRail);
+  renderRail(sideRailMobile);
+
+  // re-evaluate fades on resize (only if scroll page exists)
+  try {
+    setupSectionFade(app);
+  } catch (_) {}
+});
+
+/* =========================================================
+   11) FOOTER TICKER ROTATION (DYNAMIC SPEED)
+========================================================= */
 const quotes = [
   "I realized it's not a one-size-fits-all here. You have to be able to adapt in your caregiving, because the method one day might not be the method the next. —Pamela Smart",
   "I find that my cup is filled when I’m giving, and my healing happens when I'm helping with somebody else's healing. —Pamela Smart",
@@ -216,14 +334,12 @@ const quotes = [
   "We are more than decoration; we are infrastructure. —Mahogany L. Browne",
   "We honor the wisdom carried by those whose lives have too often been dismissed, and the trust it takes to place that wisdom in the hands of others. —Sue Ariza",
   "For the courage to dream together of futures shaped by care rather than cages, by belonging rather than banishment, by systems that nourish our inherent worth instead of managing loss. —Sue Ariza",
-  "Along the way, we learn to cup beauty and grief in the palms of our hands. —Sue Ariza"
+  "Along the way, we learn to cup beauty and grief in the palms of our hands. —Sue Ariza",
 ];
 
 let tickerStarted = false;
 let anim = null;
 let index = 0;
-
-// Guard against multiple init attempts
 let initAttempted = false;
 
 function initTickerOnce() {
@@ -233,7 +349,6 @@ function initTickerOnce() {
   const textEl = document.getElementById("tickerText");
 
   if (!ticker || !textEl) {
-    // footer might not be in DOM yet — allow a couple retries
     if (!initAttempted) {
       initAttempted = true;
       setTimeout(initTickerOnce, 150);
@@ -242,24 +357,16 @@ function initTickerOnce() {
     return;
   }
 
-  // Bind pause on hover ONCE
   if (!ticker.dataset.pauseBound) {
     ticker.dataset.pauseBound = "1";
-
-    ticker.addEventListener("mouseenter", () => {
-      if (anim) anim.pause();
-    });
-
-    ticker.addEventListener("mouseleave", () => {
-      if (anim) anim.play();
-    });
+    ticker.addEventListener("mouseenter", () => anim && anim.pause());
+    ticker.addEventListener("mouseleave", () => anim && anim.play());
   }
 
   tickerStarted = true;
 
   function runQuote(q) {
     if (!tickerStarted) return;
-
     if (anim) anim.cancel();
 
     textEl.style.display = "inline-block";
@@ -267,20 +374,9 @@ function initTickerOnce() {
     textEl.textContent = q;
 
     requestAnimationFrame(() => {
-      const tickerNow = document.getElementById("ticker");
-      const textNow = document.getElementById("tickerText");
-      if (!tickerNow || !textNow) {
-        tickerStarted = false;
-        return;
-      }
-
-      const tickerW = tickerNow.clientWidth;
-      const textW = textNow.scrollWidth;
-
-      if (!tickerW || !textW) {
-        requestAnimationFrame(() => runQuote(q));
-        return;
-      }
+      const tickerW = ticker.clientWidth;
+      const textW = textEl.scrollWidth;
+      if (!tickerW || !textW) return requestAnimationFrame(() => runQuote(q));
 
       const startX = tickerW;
       const endX = -textW;
@@ -289,7 +385,7 @@ function initTickerOnce() {
       const distance = tickerW + textW;
       const duration = Math.max(6000, (distance / speed) * 1000);
 
-      anim = textNow.animate(
+      anim = textEl.animate(
         [{ transform: `translateX(${startX}px)` }, { transform: `translateX(${endX}px)` }],
         { duration, easing: "linear", fill: "forwards" }
       );
@@ -310,15 +406,14 @@ window.addEventListener("resize", () => {
   if (!tickerStarted) return;
   const textEl = document.getElementById("tickerText");
   if (!textEl) return;
-
   if (anim) anim.cancel();
   tickerStarted = false;
   initTickerOnce();
 });
 
-/* =========================
-   We Deserve Wellness: reflection carousel
-========================= */
+/* =========================================================
+   12) WE DESERVE WELLNESS: REFLECTION CAROUSEL
+========================================================= */
 const WDW_REFLECTIONS = [
   { author: "Member 1", text: `We need to be heard in schools. We need to learn about our culture. We need more staff that understand us. We need safety, not security. We need community.` },
   { author: "Member 2", text: `Many of us have no one to talk to or express our feelings to. A lot of kids struggle to maintain their mental health because of the lack of social workers and support staff in schools. Every student should have access to a person they feel comfortable talking to and expressing themselves with.` },
@@ -329,7 +424,7 @@ const WDW_REFLECTIONS = [
   { author: "Member 7", text: `It is time that the City Council invests in the education budget to fund more school counselors. It is time to invest in our wellness. We have waited long enough.` },
   { author: "Member 8", text: `My community and neighbors are struggling with confidence, mental health issues, suicide, substance use, overdose, inflation, gentrification, and police brutality. I see that this world still has a bias towards my people. I see discrimination, Black fathers being painted as deadbeats. I don’t see the police having a good impact. My generation is fighting to survive without enough people to look up to or lift them up. We’re still crying out for accessible resources, housing, and job opportunities. For racism to end.` },
   { author: "Member 9", text: `We need to think globally to understand our struggle. To see that people in other places go through similar issues. I see people living in famine, constant problems on the news, that our taxes are not being used to help us, but towards bombings and killings that we see on social media. Until Palestine is free, for example, America is not going to succeed. There will be no feeling of peace.` },
-  { author: "Member 10", text: `When we see how others fight back and support each other, it gives us ideas, hope, and strength to fight back too. We learn that we are not alone and that together we are stronger. We understand where we can use our peace to start solving problems. We are strong and we will rise. We will transfer the hate that they have given us and use it to unify the people. There can be no true community until all of us are free.` }
+  { author: "Member 10", text: `When we see how others fight back and support each other, it gives us ideas, hope, and strength to fight back too. We learn that we are not alone and that together we are stronger. We understand where we can use our peace to start solving problems. We are strong and we will rise. We will transfer the hate that they have given us and use it to unify the people. There can be no true community until all of us are free.` },
 ];
 
 let wdwIndex = 0;
@@ -350,10 +445,8 @@ function mountWDWCarousel() {
   const prevBtn = document.getElementById("wdwPrev");
   const nextBtn = document.getElementById("wdwNext");
 
-  // ✅ Only run on the page that actually has the carousel nodes
   if (!bodyEl || !countEl || !prevBtn || !nextBtn) return;
 
-  // ✅ prevent double-binding on route re-renders
   if (bodyEl.dataset.bound === "1") {
     renderWDW();
     return;
@@ -390,7 +483,6 @@ function mountWDWCarousel() {
   prevBtn.addEventListener("click", () => go(-1));
   nextBtn.addEventListener("click", () => go(1));
 
-  // keyboard support (bind once globally)
   if (!document.documentElement.dataset.wdwKeysBound) {
     document.documentElement.dataset.wdwKeysBound = "1";
     document.addEventListener("keydown", (e) => {

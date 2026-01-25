@@ -529,6 +529,32 @@ body {
     padding: 40px 0px;
 }
 
+/* section fade baseline */
+.scroll-section {
+  opacity: 0.25;
+  transition: opacity 500ms ease;
+}
+
+.scroll-section.is-visible {
+  opacity: 1;
+}
+
+/* sentinel can be invisible */
+.fade-sentinel {
+  display: block;
+  height: 1px;
+}
+
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-section {
+    opacity: 1;
+    transition: none;
+  }
+}
+
+
 /* Ensure anchored sections don't hide under header */
 #call-response,
 #community-board,
