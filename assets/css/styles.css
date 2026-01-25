@@ -1242,3 +1242,45 @@ html.lb-lock .page {
         padding: 0 12px;
     }
 }
+
+@media (max-width: 1023px) {
+  html, body {
+    overflow: visible;
+  }
+
+  .shell,
+  .layout-container,
+  .page-grid,
+  .main,
+  .page,
+  #app {
+    overflow: visible !important;
+  }
+
+  .home-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 99;
+  }
+
+  /* Push the page content down so it doesn't hide under the fixed header */
+  .page {
+    padding-top: var(--header-h);
+  }
+
+#letter,
+#call-response,
+#community-board,
+#processing {
+    scroll-margin-top: 80px;
+}
+
+#closing-prayer,
+#collaborators {
+    scroll-margin-top: 60px;
+}
+
+}
