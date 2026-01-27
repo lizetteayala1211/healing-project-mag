@@ -158,6 +158,16 @@ body {
   text-decoration: none;
 }
 
+/* Prose: bold links need breathing room */
+.prose a strong,
+.prose strong a,
+.article-inner a strong,
+.article-inner strong a,
+.non-article-inner a strong,
+.non-article-inner strong a {
+  letter-spacing: 0.01em;
+}
+
 /* =========================================================
    5) HEADER (sticky by default; fixed on mobile)
 ========================================================= */
@@ -178,6 +188,14 @@ body {
   justify-content: space-between;
 }
 
+/* Scroll-page logo breathing room */
+.home-bar .logo {
+  line-height: 1.15;              /* 👈 BIGGEST fix */
+  letter-spacing: 0.015em;        /* subtle, not airy */
+  padding-top: 4px;               /* optical centering */
+  padding-bottom: 4px;
+}
+
 .logo {
   font-family: "THPLogo";
   text-decoration: none;
@@ -190,7 +208,9 @@ body {
   -webkit-font-smoothing: antialiased;
   display: inline-block;
   transform: scaleX(1.12);
+  /* transform: scaleX(1.08); */
   transform-origin: left center;
+  letter-spacing: 0.04em; /* was 0.02em */
 }
 
 /* Hamburger button base */
@@ -346,6 +366,13 @@ body {
   width: 26px;
   text-align: center;
   font-weight: 700;
+  /* letter-spacing: 0.08em;           */
+  letter-spacing: 0.1em;
+  font-kerning: normal;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1;
+  opacity: 0.85;
 }
 
 .rail-label {
@@ -356,14 +383,14 @@ body {
 .rail-text {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   text-align: center;
 }
 
 .rail-byline {
   font-size: 12px;
-  line-height: 1.25;
-  opacity: 0.85;
+  line-height: 1.35;
+  opacity: 0.8;
   max-width: 36ch;
   margin: 0;
 }
@@ -737,6 +764,12 @@ body.is-home .page {
   text-align: left;
 }
 
+.article-title,
+.non-article-page h1 {
+  letter-spacing: 0.01em;
+  line-height: 1.12;
+}
+
 .article-title.sue { line-height: 1.2; }
 
 .article-byline {
@@ -745,6 +778,12 @@ body.is-home .page {
   text-align: left;
   line-height: 1.45;
 }
+
+.article-page figure.media-block:first-of-type,
+.non-article-page figure.media-block:first-of-type {
+  margin-top: 0px !important;
+}
+
 
 .center-inner {
   width: 100%;
@@ -880,6 +919,28 @@ body.is-home .page {
   line-height: 1.5;
 }
 
+/* A Call to Language (or any page): 2-column media grid */
+.media-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+/* kill the big auto margins inside grids */
+.media-grid-2 .media-block {
+  margin: 0;
+  text-align: center;
+}
+
+/* responsive: stack on small screens */
+@media (max-width: 640px) {
+  .media-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
 .media-block {
   margin: 40px auto;
   text-align: center;
@@ -911,7 +972,10 @@ figure img {
   line-height: 1.5;
   color: rgba(0, 0, 0, 0.70);
   text-align: center;
+  margin-top: 24px; /* start here */
 }
+
+
 
 /* =========================================================
    19) LIGHTBOX
@@ -967,7 +1031,8 @@ html.lb-lock .page {
 .quote-inner {
   width: 100vw;
   margin: 0 auto;
-  padding: 16px 16px;
+  /* padding: 16px 16px; */
+  padding: 14px 16px;   /* slightly less tall than 16px */
 }
 
 .ticker {
@@ -983,6 +1048,13 @@ html.lb-lock .page {
   white-space: nowrap;
   will-change: transform;
   color: rgba(255, 255, 255, 0.85);
+
+  letter-spacing: 0.015em;          /* airy but not spaced-out */
+  word-spacing: 0.05em;             /* helps long sentences breathe */
+  line-height: 1.2;                 /* prevents “tight italic” feel */
+  font-kerning: normal;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* =========================================================
@@ -1224,3 +1296,13 @@ body.is-home .home-splash-overlay {
   justify-items: center;
   padding-top: 12vh; /* ← adjust this */
 }
+
+/* Prevent “paper flash” on the home route while assets load */
+body.is-home,
+body.is-home .page,
+body.is-home .main,
+body.is-home .home-splash,
+body.is-home .home-splash-media {
+  background: #000 !important; /* or a deep charcoal */
+}
+
