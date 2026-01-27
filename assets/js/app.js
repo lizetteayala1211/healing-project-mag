@@ -56,67 +56,47 @@ window.THP.setPath = setPath;
 function renderRail(target) {
   if (!target) return;
 
-  if (!target) return;
+  // Detect if this is the MOBILE rail (drawer)
+  const isMobileRail =
+    target.id === "side-rail-mobile" ||
+    target.closest("#mobile-drawer") ||
+    target.closest(".drawer");
 
-  const isMobileRail = target.id === "side-rail-mobile";
-
-  target.innerHTML = `
-    ${isMobileRail ? `
-      <a
-        class="drawer-logo-link"
-        href="https://healingprojectsound.org"
-        target="_blank"
-        rel="noopener"
-      >
-        <img
-          src="/assets/logo/HP_logo_circle_bl.png"
-          alt="The Healing Project"
-          class="drawer-logo-img"
-        />
-      </a>
-      <div class="drawer-toprule"></div>
-    ` : ""}
-
-    <div class="rail-card">
-      ${navItems.map((i) => `
-        <a class="rail-link" href="#${i.path}">
-          <div class="rail-roman">${i.roman}</div>
-          <div class="rail-label">${i.label}</div>
-        </a>
-      `).join("")}
-    </div>
+  const drawerLogo = `
+    <a class="drawer-logo-link" href="#/" aria-label="Back to home">
+      <img
+        class="drawer-logo-img"
+        src="./assets/logo/HP_logo_circle_bl.png"
+        alt="The Healing Project"
+        loading="eager"
+      />
+    </a>
   `;
 
-  const showToggleBtn = isDesktop(); // ✅ only on desktop
-
-  target.innerHTML = `
+  const railLinks = `
     <div class="rail-card">
       ${navItems
         .map(
           (i) => `
-        <a class="rail-link" href="#${i.path}">
-          <div class="rail-roman">${i.roman}</div>
-          <div class="rail-text">
-            <div class="rail-label">${i.label}</div>
-            ${i.byline ? `<p class="rail-byline">${i.byline}</p>` : ""}
-          </div>
-        </a>
-      `
+          <a class="rail-link" href="#${i.path}">
+            <div class="rail-roman">${i.roman}</div>
+            <div class="rail-text">
+              <div class="rail-label">${i.label}</div>
+              ${i.byline ? `<p class="rail-byline">${i.byline}</p>` : ""}
+            </div>
+          </a>
+        `
         )
         .join("")}
-
-      ${
-        showToggleBtn
-          ? `
-        <button class="rail-toggle" type="button" aria-expanded="true">
-          Hide ledger
-        </button>
-      `
-          : ""
-      }
     </div>
   `;
+
+  target.innerHTML = `
+    ${isMobileRail ? drawerLogo : ""}
+    ${railLinks}
+  `;
 }
+
 
 /* ---------- 5B) Bind rail toggle (delegated; binds once) ---------- */
 function bindRailToggleOnce() {

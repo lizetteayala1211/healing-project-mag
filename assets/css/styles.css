@@ -560,15 +560,15 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 8px 0 14px;
+  padding: 0px 0 14px;
   text-decoration: none;
 }
 
 .drawer-logo-img {
-  width: 96px;          /* try 80–110 */
+  width: 90px;          /* try 80–110 */
   height: auto;
   display: block;
-  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.18));
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.12));
   transition: transform 160ms ease, filter 160ms ease;
 }
 
