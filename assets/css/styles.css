@@ -1600,53 +1600,36 @@ body.lightbox-open {
   overflow: hidden !important;
 }
 
-/* =========================================
-   MOBILE DRAWER — make panel scrollable
-   (matches your actual markup)
-========================================= */
+/* --- MOBILE DRAWER: make the PANEL the scroll container --- */
+@media (max-width: 899px) {
+  /* the overlay wrapper shouldn't be the scroller */
+  #mobile-drawer {
+    overflow: visible !important;
+    max-height: none !important;
+    padding-bottom: 0 !important;
+  }
 
-/* Ensure the overlay/backdrop covers the full screen */
-#mobile-drawer .drawer-back {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 2000;
-}
+  /* this is the actual sheet: it MUST scroll */
+  #mobile-drawer .drawer-panel {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
 
-/* The actual drawer panel */
-#mobile-drawer .drawer-panel {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;              /* ✅ key: define a fixed height */
-  width: 340px;
-  max-width: calc(100vw - 24px);
-  background: var(--paper);
-  border-right: 1px solid var(--rule);
-  z-index: 2001;
+    width: 340px;
+    max-width: calc(100vw - 24px);
 
-  /* ✅ key: allow scrolling inside the drawer */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 
-  /* keep your spacing + safe area */
-  padding: 16px;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom));
-}
+    /* iOS safe area so last item isn't cut off */
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
 
-/* If the content still doesn’t scroll, force the inner container to be normal flow */
-#mobile-drawer #side-rail-mobile {
-  height: auto;
-  min-height: 100%;
-}
-
-/* Optional: keep the logo visible while scrolling */
-#mobile-drawer .drawer-logo-link {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: var(--paper);
-  padding-top: 8px;
+  /* make sure the rail content doesn't create its own weird height rules */
+  #mobile-drawer #side-rail-mobile {
+    height: auto !important;
+    min-height: 0 !important;
+  }
 }
 
