@@ -63,7 +63,7 @@ function renderRail(target) {
     target.closest(".drawer");
 
   const drawerLogo = `
-    <a class="drawer-logo-link" href="#/" aria-label="Back to home">
+    <a class="drawer-logo-link" target="_blank" href="https://www.healingprojectsound.org/" aria-label="Back to home">
       <img
         class="drawer-logo-img"
         src="./assets/logo/HP_logo_circle_bl.png"
