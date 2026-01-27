@@ -521,7 +521,13 @@ body {
         padding: 10px 16px;
         border: 1px solid var(--rule);
         border-radius: 999px;
+        visibility: visible;
+        opacity: 1;
     }
+
+    body:not(.rail-collapsed) .rail-toggle {
+    display: inline-flex;
+  }
 
     .rail-toggle:hover {
         background: var(--ledger-hover);
@@ -1678,3 +1684,4 @@ body.is-home .home-splash-media {
         display: none;
     }
 }
+
