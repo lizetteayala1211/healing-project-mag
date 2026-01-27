@@ -545,10 +545,12 @@ body {
     letter-spacing: -0.07em;
 }
 
-.rail-roman,
-#side-rail-mobile .rail-roman,
-#mobile-drawer .rail-roman {
-  font-family: "GayaTrial", serif;
+@media (max-width: 520px) {
+    #side-rail-mobile .rail-roman {
+    font-family: var(--font-exposure-ledger) !important;
+    letter-spacing: -0.07em;
+}
+
 }
 
 
