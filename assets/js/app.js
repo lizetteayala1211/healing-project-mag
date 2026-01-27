@@ -97,6 +97,45 @@ function renderRail(target) {
   `;
 }
 
+let scrollYBeforeDrawer = 0;
+
+function openDrawer() {
+  scrollYBeforeDrawer = window.scrollY || 0;
+  drawer?.classList.add("open");
+  drawerBackdrop?.classList.add("open");
+  document.documentElement.classList.add("drawer-open");
+  document.body.classList.add("drawer-open");
+  document.body.style.top = `-${scrollYBeforeDrawer}px`;
+}
+
+function closeDrawer() {
+  drawer?.classList.remove("open");
+  drawerBackdrop?.classList.remove("open");
+  document.documentElement.classList.remove("drawer-open");
+  document.body.classList.remove("drawer-open");
+  const top = document.body.style.top;
+  document.body.style.top = "";
+  window.scrollTo(0, top ? -parseInt(top, 10) : scrollYBeforeDrawer);
+}
+
+function isDrawerOpen() {
+  return drawer?.classList.contains("open");
+}
+
+// when you would re-render the mobile rail:
+if (!isDrawerOpen()) {
+  renderRail(sideRailMobile);
+}
+
+window.addEventListener("hashchange", () => {
+  closeDrawer();
+});
+
+// On hard reload / refresh
+window.addEventListener("pageshow", () => {
+  closeDrawer();
+});
+
 
 /* ---------- 5B) Bind rail toggle (delegated; binds once) ---------- */
 function bindRailToggleOnce() {

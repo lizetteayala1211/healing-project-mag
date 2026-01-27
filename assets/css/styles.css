@@ -1322,6 +1322,21 @@ html.lb-lock .page {
     padding: 16px;
 }
 
+/* Lock background scroll while drawer is open */
+html.drawer-open,
+body.drawer-open {
+  overflow: hidden !important;
+  height: 100%;
+}
+
+/* Mobile Safari: prevent page jump */
+body.drawer-open {
+  position: fixed;
+  width: 100%;
+  left: 0;
+  right: 0;
+}
+
 /* =========================================================
    22) COLLABORATORS PAGE GRID
 ========================================================= */
