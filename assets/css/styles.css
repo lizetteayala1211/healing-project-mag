@@ -222,7 +222,7 @@ body {
 @media (max-width: 768px) {
   .logo {
     color: #fcd4d4;
-    font-size: 44px;          /* adjust 28–36 */
+    font-size: 40px;          /* adjust 28–36 */
     line-height: 1.65;
     font-weight: 600;
     letter-spacing: 0.025em;
