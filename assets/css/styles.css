@@ -59,8 +59,8 @@
 @font-face {
     font-family: "THPLogo";
     src: url("/assets/fonts/GayaTrial-Regular.otf") format("opentype"),
-        url("/assets/fonts/GayaTrial.woff2") format("woff2"),
-        url("/assets/fonts/GayaTrial.woff") format("woff");
+        url("/assets/fonts/GayaTrial-Regular.woff2") format("woff2"),
+        url("/assets/fonts/GayaTrial-Regular.woff") format("woff");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
