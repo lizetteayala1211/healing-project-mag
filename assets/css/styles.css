@@ -1306,3 +1306,66 @@ body.is-home .home-splash-media {
   background: #000 !important; /* or a deep charcoal */
 }
 
+/* =========================================================
+   HAMBURGER — CIRCLE BADGE (PASTE AT VERY BOTTOM)
+========================================================= */
+
+/* Base button */
+.hamburger{
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border-radius: 999px;           /* circle */
+  border: 1px solid rgba(243,239,230,0.55);
+  background: var(--dot);          /* your ticker blue */
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+  transition: transform 140ms ease, filter 140ms ease, box-shadow 140ms ease;
+}
+
+/* Hover/active */
+.hamburger:hover{
+  filter: brightness(1.05);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.26);
+}
+.hamburger:active{
+  transform: translateY(1px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.22);
+}
+
+/* Focus (keyboard) */
+.hamburger:focus-visible{
+  outline: 2px solid rgba(243,239,230,0.9);
+  outline-offset: 3px;
+}
+
+/* The 3 lines — tightened */
+.hamburger span{
+  display: block;
+  width: 22px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(243,239,230,0.95);
+  margin: 0;
+}
+
+/* MUCH tighter vertical spacing */
+.hamburger span:nth-child(1){
+  transform: translateY(7px);
+}
+
+.hamburger span:nth-child(2){
+  width: 16px;      /* subtle hierarchy */
+  opacity: 0.9;
+}
+
+.hamburger span:nth-child(3){
+  transform: translateY(-7px);
+}
+
+/* Desktop: keep hidden */
+@media (min-width: 1024px){
+  .hamburger{ display: none; }
+}
