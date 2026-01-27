@@ -1,12 +1,8 @@
 /* =========================================================
-   THE HEALING PROJECT MAGAZINE — app.js (RECONFIGURED)
-   - ✅ Desktop ledger toggle button (JS-rendered) RESTORED
-   - ✅ Mobile drawer behavior preserved (single open/close system)
-   - Route-safe partial injection + cards render
-   - TRUE opacity fade between scroll sections
-   - Ledger highlights current scroll section (.rail-link.is-active)
-   - Intentional delay + dwell (anti-flicker)
-   - Home route is splash-only (no ledger sync/fades/scroll work)
+   THE HEALING PROJECT MAGAZINE — app.js (AMENDED)
+   - Keeps your current behavior
+   - ✅ Adds: global byline color injection (#d2a100)
+   - ✅ Adds: robust Lightbox (no layout “gap”, locks scroll, SPA-safe)
 ========================================================= */
 
 console.log("app.js loaded ✅");
@@ -47,6 +43,37 @@ function isMobile() {
 ========================= */
 window.THP = window.THP || {};
 window.THP.setPath = setPath;
+
+/* =========================
+   4B) GLOBAL STYLE INJECTOR (ONE TIME)
+========================= */
+function addGlobalStyleOnce(id, cssText) {
+  if (document.getElementById(id)) return;
+  const style = document.createElement("style");
+  style.id = id;
+  style.textContent = cssText;
+  document.head.appendChild(style);
+}
+
+/* =========================================================
+   4C) ✅ BYLINE COLOR (ALL ARTICLES)
+========================================================= */
+function initBylineColorOnce() {
+  addGlobalStyleOnce(
+    "thp-byline-color",
+    `
+/* Article byline color override */
+.is-article .article-byline,
+.is-article .byline,
+.is-article .article-meta,
+.is-article .article-subtitle,
+.is-article .prose .byline {
+  color: #d2a100 !important;
+}
+`.trim()
+  );
+}
+initBylineColorOnce();
 
 /* =========================================================
    5) LEDGER / SIDE RAIL
@@ -98,8 +125,6 @@ function renderRail(target) {
 
 /* =========================================================
    5A.1) ✅ DESKTOP LEDGER TOGGLE BUTTON (JS-rendered)
-   - Your click handler listens for .rail-toggle, but the button
-     wasn’t being created anywhere. This restores it.
 ========================================================= */
 function syncRailToggleUI(btn) {
   if (!btn) return;
@@ -112,8 +137,6 @@ function pinRailToggleToBottom() {
   const railCard = document.querySelector("#side-rail .rail-card");
   const btn = document.querySelector("#side-rail .rail-toggle");
   if (!railCard || !btn) return;
-
-  // Always keep it as the LAST element inside the rail-card
   railCard.appendChild(btn);
 }
 
@@ -134,11 +157,11 @@ function ensureRailToggleButton() {
     btn.type = "button";
     btn.className = "rail-toggle";
     btn.setAttribute("aria-controls", "side-rail");
-    railCard.appendChild(btn); // ✅ lives inside the card
+    railCard.appendChild(btn);
   }
 
   syncRailToggleUI(btn);
-  pinRailToggleToBottom(); // ✅ enforce bottom
+  pinRailToggleToBottom();
 }
 
 /* ---------- Drawer open/close (scroll-lock safe) ---------- */
@@ -174,11 +197,13 @@ if (!isDrawerOpen()) {
 
 window.addEventListener("hashchange", () => {
   closeDrawer();
+  closeLightbox(); // ✅ keep SPA clean
 });
 
 // On hard reload / refresh
 window.addEventListener("pageshow", () => {
   closeDrawer();
+  closeLightbox();
 });
 
 /* ---------- 5B) Bind rail toggle (delegated; binds once) ---------- */
@@ -192,8 +217,7 @@ function bindRailToggleOnce() {
 
     document.body.classList.toggle("rail-collapsed");
     syncRailToggleUI(btn);
-
-    pinRailToggleToBottom(); // ✅ keep it at bottom always
+    pinRailToggleToBottom();
   });
 }
 
@@ -283,12 +307,12 @@ function bindLedgerClickActiveOnce() {
 bindRailToggleOnce();
 bindLedgerClickActiveOnce();
 renderRail(sideRail);
-ensureRailToggleButton(); // ✅ must be AFTER renderRail(sideRail)
+ensureRailToggleButton();
 renderRail(sideRailMobile);
-ensureRailToggleButton(); // ✅ critical
+ensureRailToggleButton();
 
 /* =========================================================
-   6) MOBILE DRAWER (single consistent system)
+   6) MOBILE DRAWER
 ========================================================= */
 menuBtn?.addEventListener("click", openDrawer);
 drawerBackdrop?.addEventListener("click", closeDrawer);
@@ -471,6 +495,191 @@ window.THP.injectPartials =
   };
 
 /* =========================================================
+   9B) ✅ LIGHTBOX (NO GAP / SCROLL LOCK / SPA-SAFE)
+========================================================= */
+
+/**
+ * Why you were seeing that “big gap”:
+ * Usually it happens when the lightbox is not truly out of flow
+ * OR scroll locking is done in a way that shifts layout.
+ *
+ * This implementation:
+ * - Ensures #lightbox is fixed + flex centered (inline styles as a safety net)
+ * - Locks scroll without jumping (keeps your scroll position)
+ * - Works after route renders (rebinding safely)
+ */
+
+let __lightboxScrollY = 0;
+
+function ensureLightboxShell() {
+  let lb = document.getElementById("lightbox");
+  let img = document.getElementById("lightboxImg");
+
+  if (!lb) {
+    lb = document.createElement("div");
+    lb.id = "lightbox";
+    lb.className = "lightbox";
+    lb.setAttribute("aria-hidden", "true");
+    document.body.appendChild(lb);
+  }
+
+  if (!img) {
+    img = document.createElement("img");
+    img.id = "lightboxImg";
+    img.className = "lightbox-img";
+    img.alt = "";
+    lb.appendChild(img);
+  }
+
+  // Safety net styles so the lightbox can NEVER create layout space
+  lb.style.position = "fixed";
+  lb.style.inset = "0";
+  lb.style.display = "none";
+  lb.style.alignItems = "center";
+  lb.style.justifyContent = "center";
+  lb.style.zIndex = "9999";
+  lb.style.padding = "24px";
+  lb.style.background = "rgba(0,0,0,0.55)";
+
+  img.style.maxWidth = "min(1100px, 92vw)";
+  img.style.maxHeight = "88vh";
+  img.style.width = "auto";
+  img.style.height = "auto";
+  img.style.display = "block";
+  img.style.borderRadius = "12px";
+  img.style.boxShadow = "0 20px 60px rgba(0,0,0,0.35)";
+
+  return { lb, img };
+}
+
+function lockScrollForLightbox() {
+  __lightboxScrollY = window.scrollY || 0;
+
+  // prevent layout “nudge” from scrollbar disappearing
+  const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
+
+  document.documentElement.classList.add("lightbox-open");
+  document.body.classList.add("lightbox-open");
+
+  document.body.style.position = "fixed";
+  document.body.style.top = `-${__lightboxScrollY}px`;
+  document.body.style.left = "0";
+  document.body.style.right = "0";
+  document.body.style.width = "100%";
+  if (scrollbarW > 0) document.body.style.paddingRight = `${scrollbarW}px`;
+}
+
+function unlockScrollForLightbox() {
+  document.documentElement.classList.remove("lightbox-open");
+  document.body.classList.remove("lightbox-open");
+
+  const top = document.body.style.top;
+  document.body.style.position = "";
+  document.body.style.top = "";
+  document.body.style.left = "";
+  document.body.style.right = "";
+  document.body.style.width = "";
+  document.body.style.paddingRight = "";
+
+  const y = top ? -parseInt(top, 10) : __lightboxScrollY;
+  window.scrollTo(0, Number.isFinite(y) ? y : 0);
+}
+
+function openLightbox(src, alt = "") {
+  if (!src) return;
+  const { lb, img } = ensureLightboxShell();
+
+  img.src = src;
+  img.alt = alt || "";
+
+  lb.classList.add("is-open");
+  lb.setAttribute("aria-hidden", "false");
+  lb.style.display = "flex";
+
+  lockScrollForLightbox();
+}
+
+function closeLightbox() {
+  const lb = document.getElementById("lightbox");
+  const img = document.getElementById("lightboxImg");
+  if (!lb) return;
+
+  lb.classList.remove("is-open");
+  lb.setAttribute("aria-hidden", "true");
+  lb.style.display = "none";
+
+  if (img) img.src = "";
+
+  unlockScrollForLightbox();
+}
+
+function bindLightboxOnce() {
+  if (document.documentElement.dataset.lightboxBound === "1") return;
+  document.documentElement.dataset.lightboxBound = "1";
+
+  // Close on click outside image
+  document.addEventListener("click", (e) => {
+    const lb = e.target.closest("#lightbox");
+    if (!lb) return;
+
+    const clickedImg = e.target.closest("#lightboxImg");
+    if (!clickedImg) closeLightbox();
+  });
+
+  // Close on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const lb = document.getElementById("lightbox");
+    if (lb?.classList.contains("is-open")) closeLightbox();
+  });
+}
+
+/**
+ * SPA-safe binding for article images:
+ * - clicks on images inside .prose / article content
+ * - ignores images inside the rail/drawer/ticker
+ */
+function bindLightboxForRoot(root = document) {
+  if (!root) return;
+  bindLightboxOnce();
+  ensureLightboxShell();
+
+  // Delegate from app container so newly rendered pages work
+  if (root.dataset.lightboxDelegate === "1") return;
+  root.dataset.lightboxDelegate = "1";
+
+  root.addEventListener("click", (e) => {
+    // Don’t trigger from nav UI
+    if (e.target.closest("#side-rail")) return;
+    if (e.target.closest("#mobile-drawer")) return;
+    if (e.target.closest("#ticker")) return;
+
+    // Only images that are actually in content
+    const img = e.target.closest("img");
+    if (!img) return;
+
+    // If you have icons/logos you don't want to lightbox, tag them:
+    // <img data-no-lightbox ... />
+    if (img.hasAttribute("data-no-lightbox")) return;
+
+    // Prefer full-size source if provided
+    const src =
+      img.getAttribute("data-full") ||
+      img.currentSrc ||
+      img.getAttribute("src") ||
+      "";
+
+    if (!src) return;
+
+    // Avoid opening if it’s already the lightbox image
+    if (img.id === "lightboxImg") return;
+
+    e.preventDefault();
+    openLightbox(src, img.alt || "");
+  });
+}
+
+/* =========================================================
    10) ROUTER RENDER (MAIN APP MOUNT)
 ========================================================= */
 async function render() {
@@ -484,11 +693,16 @@ async function render() {
   document.body.classList.toggle("is-scroll", path === "/scroll");
   document.body.classList.toggle("is-article", path.startsWith("/article/"));
 
+  // Home lock (your current behavior)
   if (path === "/home") {
     document.documentElement.style.overflow = "hidden";
   } else {
     document.documentElement.style.overflow = "";
   }
+
+  // Always close overlays on route render
+  closeDrawer();
+  closeLightbox();
 
   try {
     const html = await loadPage(path);
@@ -528,11 +742,15 @@ async function render() {
 
   if (path === "/home") {
     document.body.classList.remove("rail-collapsed");
-    closeDrawer();
   }
 
-  // ✅ Ensure toggle exists + correct text after every route render
+  // Ensure rails/toggle stay sane after renders
+  renderRail(sideRail);
   ensureRailToggleButton();
+  renderRail(sideRailMobile);
+
+  // ✅ Lightbox binds to freshly rendered content
+  bindLightboxForRoot(app);
 
   requestAnimationFrame(() => {
     if (path === "/scroll" && anchor) {
@@ -557,7 +775,7 @@ async function render() {
 window.addEventListener("hashchange", render);
 render();
 
-/* ---------- 10B) Re-render rails on breakpoint changes ---------- */
+/* ---------- Re-render rails on breakpoint changes ---------- */
 window.addEventListener("resize", () => {
   renderRail(sideRail);
   ensureRailToggleButton();
@@ -569,7 +787,6 @@ window.addEventListener("resize", () => {
     else setupSectionFade(app);
   } catch (_) {}
 });
-
 
 /* =========================================================
    11) FOOTER TICKER ROTATION (DYNAMIC SPEED)

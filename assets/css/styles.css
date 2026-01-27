@@ -971,7 +971,8 @@ body.is-home .page {
 }
 
 .article-byline {
-    color: var(--muted);
+    /* color: var(--muted); */
+    color: #d2a100;
     margin: 0 0 20px 0;
     text-align: left;
     line-height: 1.45;
@@ -1329,6 +1330,11 @@ html.lb-lock .page {
     padding: 16px;
 }
 
+.drawer-open #side-rail {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* Lock background scroll while drawer is open */
 html.drawer-open,
 body.drawer-open {
@@ -1342,6 +1348,13 @@ body.drawer-open {
   width: 100%;
   left: 0;
   right: 0;
+}
+
+@media (min-width: 900px) {
+  #mobile-drawer.open {
+    width: 360px;         /* tweak */
+    max-width: 420px;
+  }
 }
 
 /* =========================================================
@@ -1688,3 +1701,95 @@ body.is-home .home-splash-media {
 
 .rail-toggle { display: inline-flex; }
 @media (max-width: 899px) { .rail-toggle { display: none; } }
+
+/* Force hamburger visible on desktop */
+#menu-button.hamburger {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Desktop-only dropdown drawer (won’t affect mobile at all) */
+.desktop-ui #mobile-drawer {
+  position: fixed;
+  top: 74px;           /* adjust to your header height */
+  right: 18px;         /* aligns under hamburger */
+  left: auto;
+
+  width: 320px;
+  max-width: calc(100vw - 36px);
+  height: auto;
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+
+  border-radius: 18px;
+  z-index: 9999;
+
+  /* hidden by default */
+  transform: translateY(-6px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.desktop-ui #mobile-drawer.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Desktop: backdrop shouldn’t block the page */
+.desktop-ui #drawer-backdrop {
+  background: transparent;
+}
+
+.desktop-ui #drawer-backdrop.open {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Keep hamburger above */
+.desktop-ui #menu-button {
+  position: relative;
+  z-index: 10000;
+}
+
+/* ===== LIGHTBOX HARD OVERRIDE (wins no matter what) ===== */
+#lightbox.lightbox{
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999 !important;
+
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 24px !important;
+  background: rgba(0,0,0,.35) !important;
+
+  /* key: make sure it never affects page layout */
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+}
+
+#lightbox.lightbox.is-open{
+  display: flex !important;
+}
+
+#lightboxImg.lightbox-img{
+  display: block !important;
+  max-width: min(1100px, 92vw) !important;
+  max-height: 88vh !important;
+  width: auto !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  background: #fff !important;
+  border-radius: 16px !important;
+}
+
+html.lightbox-open,
+body.lightbox-open{
+  overflow: hidden !important;
+}
