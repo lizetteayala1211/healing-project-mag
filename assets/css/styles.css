@@ -58,7 +58,7 @@
 ========================================================= */
 @font-face {
     font-family: "THPLogo";
-    src: url("/assets/fonts/GayaTrial-Regular.otf") format("opentype"),
+    src: url("./assets/fonts/GayaTrial-Regular.otf") format("opentype"),
         url("./assets/fonts/GayaTrial.woff2") format("woff2"),
         url("./assets/fonts/GayaTrial.woff") format("woff");
     font-weight: 400;
@@ -68,9 +68,9 @@
 
 @font-face {
     font-family: "ExposureItalic";
-    src: url("/assets/fonts/ExposureItalicTrial[-40].otf") format("opentype"),
-        url("/assets/fonts/ExposureItalicTrial[-40].woff2") format("woff2"),
-        url("/assets/fonts/ExposureItalicTrial[-40].woff") format("woff");
+    src: url("./assets/fonts/ExposureItalicTrial[-40].otf") format("opentype"),
+        url("./assets/fonts/ExposureItalicTrial[-40].woff2") format("woff2"),
+        url("./assets/fonts/ExposureItalicTrial[-40].woff") format("woff");
     font-weight: 400;
     font-style: italic;
     font-display: swap;
@@ -78,9 +78,9 @@
 
 @font-face {
     font-family: "ExposureItalicTicker";
-    src: url("/assets/fonts/ExposureItalicTrial[-20].otf") format("opentype"),
-        url("/assets/fonts/ExposureItalicTrial[-20].woff2") format("woff2"),
-        url("/assets/fonts/ExposureItalicTrial[-20].woff") format("woff");
+    src: url("./assets/fonts/ExposureItalicTrial[-20].otf") format("opentype"),
+        url("./assets/fonts/ExposureItalicTrial[-20].woff2") format("woff2"),
+        url("./assets/fonts/ExposureItalicTrial[-20].woff") format("woff");
     font-weight: 400;
     font-style: italic;
     font-display: swap;
@@ -88,9 +88,9 @@
 
 @font-face {
     font-family: "ExposureLedger";
-    src: url("/assets/fonts/ExposureTrial[-70].otf") format("opentype"),
-        url("/assets/fonts/ExposureTrial[-70].woff2") format("woff2"),
-        url("/assets/fonts/ExposureTrial[-70].woff") format("woff");
+    src: url("./assets/fonts/ExposureTrial[-70].otf") format("opentype"),
+        url("./assets/fonts/ExposureTrial[-70].woff2") format("woff2"),
+        url("./assets/fonts/ExposureTrial[-70].woff") format("woff");
     font-weight: 400;
     font-style: italic;
     font-display: swap;
@@ -543,6 +543,12 @@ body {
 #side-rail-mobile .rail-roman {
     font-family: var(--font-exposure-ledger) !important;
     letter-spacing: -0.07em;
+}
+
+.rail-roman,
+#side-rail-mobile .rail-roman,
+#mobile-drawer .rail-roman {
+  font-family: "GayaTrial", serif;
 }
 
 /* =========================================================
