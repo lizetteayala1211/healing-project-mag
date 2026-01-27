@@ -56,6 +56,37 @@ window.THP.setPath = setPath;
 function renderRail(target) {
   if (!target) return;
 
+  if (!target) return;
+
+  const isMobileRail = target.id === "side-rail-mobile";
+
+  target.innerHTML = `
+    ${isMobileRail ? `
+      <a
+        class="drawer-logo-link"
+        href="https://healingprojectsound.org"
+        target="_blank"
+        rel="noopener"
+      >
+        <img
+          src="/assets/logo/HP_logo_circle_bl.png"
+          alt="The Healing Project"
+          class="drawer-logo-img"
+        />
+      </a>
+      <div class="drawer-toprule"></div>
+    ` : ""}
+
+    <div class="rail-card">
+      ${navItems.map((i) => `
+        <a class="rail-link" href="#${i.path}">
+          <div class="rail-roman">${i.roman}</div>
+          <div class="rail-label">${i.label}</div>
+        </a>
+      `).join("")}
+    </div>
+  `;
+
   const showToggleBtn = isDesktop(); // ✅ only on desktop
 
   target.innerHTML = `
