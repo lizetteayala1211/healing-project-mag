@@ -92,7 +92,7 @@
         url("/assets/fonts/ExposureTrial[-70].woff2") format("woff2"),
         url("/assets/fonts/ExposureTrial[-70].woff") format("woff");
     font-weight: 400;
-    font-style: italic;
+    font-style: normal;
     font-display: swap;
 }
 
@@ -545,14 +545,16 @@ body {
     letter-spacing: -0.07em;
 }
 
-@media (max-width: 520px) {
-    #side-rail-mobile .rail-roman {
-    font-family: var(--font-exposure-ledger) !important;
-    letter-spacing: -0.07em;
+/* Mobile drawer roman styling (covers both containers) */
+#mobile-drawer .rail-roman,
+#side-rail-mobile .rail-roman {
+  font-family: var(--font-exposure-ledger) !important;
+  font-style: normal;           /* 🔑 ensures it matches the normal face */
+  font-weight: 400;             /* avoids weight-mismatch weirdness on iOS */
+  letter-spacing: 0.08em;       /* use your desktop vibe */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
 }
-
-}
-
 
 /* =========================================================
    9) CENTER CONTENT COLUMN
