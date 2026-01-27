@@ -1686,3 +1686,5 @@ body.is-home .home-splash-media {
     }
 }
 
+.rail-toggle { display: inline-flex; }
+@media (max-width: 899px) { .rail-toggle { display: none; } }

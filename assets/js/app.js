@@ -1,14 +1,12 @@
 /* =========================================================
-   THE HEALING PROJECT MAGAZINE — app.js (CLEAN + LABELED)
-   - Desktop-only ledger toggle button (JS-rendered)
-   - Mobile drawer behavior preserved
+   THE HEALING PROJECT MAGAZINE — app.js (RECONFIGURED)
+   - ✅ Desktop ledger toggle button (JS-rendered) RESTORED
+   - ✅ Mobile drawer behavior preserved (single open/close system)
    - Route-safe partial injection + cards render
-   - TRUE opacity fade between scroll sections (works for long sections)
-   - ✅ Ledger highlights current scroll section (.rail-link.is-active)
-   - ✅ Intentional (slight) delay on scroll-driven ledger changes
-   - ✅ Fix: “Letter” reliably re-activates when you scroll back to top
-   - ✅ Fix: boundary flicker (single update source + dwell/hysteresis + click lock)
-   - ✅ NEW: Home route is splash-only (no ledger sync, no fades, no scroll work)
+   - TRUE opacity fade between scroll sections
+   - Ledger highlights current scroll section (.rail-link.is-active)
+   - Intentional delay + dwell (anti-flicker)
+   - Home route is splash-only (no ledger sync/fades/scroll work)
 ========================================================= */
 
 console.log("app.js loaded ✅");
@@ -35,11 +33,13 @@ const drawerBackdrop = document.getElementById("drawer-backdrop");
 /* =========================
    3) RESPONSIVE HELPERS
 ========================= */
+const DESKTOP_BREAKPOINT = 900;
+
 function isDesktop() {
-  return window.matchMedia("(min-width: 1024px)").matches;
+  return window.matchMedia(`(min-width: ${DESKTOP_BREAKPOINT}px)`).matches;
 }
 function isMobile() {
-  return window.matchMedia("(max-width: 1023px)").matches;
+  return window.matchMedia(`(max-width: ${DESKTOP_BREAKPOINT - 1}px)`).matches;
 }
 
 /* =========================
@@ -56,7 +56,6 @@ window.THP.setPath = setPath;
 function renderRail(target) {
   if (!target) return;
 
-  // Detect if this is the MOBILE rail (drawer)
   const isMobileRail =
     target.id === "side-rail-mobile" ||
     target.closest("#mobile-drawer") ||
@@ -97,6 +96,52 @@ function renderRail(target) {
   `;
 }
 
+/* =========================================================
+   5A.1) ✅ DESKTOP LEDGER TOGGLE BUTTON (JS-rendered)
+   - Your click handler listens for .rail-toggle, but the button
+     wasn’t being created anywhere. This restores it.
+========================================================= */
+function syncRailToggleUI(btn) {
+  if (!btn) return;
+  const collapsed = document.body.classList.contains("rail-collapsed");
+  btn.setAttribute("aria-expanded", String(!collapsed));
+  btn.textContent = collapsed ? "Show ledger" : "Hide ledger";
+}
+
+function pinRailToggleToBottom() {
+  const railCard = document.querySelector("#side-rail .rail-card");
+  const btn = document.querySelector("#side-rail .rail-toggle");
+  if (!railCard || !btn) return;
+
+  // Always keep it as the LAST element inside the rail-card
+  railCard.appendChild(btn);
+}
+
+function ensureRailToggleButton() {
+  if (!isDesktop()) {
+    document.querySelector("#side-rail .rail-toggle")?.remove();
+    return;
+  }
+
+  if (!sideRail) return;
+
+  const railCard = sideRail.querySelector(".rail-card");
+  if (!railCard) return;
+
+  let btn = railCard.querySelector(".rail-toggle");
+  if (!btn) {
+    btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "rail-toggle";
+    btn.setAttribute("aria-controls", "side-rail");
+    railCard.appendChild(btn); // ✅ lives inside the card
+  }
+
+  syncRailToggleUI(btn);
+  pinRailToggleToBottom(); // ✅ enforce bottom
+}
+
+/* ---------- Drawer open/close (scroll-lock safe) ---------- */
 let scrollYBeforeDrawer = 0;
 
 function openDrawer() {
@@ -122,7 +167,7 @@ function isDrawerOpen() {
   return drawer?.classList.contains("open");
 }
 
-// when you would re-render the mobile rail:
+// initial mobile rail render
 if (!isDrawerOpen()) {
   renderRail(sideRailMobile);
 }
@@ -136,7 +181,6 @@ window.addEventListener("pageshow", () => {
   closeDrawer();
 });
 
-
 /* ---------- 5B) Bind rail toggle (delegated; binds once) ---------- */
 function bindRailToggleOnce() {
   if (document.documentElement.dataset.railToggleBound === "1") return;
@@ -147,10 +191,9 @@ function bindRailToggleOnce() {
     if (!btn) return;
 
     document.body.classList.toggle("rail-collapsed");
-    const collapsed = document.body.classList.contains("rail-collapsed");
+    syncRailToggleUI(btn);
 
-    btn.setAttribute("aria-expanded", String(!collapsed));
-    btn.textContent = collapsed ? "Show ledger" : "Hide ledger";
+    pinRailToggleToBottom(); // ✅ keep it at bottom always
   });
 }
 
@@ -166,8 +209,8 @@ function setActiveLedger(sectionId) {
 }
 
 /* ---------- 5D) Intentional delay + dwell (anti-flicker) ---------- */
-const LEDGER_SCROLL_DELAY_MS = 140; // the "intentional" feel (120–220)
-const LEDGER_DWELL_MS = 160;        // must remain winner before scheduling (120–240)
+const LEDGER_SCROLL_DELAY_MS = 140;
+const LEDGER_DWELL_MS = 160;
 
 let ledgerTimer = null;
 let lastLedgerId = null;
@@ -175,19 +218,15 @@ let lastLedgerId = null;
 let pendingLedgerId = null;
 let pendingSince = 0;
 
-// lock scroll-driven changes briefly after click / smooth scroll
 let scrollLockUntil = 0;
 
 function nowMs() {
-  return (window.performance && performance.now) ? performance.now() : Date.now();
+  return window.performance && performance.now ? performance.now() : Date.now();
 }
 
 function scheduleLedgerActive(sectionId) {
   if (!sectionId) return;
-
-  // ✅ NEW: Never run scroll-driven ledger work on home/articles
   if (!window.location.hash.startsWith("#/scroll")) return;
-
   if (nowMs() < scrollLockUntil) return;
 
   if (sectionId === lastLedgerId) {
@@ -234,7 +273,6 @@ function bindLedgerClickActiveOnce() {
     const href = a.getAttribute("href") || "";
     const m = href.match(/^#\/scroll#(.+)$/);
     if (m && m[1]) {
-      // ✅ Slightly longer lock makes mobile feel less "teleporty"
       scrollLockUntil = nowMs() + 850;
       setLedgerActiveImmediate(m[1]);
     }
@@ -245,24 +283,24 @@ function bindLedgerClickActiveOnce() {
 bindRailToggleOnce();
 bindLedgerClickActiveOnce();
 renderRail(sideRail);
+ensureRailToggleButton(); // ✅ must be AFTER renderRail(sideRail)
 renderRail(sideRailMobile);
+ensureRailToggleButton(); // ✅ critical
 
 /* =========================================================
-   6) MOBILE DRAWER
+   6) MOBILE DRAWER (single consistent system)
 ========================================================= */
-menuBtn?.addEventListener("click", () => drawer?.classList.add("open"));
-drawerBackdrop?.addEventListener("click", () => drawer?.classList.remove("open"));
+menuBtn?.addEventListener("click", openDrawer);
+drawerBackdrop?.addEventListener("click", closeDrawer);
 
-// close drawer when clicking a nav link on mobile
 sideRailMobile?.addEventListener("click", (e) => {
   const a = e.target.closest("a");
-  if (a) drawer?.classList.remove("open");
+  if (a) closeDrawer();
 });
 
 /* =========================================================
-   7) SECTION FADE (TRUE OPACITY FADE) + LEDGER SYNC
+   7) SECTION FADE + LEDGER SYNC
 ========================================================= */
-
 let updateScrollStateFn = null;
 let ledgerRAF = null;
 
@@ -273,7 +311,6 @@ function bindLedgerScrollSyncOnce() {
   window.addEventListener(
     "scroll",
     () => {
-      // ✅ NEW: Never do scroll work unless we're on /scroll
       if (!window.location.hash.startsWith("#/scroll")) return;
       if (!updateScrollStateFn) return;
 
@@ -288,7 +325,6 @@ function bindLedgerScrollSyncOnce() {
 }
 
 function setupSectionFade(root = document) {
-  // ✅ NEW: Safety — only ever setup fades on /scroll
   if (!window.location.hash.startsWith("#/scroll")) {
     updateScrollStateFn = null;
     return;
@@ -444,13 +480,10 @@ async function render() {
   let [path, anchor] = raw.split("#");
   if (!path || path === "/") path = "/home";
 
-  // ✅ Page mode classes (drives CSS overrides)
-document.body.classList.toggle("is-home", path === "/home");
-document.body.classList.toggle("is-scroll", path === "/scroll");
-document.body.classList.toggle("is-article", path.startsWith("/article/"));
+  document.body.classList.toggle("is-home", path === "/home");
+  document.body.classList.toggle("is-scroll", path === "/scroll");
+  document.body.classList.toggle("is-article", path.startsWith("/article/"));
 
-  // ✅ Optional: lock scroll on splash/home if you want it to never scroll
-  // If you DON'T want this, delete this block.
   if (path === "/home") {
     document.documentElement.style.overflow = "hidden";
   } else {
@@ -493,11 +526,13 @@ document.body.classList.toggle("is-article", path.startsWith("/article/"));
     updateScrollStateFn = null;
   }
 
-  // ✅ Make sure home is always top + never inherits rail collapsed state
   if (path === "/home") {
     document.body.classList.remove("rail-collapsed");
-    drawer?.classList.remove("open");
+    closeDrawer();
   }
+
+  // ✅ Ensure toggle exists + correct text after every route render
+  ensureRailToggleButton();
 
   requestAnimationFrame(() => {
     if (path === "/scroll" && anchor) {
@@ -505,8 +540,6 @@ document.body.classList.toggle("is-article", path.startsWith("/article/"));
       if (el) {
         scrollLockUntil = nowMs() + 900;
         setLedgerActiveImmediate(anchor);
-
-        // ✅ Slightly gentler scroll feel
         el.scrollIntoView({ behavior: "smooth", block: "start" });
         return;
       }
@@ -527,6 +560,8 @@ render();
 /* ---------- 10B) Re-render rails on breakpoint changes ---------- */
 window.addEventListener("resize", () => {
   renderRail(sideRail);
+  ensureRailToggleButton();
+
   renderRail(sideRailMobile);
 
   try {
@@ -534,6 +569,7 @@ window.addEventListener("resize", () => {
     else setupSectionFade(app);
   } catch (_) {}
 });
+
 
 /* =========================================================
    11) FOOTER TICKER ROTATION (DYNAMIC SPEED)
@@ -597,7 +633,7 @@ function initTickerOnce() {
       const startX = tickerW;
       const endX = -textW;
 
-      const speed = 90; // px/sec
+      const speed = 90;
       const distance = tickerW + textW;
       const duration = Math.max(6000, (distance / speed) * 1000);
 
