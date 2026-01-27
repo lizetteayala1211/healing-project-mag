@@ -213,6 +213,53 @@ body {
   letter-spacing: 0.04em; /* was 0.02em */
 }
 
+/* Desktop default: keep your current logo behavior */
+.logo .logo-line {
+  display: inline;
+}
+
+/* Mobile masthead version */
+@media (max-width: 768px) {
+  .logo {
+    color: #fcd4d4;
+    font-size: 44px;          /* adjust 28–36 */
+    line-height: 1.65;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    /* transform: none;  */
+    white-space: normal;
+    transform: scaleX(1.20);
+    /* max-width: calc(100% - 80px);  */
+    /* leaves room for the hamburger circle */
+  }
+
+  .logo .logo-line {
+    display: block;           /* forces two lines */
+  }
+
+  /* .logo-line1 {
+    display: block;
+    text-align: center;         
+    width: 100%;
+  } */
+
+  .logo-line2 {
+    display: block;
+    text-align: left;           /* keeps the weight + authority */
+  }
+
+  .logo .logo-line2 {
+    margin-top: -2px;          /* micro breathing room */
+  }
+}
+
+/* Extra-tight phones */
+@media (max-width: 420px) {
+  .logo {
+    font-size: 28px;
+  }
+}
+
 /* Hamburger button base */
 .hamburger {
   display: flex;
@@ -1178,6 +1225,18 @@ html.lb-lock .page {
   #menu-button { flex: 0 0 auto; }
 
   .non-article-inner { padding: 0 12px; }
+}
+
+@media (max-width: 768px) {
+  .logo {
+    display: inline-block;
+    padding: 10px 0;
+    font-size: 1.34rem; /* or +0.2rem from current */
+    line-height: 1.25;
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 0 currentColor;
+    max-width: 43%;
+  }
 }
 
 /* =========================================================
