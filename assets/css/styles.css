@@ -229,6 +229,7 @@ body {
     /* transform: none;  */
     white-space: normal;
     transform: scaleX(1.20);
+    max-width: 92vw;   /* wider than before */
     /* max-width: calc(100% - 80px);  */
     /* leaves room for the hamburger circle */
   }
@@ -237,15 +238,16 @@ body {
     display: block;           /* forces two lines */
   }
 
-  /* .logo-line1 {
+  .logo-line1 {
     display: block;
-    text-align: center;         
+    /* text-align: center;          */
     width: 100%;
-  } */
+  }
 
   .logo-line2 {
     display: block;
     text-align: left;           /* keeps the weight + authority */
+    white-space: nowrap;
   }
 
   .logo .logo-line2 {
