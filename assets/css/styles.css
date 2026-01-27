@@ -565,7 +565,7 @@ body {
 }
 
 .drawer-logo-img {
-  width: 90px;          /* try 80–110 */
+  width: 84px;          /* try 80–110 */
   height: auto;
   display: block;
   filter: drop-shadow(0 6px 14px rgba(0,0,0,0.12));
@@ -1315,7 +1315,7 @@ html.lb-lock .page {
     left: 0;
     top: 0;
     height: 100%;
-    width: 320px;
+    width: 360px;
     background: var(--paper);
     border-right: 1px solid var(--rule);
     z-index: 2001;
