@@ -1332,7 +1332,7 @@ html.lb-lock .page {
     width: 340px;
     background: var(--paper);
     border-right: 1px solid var(--rule);
-    z-index: 2001;
+    z-index: 5001;
     padding: 16px;
 }
 
@@ -1965,17 +1965,35 @@ body.is-article .gutter-right {
     z-index: 3000;
   }
 
-  /* push ONLY the main grid down (not the whole body) */
-  .page-grid{
-    padding-top: var(--home-bar-height);
+/* =========================================================
+   FIX: header offset should NOT affect HOME
+========================================================= */
+
+/* Desktop/tablet: only offset pages when header is present */
+@media (min-width: 900px) {
+  body:not(.is-home) .page-grid {
+    padding-top: var(--header-h);
   }
+
+  /* hard reset on home */
+  body.is-home .page-grid {
+    padding-top: 0 !important;
+  }
+}
+
+/* Mobile: same idea (header hidden on home anyway) */
+@media (max-width: 899px) {
+  body.is-home .page-grid {
+    padding-top: 0 !important;
+  }
+}
 
   /* make sure sticky columns start below the fixed header */
   .left-rail{
     top: var(--home-bar-height);
   }
   .left-rail > *{
-    top: var(--home-bar-height);
+    /* top: var(--home-bar-height); */
     max-height: calc(100vh - var(--home-bar-height) - var(--footer-h));
   }
 }
@@ -1991,3 +2009,84 @@ body.is-article .gutter-right {
     scroll-margin-top: calc(var(--home-bar-height) + var(--anchor-gap));
   }
 }
+
+/* =========================================================
+   DESKTOP LEDGER: make rail scroll + prevent last item/toggle clipping
+========================================================= */
+
+@media (min-width: 1024px) {
+  /* keep the rail pinned, but allow its *contents* to scroll */
+  .left-rail {
+    position: sticky;
+    top: var(--header-h);                 /* header is fixed now */
+    height: calc(100vh - var(--header-h));/* rail fills below header */
+    overflow: hidden;                     /* prevents page-height growth */
+  }
+
+  /* IMPORTANT: this is the scroll container */
+  #side-rail .rail-card {
+    height: calc(100vh - var(--header-h) - var(--footer-h));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+
+    /* breathing room so last link + toggle never sit behind the ticker */
+    padding-bottom: 24px;
+  }
+
+  /* pin the toggle to the bottom of the scroll area */
+  #side-rail .rail-toggle {
+    position: sticky;
+    bottom: 12px;                         /* sits above the ticker edge */
+    margin: 12px auto 12px auto;
+    background: var(--ledger-sage-tint);  /* matches ledger background */
+    z-index: 5;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Scroll container */
+  #side-rail .rail-card {
+    height: calc(100vh - var(--header-h) - var(--footer-h));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding-bottom: 18px;
+  }
+
+  /* ✅ Put the toggle into the same scroll “column” */
+  #side-rail {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* If rail-card is the main scroller, it should be the flexible child */
+  #side-rail .rail-card {
+    flex: 1 1 auto;
+  }
+
+  /* ✅ Make the toggle part of the flow BELOW the rail-card content */
+  #side-rail .rail-toggle {
+    flex: 0 0 auto;
+    margin: 14px auto 18px auto;
+    position: static; /* remove sticky/absolute behavior */
+    background: transparent;
+  }
+}
+
+/* Desktop-only dropdown drawer */
+.desktop-ui #mobile-drawer {
+  position: fixed;
+  top: calc(var(--home-bar-height) + 10px); /* was 74px */
+  right: 18px;
+  left: auto;
+
+  z-index: 9998; /* 👈 higher than .home-bar */
+}
+
+@media (min-width: 900px) {
+  .home-bar { z-index: 3000; }
+  .desktop-ui #mobile-drawer { z-index: 4000; }
+  .desktop-ui #menu-button { z-index: 5000; } /* keep button clickable */
+}
+
