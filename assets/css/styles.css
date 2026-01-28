@@ -1633,3 +1633,45 @@ body.lightbox-open {
   }
 }
 
+/* ✅ Mobile drawer: panel scrolls, logo stays pinned (no text showing behind) */
+@media (max-width: 899px) {
+  /* Make the PANEL the scroll container */
+  #mobile-drawer .drawer-panel {
+    top: 0;
+    bottom: 0;
+    height: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+
+  /* Ensure rail content is stacked normally */
+  #mobile-drawer #side-rail-mobile {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Sticky logo header slab */
+  #mobile-drawer #side-rail-mobile .drawer-logo-link {
+    position: sticky;
+    top: -16px;
+    z-index: 50;
+
+    background: var(--paper);     /* prevents “see-through” */
+    padding: 16px 0 14px;
+
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* Keep the logo centered */
+  #mobile-drawer #side-rail-mobile .drawer-logo-img {
+    display: block;
+    margin: 0 auto;
+  }
+
+  /* Give the first ledger item breathing room under the sticky header */
+  #mobile-drawer #side-rail-mobile .rail-card {
+    padding-top: 10px;
+  }
+}
