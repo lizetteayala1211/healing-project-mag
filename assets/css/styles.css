@@ -813,19 +813,6 @@ body.is-home .page {
     padding: 40px 0px;
 }
 
-/* Anchor offsets */
-#letter {
-    scroll-margin-top: 80px;
-}
-
-#call-response,
-#community-board,
-#processing,
-#closing-prayer,
-#collaborators {
-    scroll-margin-top: 0px;
-}
-
 /* =========================================================
    14) CARDS GRID
 ========================================================= */
@@ -1945,4 +1932,62 @@ body.is-article .gutter-right {
         /* 👈 optical tightening */
         letter-spacing: 0.01em;
     }
+}
+
+@media (min-width: 900px) {
+  .home-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    z-index: 3000; /* above ledger, below lightbox */
+  }
+}
+
+/* =========================================================
+   FIXED HOME BAR (DESKTOP) + ANCHOR OFFSETS (DESKTOP)
+   - keeps header fixed
+   - ensures ALL section IDs land below header
+========================================================= */
+
+/* one source of truth */
+:root{
+  --home-bar-height: 96px;  /* match your real rendered header */
+  --anchor-gap: 18px;       /* your “curated breathing room” */
+}
+
+/* desktop: lock header */
+@media (min-width: 900px) {
+  .home-bar{
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 3000;
+  }
+
+  /* push ONLY the main grid down (not the whole body) */
+  .page-grid{
+    padding-top: var(--home-bar-height);
+  }
+
+  /* make sure sticky columns start below the fixed header */
+  .left-rail{
+    top: var(--home-bar-height);
+  }
+  .left-rail > *{
+    top: var(--home-bar-height);
+    max-height: calc(100vh - var(--home-bar-height) - var(--footer-h));
+  }
+}
+
+/* desktop: anchor offsets for ALL section ids */
+@media (min-width: 900px) {
+  #letter,
+  #call-response,
+  #community-board,
+  #processing,
+  #closing-prayer,
+  #collaborators{
+    scroll-margin-top: calc(var(--home-bar-height) + var(--anchor-gap));
+  }
 }

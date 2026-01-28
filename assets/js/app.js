@@ -143,8 +143,8 @@ function renderRail(target) {
   const railLinks = `
     <div class="rail-card">
       ${navItems
-        .map(
-          (i) => `
+      .map(
+        (i) => `
           <a class="rail-link" href="#${i.path}">
             <div class="rail-roman">${i.roman}</div>
             <div class="rail-text">
@@ -153,8 +153,8 @@ function renderRail(target) {
             </div>
           </a>
         `
-        )
-        .join("")}
+      )
+      .join("")}
     </div>
   `;
 
@@ -326,7 +326,11 @@ function smoothScrollToId(id, opts = {}) {
   const el = document.getElementById(id);
   if (!el) return;
 
-  const offset = opts.offset ?? 18; // curated breathing room
+  const cssHeader = getComputedStyle(document.documentElement).getPropertyValue("--home-bar-height").trim();
+  const headerH = parseInt(cssHeader, 10) || 0;
+  const gap = opts.offset ?? 18;
+  const offset = headerH + gap;
+
   const y = el.getBoundingClientRect().top + window.scrollY - offset;
 
   scrollLockUntil = nowMs() + (opts.lockMs ?? 1400);
@@ -819,7 +823,7 @@ window.addEventListener("resize", () => {
   try {
     if (updateScrollStateFn) updateScrollStateFn();
     else setupSectionFade(app);
-  } catch (_) {}
+  } catch (_) { }
 });
 
 /* Close overlays on hard nav events */
