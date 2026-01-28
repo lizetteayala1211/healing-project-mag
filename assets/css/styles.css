@@ -890,10 +890,33 @@ body.is-home .page { padding: 0 !important; }
 .article-title.sue { line-height: 1.2; }
 
 .article-byline {
-  color: #d2a100; /* ✅ requested */
+  /* color: #d2a100;  */
+  /* color: #e0b200; */
+  color: #f2b705 !important;
+  /* color: #f5c400; */
   margin: 0 0 20px 0;
   text-align: left;
   line-height: 1.45;
+}
+
+/* 🔒 Lock byline links to mustard (no green override) */
+.is-article .article-byline a,
+.is-article .byline a,
+.is-article .article-meta a,
+.is-article .article-subtitle a,
+.is-article .prose .byline a {
+  color: #f2b705 !important;
+  text-decoration-color: rgb(224, 179);
+}
+
+/* Optional: subtle hover, still mustard */
+.is-article .article-byline a:hover,
+.is-article .byline a:hover,
+.is-article .article-meta a:hover,
+.is-article .article-subtitle a:hover,
+.is-article .prose .byline a:hover {
+  color: #f2b705 !important; /* gentle lift, still warm */
+  text-decoration-color: rgba(242, 194, 26, 0.9);
 }
 
 .article-page figure.media-block:first-of-type,
@@ -1708,20 +1731,27 @@ body.lightbox-open {
 }
 
 /* =========================================================
-   RIGHT GUTTER: match ledger tint
+   RIGHT NEGATIVE SPACE: match ledger tint on Scroll + Article
 ========================================================= */
 
-/* 1) Set the overall page background (this fills the far-right negative space) */
-.is-scroll {
+/* fill the “outside the columns” area */
+body.is-scroll,
+body.is-article {
   background: var(--ledger-sage-tint);
 }
 
-/* 2) Keep your main content column on paper so the article stays readable */
-.is-scroll #app,
-.is-scroll main,
-.is-scroll .page,
-.is-scroll .page-inner,
-.is-scroll .layout,
-.is-scroll .content {
+/* keep the actual content column(s) on paper */
+body.is-scroll .main,
+body.is-scroll .page,
+body.is-scroll #app,
+body.is-article .main,
+body.is-article .page,
+body.is-article #app {
   background: var(--paper);
+}
+
+/* (optional) if your right gutter element exists, hard-set it too */
+body.is-scroll .gutter-right,
+body.is-article .gutter-right {
+  background: var(--ledger-sage-tint);
 }
