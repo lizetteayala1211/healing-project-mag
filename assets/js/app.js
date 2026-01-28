@@ -233,8 +233,8 @@ function setActiveLedger(sectionId) {
 }
 
 /* ---------- 5D) Intentional delay + dwell (anti-flicker) ---------- */
-const LEDGER_SCROLL_DELAY_MS = 140;
-const LEDGER_DWELL_MS = 160;
+const LEDGER_SCROLL_DELAY_MS = 260;
+const LEDGER_DWELL_MS = 320;
 
 let ledgerTimer = null;
 let lastLedgerId = null;
@@ -449,7 +449,7 @@ function setupSectionFade(root = document) {
       }
     }
 
-    const SWITCH_RATIO = 1.35;
+    const SWITCH_RATIO = 1.45;
     if (currentActiveId && bestId && bestId !== currentActiveId) {
       if (currentArea >= 0 && bestArea < currentArea * SWITCH_RATIO) {
         return currentActiveId;
