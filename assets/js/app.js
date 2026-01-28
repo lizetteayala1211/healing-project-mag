@@ -1,22 +1,24 @@
 /* =========================================================
-   THE HEALING PROJECT MAGAZINE — app.js (AMENDED)
+   THE HEALING PROJECT MAGAZINE — app.js (CHECKED + LABELED)
    - Keeps your current behavior
-   - ✅ Adds: global byline color injection (#d2a100)
-   - ✅ Adds: robust Lightbox (no layout “gap”, locks scroll, SPA-safe)
+   - ✅ Byline color override (#d2a100)
+   - ✅ Robust Lightbox (no layout “gap”, scroll-lock, SPA-safe)
+   - ✅ Curated route transitions (prevents “flash”)
+   - ✅ Curated ledger click scroll (no anchor snap)
 ========================================================= */
 
 console.log("app.js loaded ✅");
 console.log("[ticker] code reached");
 
-/* =========================
+/* =========================================================
    1) IMPORTS
-========================= */
+========================================================= */
 import { navItems, cards } from "./data.js";
 import { loadPage, setPath } from "./router.js";
 
-/* =========================
+/* =========================================================
    2) DOM REFS
-========================= */
+========================================================= */
 const app = document.getElementById("app");
 
 const sideRail = document.getElementById("side-rail");
@@ -26,9 +28,9 @@ const drawer = document.getElementById("mobile-drawer");
 const menuBtn = document.getElementById("menu-button");
 const drawerBackdrop = document.getElementById("drawer-backdrop");
 
-/* =========================
+/* =========================================================
    3) RESPONSIVE HELPERS
-========================= */
+========================================================= */
 const DESKTOP_BREAKPOINT = 900;
 
 function isDesktop() {
@@ -38,15 +40,15 @@ function isMobile() {
   return window.matchMedia(`(max-width: ${DESKTOP_BREAKPOINT - 1}px)`).matches;
 }
 
-/* =========================
+/* =========================================================
    4) THP NAMESPACE (ONE TIME)
-========================= */
+========================================================= */
 window.THP = window.THP || {};
 window.THP.setPath = setPath;
 
-/* =========================
-   4B) GLOBAL STYLE INJECTOR (ONE TIME)
-========================= */
+/* =========================================================
+   4A) GLOBAL STYLE INJECTOR (ONE TIME)
+========================================================= */
 function addGlobalStyleOnce(id, cssText) {
   if (document.getElementById(id)) return;
   const style = document.createElement("style");
@@ -56,7 +58,7 @@ function addGlobalStyleOnce(id, cssText) {
 }
 
 /* =========================================================
-   4C) ✅ BYLINE COLOR (ALL ARTICLES)
+   4B) ✅ BYLINE COLOR (ALL ARTICLES)
 ========================================================= */
 function initBylineColorOnce() {
   addGlobalStyleOnce(
@@ -74,6 +76,44 @@ function initBylineColorOnce() {
   );
 }
 initBylineColorOnce();
+
+/* =========================================================
+   4C) ✅ ROUTE TRANSITION SYSTEM (SINGLE SOURCE OF TRUTH)
+   - This replaces your click-only transitionToRoute().
+   - Fade OUT happens before loadPage()/innerHTML swap.
+   - Fade IN happens after the new DOM paints.
+========================================================= */
+function beginRouteTransition() {
+  document.body.classList.add("is-transitioning");
+}
+
+function endRouteTransition() {
+  // remove after the new DOM has painted
+  requestAnimationFrame(() => {
+    document.body.classList.remove("is-transitioning");
+  });
+}
+
+async function withRouteTransition(fn) {
+  // prevent double-trigger spam
+  if (document.documentElement.dataset.routeTransitioning === "1") return;
+  document.documentElement.dataset.routeTransitioning = "1";
+
+  beginRouteTransition();
+
+  // give the fade-out a frame to apply BEFORE we swap DOM
+  await new Promise((r) => requestAnimationFrame(r));
+
+  try {
+    await fn();
+  } finally {
+    endRouteTransition();
+    // small safety reset
+    setTimeout(() => {
+      document.documentElement.dataset.routeTransitioning = "0";
+    }, 50);
+  }
+}
 
 /* =========================================================
    5) LEDGER / SIDE RAIL
@@ -95,6 +135,7 @@ function renderRail(target) {
         src="./assets/logo/HP_logo_circle_bl.png"
         alt="The Healing Project"
         loading="eager"
+        data-no-lightbox
       />
     </a>
   `;
@@ -123,9 +164,7 @@ function renderRail(target) {
   `;
 }
 
-/* =========================================================
-   5A.1) ✅ DESKTOP LEDGER TOGGLE BUTTON (JS-rendered)
-========================================================= */
+/* ---------- 5B) Desktop ledger toggle (JS-rendered) ---------- */
 function syncRailToggleUI(btn) {
   if (!btn) return;
   const collapsed = document.body.classList.contains("rail-collapsed");
@@ -164,7 +203,9 @@ function ensureRailToggleButton() {
   pinRailToggleToBottom();
 }
 
-/* ---------- Drawer open/close (scroll-lock safe) ---------- */
+/* =========================================================
+   6) MOBILE DRAWER (scroll-lock safe)
+========================================================= */
 let scrollYBeforeDrawer = 0;
 
 function openDrawer() {
@@ -190,23 +231,20 @@ function isDrawerOpen() {
   return drawer?.classList.contains("open");
 }
 
-// initial mobile rail render
-if (!isDrawerOpen()) {
-  renderRail(sideRailMobile);
-}
+/* Bind drawer controls */
+menuBtn?.addEventListener("click", openDrawer);
+drawerBackdrop?.addEventListener("click", closeDrawer);
 
-window.addEventListener("hashchange", () => {
-  closeDrawer();
-  closeLightbox(); // ✅ keep SPA clean
+sideRailMobile?.addEventListener("click", (e) => {
+  const a = e.target.closest("a");
+  if (a) closeDrawer();
 });
 
-// On hard reload / refresh
-window.addEventListener("pageshow", () => {
-  closeDrawer();
-  closeLightbox();
-});
+/* =========================================================
+   7) LEDGER INTERACTION + SCROLL CURATION
+========================================================= */
 
-/* ---------- 5B) Bind rail toggle (delegated; binds once) ---------- */
+/* ---------- 7A) Toggle binding (delegated; binds once) ---------- */
 function bindRailToggleOnce() {
   if (document.documentElement.dataset.railToggleBound === "1") return;
   document.documentElement.dataset.railToggleBound = "1";
@@ -221,7 +259,7 @@ function bindRailToggleOnce() {
   });
 }
 
-/* ---------- 5C) Active ledger highlight ---------- */
+/* ---------- 7B) Active ledger highlight ---------- */
 function setActiveLedger(sectionId) {
   if (!sectionId) return;
   const links = document.querySelectorAll(".rail-link");
@@ -232,16 +270,14 @@ function setActiveLedger(sectionId) {
   });
 }
 
-/* ---------- 5D) Intentional delay + dwell (anti-flicker) ---------- */
+/* ---------- 7C) Anti-flicker dwell tuning (slower, curated) ---------- */
 const LEDGER_SCROLL_DELAY_MS = 260;
 const LEDGER_DWELL_MS = 320;
 
 let ledgerTimer = null;
 let lastLedgerId = null;
-
 let pendingLedgerId = null;
 let pendingSince = 0;
-
 let scrollLockUntil = 0;
 
 function nowMs() {
@@ -285,8 +321,7 @@ function setLedgerActiveImmediate(sectionId) {
   lastLedgerId = sectionId;
 }
 
-/* ---------- 5E) Ledger click → immediate active + lock scroll updates ---------- */
-
+/* ---------- 7D) Curated smooth scroll (prevents anchor “snap”) ---------- */
 function smoothScrollToId(id, opts = {}) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -294,18 +329,16 @@ function smoothScrollToId(id, opts = {}) {
   const offset = opts.offset ?? 18; // curated breathing room
   const y = el.getBoundingClientRect().top + window.scrollY - offset;
 
-  // lock scroll-driven ledger changes longer for “curated”
   scrollLockUntil = nowMs() + (opts.lockMs ?? 1400);
-
   window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
 }
 
 function setHashQuietly(nextHash) {
-  // Updates URL without triggering the browser’s default anchor jump.
-  // (hashchange still fires if you use location.hash, so we use history)
+  // avoids default browser anchor jump
   history.replaceState(null, "", `#${nextHash}`);
 }
 
+/* ---------- 7E) Ledger click binding (delegated; binds once) ---------- */
 function bindLedgerClickActiveOnce() {
   if (document.documentElement.dataset.ledgerClickBound === "1") return;
   document.documentElement.dataset.ledgerClickBound = "1";
@@ -321,52 +354,34 @@ function bindLedgerClickActiveOnce() {
     e.preventDefault();
 
     const id = m[1];
-
-    // Immediate visual feedback (no scroll yet)
     setLedgerActiveImmediate(id);
 
-    // If we’re not already on /scroll, route there FIRST
     const onScrollRoute = window.location.hash.startsWith("#/scroll");
+
+    // If we’re not on /scroll, do a quiet hash update + render with transition
     if (!onScrollRoute) {
-      // set the hash to /scroll#id in a way that won’t “snap”
       setHashQuietly(`/scroll#${id}`);
-      // now run your render() manually so the page actually loads
-      render();
-      // after render paints, scroll to the section
+
+      // render the new page (curated transition)
+      withRouteTransition(async () => {
+        await render();
+      });
+
+      // after render paints, scroll smoothly
       requestAnimationFrame(() => smoothScrollToId(id, { offset: 18, lockMs: 1500 }));
+      if (isDrawerOpen()) closeDrawer();
       return;
     }
 
-    // Already on /scroll → just scroll smoothly
+    // Already on /scroll
     setHashQuietly(`/scroll#${id}`);
     smoothScrollToId(id, { offset: 18, lockMs: 1500 });
-
-    // If drawer is open on mobile, close it (prevents weird snap-back)
     if (isDrawerOpen()) closeDrawer();
   });
 }
 
-/* ---------- 5F) Initial mount ---------- */
-bindRailToggleOnce();
-bindLedgerClickActiveOnce();
-renderRail(sideRail);
-ensureRailToggleButton();
-renderRail(sideRailMobile);
-ensureRailToggleButton();
-
 /* =========================================================
-   6) MOBILE DRAWER
-========================================================= */
-menuBtn?.addEventListener("click", openDrawer);
-drawerBackdrop?.addEventListener("click", closeDrawer);
-
-sideRailMobile?.addEventListener("click", (e) => {
-  const a = e.target.closest("a");
-  if (a) closeDrawer();
-});
-
-/* =========================================================
-   7) SECTION FADE + LEDGER SYNC
+   8) SECTION FADE + LEDGER SCROLL SYNC
 ========================================================= */
 let updateScrollStateFn = null;
 let ledgerRAF = null;
@@ -412,7 +427,6 @@ function setupSectionFade(root = document) {
   });
 
   sections.forEach((s, idx) => s.classList.toggle("is-visible", idx === 0));
-
   let currentActiveId = lastLedgerId || sections[0]?.id || null;
 
   function visibleArea(rect, vh, vw) {
@@ -482,7 +496,7 @@ function setupSectionFade(root = document) {
 }
 
 /* =========================================================
-   8) CARDS GRID RENDERER
+   9) CARDS GRID RENDERER
 ========================================================= */
 window.THP.renderCardsGrid = function renderCardsGrid() {
   const grids = document.querySelectorAll(".cards-grid");
@@ -512,7 +526,7 @@ window.THP.renderCardsGrid = function renderCardsGrid() {
 };
 
 /* =========================================================
-   9) PARTIALS INJECTOR
+   10) PARTIALS INJECTOR
 ========================================================= */
 window.THP.injectPartials =
   window.THP.injectPartials ||
@@ -538,20 +552,8 @@ window.THP.injectPartials =
   };
 
 /* =========================================================
-   9B) ✅ LIGHTBOX (NO GAP / SCROLL LOCK / SPA-SAFE)
+   11) ✅ LIGHTBOX (NO GAP / SCROLL LOCK / SPA-SAFE)
 ========================================================= */
-
-/**
- * Why you were seeing that “big gap”:
- * Usually it happens when the lightbox is not truly out of flow
- * OR scroll locking is done in a way that shifts layout.
- *
- * This implementation:
- * - Ensures #lightbox is fixed + flex centered (inline styles as a safety net)
- * - Locks scroll without jumping (keeps your scroll position)
- * - Works after route renders (rebinding safely)
- */
-
 let __lightboxScrollY = 0;
 
 function ensureLightboxShell() {
@@ -574,7 +576,7 @@ function ensureLightboxShell() {
     lb.appendChild(img);
   }
 
-  // Safety net styles so the lightbox can NEVER create layout space
+  // Safety net: never creates layout space
   lb.style.position = "fixed";
   lb.style.inset = "0";
   lb.style.display = "none";
@@ -597,8 +599,6 @@ function ensureLightboxShell() {
 
 function lockScrollForLightbox() {
   __lightboxScrollY = window.scrollY || 0;
-
-  // prevent layout “nudge” from scrollbar disappearing
   const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
 
   document.documentElement.classList.add("lightbox-open");
@@ -652,7 +652,6 @@ function closeLightbox() {
   lb.style.display = "none";
 
   if (img) img.src = "";
-
   unlockScrollForLightbox();
 }
 
@@ -660,7 +659,6 @@ function bindLightboxOnce() {
   if (document.documentElement.dataset.lightboxBound === "1") return;
   document.documentElement.dataset.lightboxBound = "1";
 
-  // Close on click outside image
   document.addEventListener("click", (e) => {
     const lb = e.target.closest("#lightbox");
     if (!lb) return;
@@ -669,7 +667,6 @@ function bindLightboxOnce() {
     if (!clickedImg) closeLightbox();
   });
 
-  // Close on Escape
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     const lb = document.getElementById("lightbox");
@@ -677,35 +674,24 @@ function bindLightboxOnce() {
   });
 }
 
-/**
- * SPA-safe binding for article images:
- * - clicks on images inside .prose / article content
- * - ignores images inside the rail/drawer/ticker
- */
 function bindLightboxForRoot(root = document) {
   if (!root) return;
   bindLightboxOnce();
   ensureLightboxShell();
 
-  // Delegate from app container so newly rendered pages work
   if (root.dataset.lightboxDelegate === "1") return;
   root.dataset.lightboxDelegate = "1";
 
   root.addEventListener("click", (e) => {
-    // Don’t trigger from nav UI
     if (e.target.closest("#side-rail")) return;
     if (e.target.closest("#mobile-drawer")) return;
     if (e.target.closest("#ticker")) return;
 
-    // Only images that are actually in content
     const img = e.target.closest("img");
     if (!img) return;
-
-    // If you have icons/logos you don't want to lightbox, tag them:
-    // <img data-no-lightbox ... />
     if (img.hasAttribute("data-no-lightbox")) return;
+    if (img.id === "lightboxImg") return;
 
-    // Prefer full-size source if provided
     const src =
       img.getAttribute("data-full") ||
       img.currentSrc ||
@@ -714,16 +700,16 @@ function bindLightboxForRoot(root = document) {
 
     if (!src) return;
 
-    // Avoid opening if it’s already the lightbox image
-    if (img.id === "lightboxImg") return;
-
     e.preventDefault();
     openLightbox(src, img.alt || "");
   });
 }
 
 /* =========================================================
-   10) ROUTER RENDER (MAIN APP MOUNT)
+   12) ROUTER RENDER (MAIN APP MOUNT)
+   IMPORTANT:
+   - NO begin/endRouteTransition calls inside render()
+   - renderWithTransition() is the only place handling transitions
 ========================================================= */
 async function render() {
   if (!app) return;
@@ -787,12 +773,12 @@ async function render() {
     document.body.classList.remove("rail-collapsed");
   }
 
-  // Ensure rails/toggle stay sane after renders
+  // Keep rails/toggle sane after renders
   renderRail(sideRail);
   ensureRailToggleButton();
   renderRail(sideRailMobile);
 
-  // ✅ Lightbox binds to freshly rendered content
+  // Lightbox binds to freshly rendered content
   bindLightboxForRoot(app);
 
   requestAnimationFrame(() => {
@@ -801,7 +787,7 @@ async function render() {
       if (el) {
         scrollLockUntil = nowMs() + 900;
         setLedgerActiveImmediate(anchor);
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        smoothScrollToId(anchor, { offset: 18, lockMs: 1500 });
         return;
       }
     }
@@ -815,14 +801,19 @@ async function render() {
   }
 }
 
-window.addEventListener("hashchange", render);
-render();
+/* Route handler WITH transition */
+async function renderWithTransition() {
+  await withRouteTransition(render);
+}
 
-/* ---------- Re-render rails on breakpoint changes ---------- */
+/* Bind route changes */
+window.addEventListener("hashchange", renderWithTransition);
+renderWithTransition();
+
+/* Keep UI sane on resize */
 window.addEventListener("resize", () => {
   renderRail(sideRail);
   ensureRailToggleButton();
-
   renderRail(sideRailMobile);
 
   try {
@@ -831,8 +822,23 @@ window.addEventListener("resize", () => {
   } catch (_) {}
 });
 
+/* Close overlays on hard nav events */
+window.addEventListener("pageshow", () => {
+  closeDrawer();
+  closeLightbox();
+});
+
 /* =========================================================
-   11) FOOTER TICKER ROTATION (DYNAMIC SPEED)
+   13) ONE-TIME INITIAL BINDINGS + INITIAL RAIL RENDER
+========================================================= */
+bindRailToggleOnce();
+bindLedgerClickActiveOnce();
+renderRail(sideRail);
+ensureRailToggleButton();
+renderRail(sideRailMobile);
+
+/* =========================================================
+   14) FOOTER TICKER ROTATION (DYNAMIC SPEED)
 ========================================================= */
 const quotes = [
   "I realized it's not a one-size-fits-all here. You have to be able to adapt in your caregiving, because the method one day might not be the method the next. —Pamela Smart",
@@ -924,7 +930,7 @@ window.addEventListener("resize", () => {
 });
 
 /* =========================================================
-   12) WE DESERVE WELLNESS: REFLECTION CAROUSEL
+   15) WE DESERVE WELLNESS: REFLECTION CAROUSEL
 ========================================================= */
 const WDW_REFLECTIONS = [
   { author: "Member 1", text: `We need to be heard in schools. We need to learn about our culture. We need more staff that understand us. We need safety, not security. We need community.` },

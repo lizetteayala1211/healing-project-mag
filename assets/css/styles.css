@@ -647,6 +647,22 @@ body {
 
 .enter-button:active { transform: translateY(0px); }
 
+/* ===== Curated route transition ===== */
+#app {
+  transition: opacity 420ms ease, filter 420ms ease;
+}
+
+body.is-transitioning #app {
+  opacity: 0;
+  filter: blur(6px);
+}
+
+/* Optional: make the home hero feel more cinematic on exit */
+body.is-home.is-transitioning .home-hero-img {
+  transform: scale(1.02);
+  transition: transform 520ms ease;
+}
+
 /* HOME: collapse rail/gutter widths */
 body.is-home {
   --rail-w: 0px;
@@ -1689,4 +1705,23 @@ body.lightbox-open {
 .rail-link.is-active {
   transform: translateY(-1px);
   box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+}
+
+/* =========================================================
+   RIGHT GUTTER: match ledger tint
+========================================================= */
+
+/* 1) Set the overall page background (this fills the far-right negative space) */
+.is-scroll {
+  background: var(--ledger-sage-tint);
+}
+
+/* 2) Keep your main content column on paper so the article stays readable */
+.is-scroll #app,
+.is-scroll main,
+.is-scroll .page,
+.is-scroll .page-inner,
+.is-scroll .layout,
+.is-scroll .content {
+  background: var(--paper);
 }
