@@ -1675,3 +1675,18 @@ body.lightbox-open {
     padding-top: 10px;
   }
 }
+
+.rail-link {
+  transition:
+    background-color 320ms ease,
+    outline-color 320ms ease,
+    color 320ms ease,
+    transform 220ms ease,
+    box-shadow 220ms ease;
+  will-change: background-color, transform;
+}
+
+.rail-link.is-active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+}

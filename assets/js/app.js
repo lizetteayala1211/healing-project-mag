@@ -286,6 +286,26 @@ function setLedgerActiveImmediate(sectionId) {
 }
 
 /* ---------- 5E) Ledger click → immediate active + lock scroll updates ---------- */
+
+function smoothScrollToId(id, opts = {}) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const offset = opts.offset ?? 18; // curated breathing room
+  const y = el.getBoundingClientRect().top + window.scrollY - offset;
+
+  // lock scroll-driven ledger changes longer for “curated”
+  scrollLockUntil = nowMs() + (opts.lockMs ?? 1400);
+
+  window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+}
+
+function setHashQuietly(nextHash) {
+  // Updates URL without triggering the browser’s default anchor jump.
+  // (hashchange still fires if you use location.hash, so we use history)
+  history.replaceState(null, "", `#${nextHash}`);
+}
+
 function bindLedgerClickActiveOnce() {
   if (document.documentElement.dataset.ledgerClickBound === "1") return;
   document.documentElement.dataset.ledgerClickBound = "1";
@@ -296,10 +316,33 @@ function bindLedgerClickActiveOnce() {
 
     const href = a.getAttribute("href") || "";
     const m = href.match(/^#\/scroll#(.+)$/);
-    if (m && m[1]) {
-      scrollLockUntil = nowMs() + 850;
-      setLedgerActiveImmediate(m[1]);
+    if (!m || !m[1]) return;
+
+    e.preventDefault();
+
+    const id = m[1];
+
+    // Immediate visual feedback (no scroll yet)
+    setLedgerActiveImmediate(id);
+
+    // If we’re not already on /scroll, route there FIRST
+    const onScrollRoute = window.location.hash.startsWith("#/scroll");
+    if (!onScrollRoute) {
+      // set the hash to /scroll#id in a way that won’t “snap”
+      setHashQuietly(`/scroll#${id}`);
+      // now run your render() manually so the page actually loads
+      render();
+      // after render paints, scroll to the section
+      requestAnimationFrame(() => smoothScrollToId(id, { offset: 18, lockMs: 1500 }));
+      return;
     }
+
+    // Already on /scroll → just scroll smoothly
+    setHashQuietly(`/scroll#${id}`);
+    smoothScrollToId(id, { offset: 18, lockMs: 1500 });
+
+    // If drawer is open on mobile, close it (prevents weird snap-back)
+    if (isDrawerOpen()) closeDrawer();
   });
 }
 
@@ -406,7 +449,7 @@ function setupSectionFade(root = document) {
       }
     }
 
-    const SWITCH_RATIO = 1.22;
+    const SWITCH_RATIO = 1.35;
     if (currentActiveId && bestId && bestId !== currentActiveId) {
       if (currentArea >= 0 && bestArea < currentArea * SWITCH_RATIO) {
         return currentActiveId;
