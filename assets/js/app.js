@@ -10,6 +10,18 @@
 console.log("app.js loaded ✅");
 console.log("[ticker] code reached");
 
+function trackPageview() {
+  const path = window.location.pathname + window.location.hash;
+  window.va?.("pageview", { url: path });
+}
+
+// on first load
+window.addEventListener("load", trackPageview);
+
+// whenever hash changes (your SPA navigation)
+window.addEventListener("hashchange", trackPageview);
+
+
 /* =========================================================
    1) IMPORTS
 ========================================================= */
