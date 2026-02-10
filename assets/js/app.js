@@ -1,26 +1,27 @@
 /* =========================================================
-   THE HEALING PROJECT MAGAZINE — app.js (CHECKED + LABELED)
+   THE HEALING PROJECT MAGAZINE — app.js (REWRITTEN IN FULL)
    - Keeps your current behavior
    - ✅ Byline color override (#d2a100)
    - ✅ Robust Lightbox (no layout “gap”, scroll-lock, SPA-safe)
-   - ✅ Curated route transitions (prevents “flash”)
+   - ✅ Curated route transitions (prevents “flash” + reduces “blank on back”)
    - ✅ Curated ledger click scroll (no anchor snap)
+   - ✅ Desktop ledger: scrollable + toggle stays at bottom WITH the scroll
+   - ✅ FIX: Home logo / home route no longer “stuck on scroll”
+     (removes broken __suppressNextHashChange flow + adds safe go())
 ========================================================= */
 
 console.log("app.js loaded ✅");
 console.log("[ticker] code reached");
 
+/* =========================================================
+   0) ANALYTICS (Vercel Web Analytics)
+========================================================= */
 function trackPageview() {
   const path = window.location.pathname + window.location.hash;
   window.va?.("pageview", { url: path });
 }
-
-// on first load
 window.addEventListener("load", trackPageview);
-
-// whenever hash changes (your SPA navigation)
 window.addEventListener("hashchange", trackPageview);
-
 
 /* =========================================================
    1) IMPORTS
@@ -91,41 +92,98 @@ initBylineColorOnce();
 
 /* =========================================================
    4C) ✅ ROUTE TRANSITION SYSTEM (SINGLE SOURCE OF TRUTH)
-   - This replaces your click-only transitionToRoute().
-   - Fade OUT happens before loadPage()/innerHTML swap.
-   - Fade IN happens after the new DOM paints.
 ========================================================= */
 function beginRouteTransition() {
   document.body.classList.add("is-transitioning");
 }
-
 function endRouteTransition() {
-  // remove after the new DOM has painted
   requestAnimationFrame(() => {
     document.body.classList.remove("is-transitioning");
   });
 }
+function raf() {
+  return new Promise((r) => requestAnimationFrame(r));
+}
 
 async function withRouteTransition(fn) {
-  // prevent double-trigger spam
   if (document.documentElement.dataset.routeTransitioning === "1") return;
   document.documentElement.dataset.routeTransitioning = "1";
 
   beginRouteTransition();
-
-  // give the fade-out a frame to apply BEFORE we swap DOM
-  await new Promise((r) => requestAnimationFrame(r));
+  await raf(); // let fade-out apply
 
   try {
     await fn();
   } finally {
+    // allow paint before fade-in
+    await raf();
+    await raf();
     endRouteTransition();
-    // small safety reset
+
     setTimeout(() => {
       document.documentElement.dataset.routeTransitioning = "0";
-    }, 50);
+    }, 60);
   }
 }
+
+/* =========================================================
+   4D) ✅ ROUTE HELPERS (SAFE, NO "STUCK ON SCROLL")
+========================================================= */
+function setHashQuietly(nextHash) {
+  // avoids default browser anchor jump + does NOT trigger hashchange
+  history.replaceState(null, "", `#${nextHash}`);
+}
+
+async function go(nextHash) {
+  // curated navigation: transition + quiet hash + render
+  await withRouteTransition(async () => {
+    setHashQuietly(nextHash);
+    await render();
+  });
+}
+
+/* =========================================================
+   4E) ✅ ENTER + HOME CLICK CURATION (OPTIONAL BUT NICE)
+   - Enter button fades into /scroll instead of abrupt jump.
+   - Home logo/link reliably returns to /home.
+   - Only intercepts the specific hashes.
+========================================================= */
+function bindCuratedNavOnce() {
+  if (document.documentElement.dataset.curatedNavBound === "1") return;
+  document.documentElement.dataset.curatedNavBound = "1";
+
+  document.addEventListener("click", async (e) => {
+    // ENTER -> /scroll
+    const enter =
+      e.target.closest('[data-enter]') ||
+      e.target.closest(".enter-btn") ||
+      e.target.closest("#enterBtn") ||
+      e.target.closest('a[href="#/scroll"]') ||
+      e.target.closest('a[href="#/scroll#letter"]');
+
+    if (enter) {
+      // only intercept when leaving home (keeps everything else normal)
+      if (document.body.classList.contains("is-home")) {
+        e.preventDefault();
+        await go("/scroll");
+      }
+      return;
+    }
+
+    // HOME -> /home (logo, button, etc.)
+    const home =
+      e.target.closest('a[href="#/home"]') ||
+      e.target.closest('[data-home]') ||
+      e.target.closest(".home-link");
+
+    if (home) {
+      e.preventDefault();
+      await go("/home");
+      return;
+    }
+  });
+}
+bindCuratedNavOnce();
 
 /* =========================================================
    5) LEDGER / SIDE RAIL
@@ -155,8 +213,8 @@ function renderRail(target) {
   const railLinks = `
     <div class="rail-card">
       ${navItems
-      .map(
-        (i) => `
+        .map(
+          (i) => `
           <a class="rail-link" href="#${i.path}">
             <div class="rail-roman">${i.roman}</div>
             <div class="rail-text">
@@ -165,8 +223,8 @@ function renderRail(target) {
             </div>
           </a>
         `
-      )
-      .join("")}
+        )
+        .join("")}
     </div>
   `;
 
@@ -184,6 +242,10 @@ function syncRailToggleUI(btn) {
   btn.textContent = collapsed ? "Show ledger" : "Hide ledger";
 }
 
+/**
+ * To make the toggle scroll WITH the ledger (and sit under the last item),
+ * it must be inside the scroll container.
+ */
 function pinRailToggleToBottom() {
   const railCard = document.querySelector("#side-rail .rail-card");
   const btn = document.querySelector("#side-rail .rail-toggle");
@@ -192,6 +254,7 @@ function pinRailToggleToBottom() {
 }
 
 function ensureRailToggleButton() {
+  // Desktop-only
   if (!isDesktop()) {
     document.querySelector("#side-rail .rail-toggle")?.remove();
     return;
@@ -244,7 +307,10 @@ function isDrawerOpen() {
 }
 
 /* Bind drawer controls */
-menuBtn?.addEventListener("click", openDrawer);
+menuBtn?.addEventListener("click", () => {
+  if (isDrawerOpen()) closeDrawer();
+  else openDrawer();
+});
 drawerBackdrop?.addEventListener("click", closeDrawer);
 
 sideRailMobile?.addEventListener("click", (e) => {
@@ -274,10 +340,11 @@ function bindRailToggleOnce() {
 /* ---------- 7B) Active ledger highlight ---------- */
 function setActiveLedger(sectionId) {
   if (!sectionId) return;
+
   const links = document.querySelectorAll(".rail-link");
   links.forEach((a) => {
     const href = a.getAttribute("href") || "";
-    const isMatch = href.includes(`/scroll#${sectionId}`);
+    const isMatch = href === `#/scroll#${sectionId}`;
     a.classList.toggle("is-active", isMatch);
   });
 }
@@ -338,8 +405,11 @@ function smoothScrollToId(id, opts = {}) {
   const el = document.getElementById(id);
   if (!el) return;
 
-  const cssHeader = getComputedStyle(document.documentElement).getPropertyValue("--home-bar-height").trim();
+  const cssHeader = getComputedStyle(document.documentElement)
+    .getPropertyValue("--home-bar-height")
+    .trim();
   const headerH = parseInt(cssHeader, 10) || 0;
+
   const gap = opts.offset ?? 18;
   const offset = headerH + gap;
 
@@ -347,11 +417,6 @@ function smoothScrollToId(id, opts = {}) {
 
   scrollLockUntil = nowMs() + (opts.lockMs ?? 1400);
   window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-}
-
-function setHashQuietly(nextHash) {
-  // avoids default browser anchor jump
-  history.replaceState(null, "", `#${nextHash}`);
 }
 
 /* ---------- 7E) Ledger click binding (delegated; binds once) ---------- */
@@ -378,12 +443,10 @@ function bindLedgerClickActiveOnce() {
     if (!onScrollRoute) {
       setHashQuietly(`/scroll#${id}`);
 
-      // render the new page (curated transition)
       withRouteTransition(async () => {
         await render();
       });
 
-      // after render paints, scroll smoothly
       requestAnimationFrame(() => smoothScrollToId(id, { offset: 18, lockMs: 1500 }));
       if (isDrawerOpen()) closeDrawer();
       return;
@@ -723,9 +786,6 @@ function bindLightboxForRoot(root = document) {
 
 /* =========================================================
    12) ROUTER RENDER (MAIN APP MOUNT)
-   IMPORTANT:
-   - NO begin/endRouteTransition calls inside render()
-   - renderWithTransition() is the only place handling transitions
 ========================================================= */
 async function render() {
   if (!app) return;
@@ -738,20 +798,21 @@ async function render() {
   document.body.classList.toggle("is-scroll", path === "/scroll");
   document.body.classList.toggle("is-article", path.startsWith("/article/"));
 
-  // Home lock (your current behavior)
+  // Home lock (avoid html overflow edits — reduces “blank” flashes)
   if (path === "/home") {
-    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
   } else {
-    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
   }
 
   // Always close overlays on route render
   closeDrawer();
   closeLightbox();
 
+  // fetch HTML BEFORE swapping DOM
+  let html = "";
   try {
-    const html = await loadPage(path);
-    app.innerHTML = html;
+    html = await loadPage(path);
   } catch (err) {
     console.error("loadPage failed:", err);
     app.innerHTML = `
@@ -764,6 +825,11 @@ async function render() {
     `;
     return;
   }
+
+  console.log("RENDER:", window.location.hash, performance.now());
+
+  // Swap DOM only once we have the HTML
+  app.innerHTML = html;
 
   if (path === "/scroll") {
     try {
@@ -797,6 +863,7 @@ async function render() {
   // Lightbox binds to freshly rendered content
   bindLightboxForRoot(app);
 
+  // Scroll behavior
   requestAnimationFrame(() => {
     if (path === "/scroll" && anchor) {
       const el = document.getElementById(anchor);
@@ -810,6 +877,7 @@ async function render() {
     window.scrollTo(0, 0);
   });
 
+  // WDW carousel, if present
   try {
     mountWDWCarousel();
   } catch (e) {
@@ -822,7 +890,7 @@ async function renderWithTransition() {
   await withRouteTransition(render);
 }
 
-/* Bind route changes */
+/* Bind route changes (NORMAL — no suppression) */
 window.addEventListener("hashchange", renderWithTransition);
 renderWithTransition();
 
@@ -835,7 +903,7 @@ window.addEventListener("resize", () => {
   try {
     if (updateScrollStateFn) updateScrollStateFn();
     else setupSectionFade(app);
-  } catch (_) { }
+  } catch (_) {}
 });
 
 /* Close overlays on hard nav events */
@@ -1035,3 +1103,6 @@ function mountWDWCarousel() {
 
   renderWDW();
 }
+
+
+

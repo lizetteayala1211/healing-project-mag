@@ -106,6 +106,7 @@
 html,
 body {
     height: 100%;
+    /* background: #f3f0ea;  */
 }
 
 html {
@@ -119,6 +120,10 @@ body {
     color: var(--ink);
     overflow: auto;
 }
+
+/* body.is-scroll {
+    background: var(--ledger-sage-tint) !important;
+} */
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
@@ -674,8 +679,10 @@ body {
     padding: 14px 34px;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.65);
-    background: rgba(243, 239, 230, 0.82);
-    color: #1a1a1a;
+    /* background: rgba(243, 239, 230, 0.82); */
+    background: var(--dot);
+    /* color: #1a1a1a; */
+    color: rgba(255, 255, 255, 0.85);
     font-family: var(--font-body);
     font-size: 14px;
     letter-spacing: 0.08em;
@@ -688,7 +695,8 @@ body {
 
 .enter-button:hover {
     transform: translateY(-1px);
-    background: rgba(243, 239, 230, 0.92);
+    /* background: rgba(243, 239, 230, 0.92); */
+    background: var(--dot);
     border-color: rgba(255, 255, 255, 0.85);
 }
 
@@ -1199,11 +1207,12 @@ figure img {
 .media-caption {
     margin: 12px auto 0 auto;
     max-width: 52ch;
-    font-size: 13px;
+    font-size: 13.5px;
     line-height: 1.5;
-    color: rgba(0, 0, 0, 0.70);
+    /* color: rgba(0, 0, 0, 0.70); */
+    color: #d2a100 !important;
     text-align: center;
-    margin-top: 24px;
+    margin-top: 28px;
 }
 
 /* =========================================================
@@ -1626,8 +1635,90 @@ body.is-home .page,
 body.is-home .main,
 body.is-home .home-splash,
 body.is-home .home-splash-media {
-    background: #000 !important;
+    /* background: #000 !important; */
+    background: var(--paper) !important;
 }
+
+/* =========================================================
+   ROUTE FADE OVERLAY
+========================================================= */
+
+#route-fade{
+  position: fixed;
+  inset: 0;
+  background: var(--paper); /* prevents black flash */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 420ms ease;
+  z-index: 2500; /* above content, below lightbox (you use 999999 there) */
+}
+
+/* When transitioning, cover + fade */
+body.is-transitioning #route-fade{
+  opacity: 1;
+}
+
+/* Optional: also fade app slightly for softness (you already have this) */
+#app{
+  transition: opacity 420ms ease, filter 420ms ease;
+}
+body.is-transitioning #app{
+  opacity: 0;
+  filter: blur(6px);
+}
+
+#app {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 260ms ease, transform 520ms cubic-bezier(.2,.9,.2,1);
+}
+
+body.is-transitioning #app {
+  opacity: 0;
+  transform: translateX(-14px);
+}
+
+
+/* optional: make it feel more “editorial” */
+body.is-transitioning {
+  cursor: progress;
+}
+
+/* Smooth SPA route transitions (only the app content) */
+#app {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 260ms ease, transform 320ms ease;
+  will-change: opacity, transform;
+}
+
+#app.is-fading-out {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+#app.is-fading-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+img { content-visibility: auto; }
+
+body.is-scroll .layout-container,
+body.is-scroll .page-grid,
+body.is-scroll .scroll-page {
+  background: var(--sage);
+  min-height: 100vh;
+}
+
+/* Ensure the center paper area stays paper */
+body.is-scroll main,
+body.is-scroll .main,
+body.is-scroll .center {
+  background: var(--paper);
+}
+
 
 /* =========================================================
    HAMBURGER — CIRCLE BADGE (PASTE AT VERY BOTTOM)
