@@ -1207,7 +1207,7 @@ figure img {
 .media-caption {
     margin: 12px auto 0 auto;
     max-width: 52ch;
-    font-size: 13.5px;
+    font-size: 12px;
     line-height: 1.5;
     /* color: rgba(0, 0, 0, 0.70); */
     color: #d2a100 !important;
@@ -1238,6 +1238,26 @@ figure img {
     border-radius: 14px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.60);
     cursor: pointer;
+}
+
+#lightbox {
+  z-index: 2147483647 !important;
+}
+
+#lightbox {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: auto;
+}
+
+html.lightbox-open,
+html.lightbox-open body,
+html.lightbox-open #app,
+html.lightbox-open .page,
+html.lightbox-open .page-grid {
+  overflow: visible !important;
 }
 
 /* Lock page scroll WITHOUT losing scroll position */

@@ -644,7 +644,9 @@ function ensureLightboxShell() {
     lb.id = "lightbox";
     lb.className = "lightbox";
     lb.setAttribute("aria-hidden", "true");
-    document.body.appendChild(lb);
+    // document.body.appendChild(lb);
+    document.documentElement.appendChild(lb);
+
   }
 
   if (!img) {
@@ -678,45 +680,66 @@ function ensureLightboxShell() {
 
 function lockScrollForLightbox() {
   __lightboxScrollY = window.scrollY || 0;
-  const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
 
+  // lock at the ROOT, not body-fixed
   document.documentElement.classList.add("lightbox-open");
   document.body.classList.add("lightbox-open");
 
-  document.body.style.position = "fixed";
-  document.body.style.top = `-${__lightboxScrollY}px`;
-  document.body.style.left = "0";
-  document.body.style.right = "0";
-  document.body.style.width = "100%";
-  if (scrollbarW > 0) document.body.style.paddingRight = `${scrollbarW}px`;
+  document.documentElement.style.overflow = "hidden";
+  document.documentElement.style.height = "100%";
+
+  // optional: prevents layout shift when scrollbar disappears
+  const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
+  if (scrollbarW > 0) document.documentElement.style.paddingRight = `${scrollbarW}px`;
 }
 
 function unlockScrollForLightbox() {
   document.documentElement.classList.remove("lightbox-open");
   document.body.classList.remove("lightbox-open");
 
-  const top = document.body.style.top;
-  document.body.style.position = "";
-  document.body.style.top = "";
-  document.body.style.left = "";
-  document.body.style.right = "";
-  document.body.style.width = "";
-  document.body.style.paddingRight = "";
+  document.documentElement.style.overflow = "";
+  document.documentElement.style.height = "";
+  document.documentElement.style.paddingRight = "";
 
-  const y = top ? -parseInt(top, 10) : __lightboxScrollY;
-  window.scrollTo(0, Number.isFinite(y) ? y : 0);
+  window.scrollTo(0, __lightboxScrollY || 0);
 }
 
 function openLightbox(src, alt = "") {
   if (!src) return;
+
   const { lb, img } = ensureLightboxShell();
+
+  // ✅ FORCE it to be top-level every time
+  if (lb.parentElement !== document.body) {
+    document.body.appendChild(lb);
+  }
+
+  // ✅ Temporarily neutralize transition transforms that “trap” fixed overlays
+  const appEl = document.getElementById("app");
+  if (appEl) {
+    appEl.dataset.prevTransform = appEl.style.transform || "";
+    appEl.dataset.prevFilter = appEl.style.filter || "";
+    appEl.style.transform = "none";
+    appEl.style.filter = "none";
+  }
 
   img.src = src;
   img.alt = alt || "";
 
+  // ✅ Force viewport sizing
+  lb.style.position = "fixed";
+  lb.style.left = "0";
+  lb.style.top = "0";
+  lb.style.right = "0";
+  lb.style.bottom = "0";
+  lb.style.width = "100vw";
+  lb.style.height = "100vh";
+  lb.style.margin = "0";
+  lb.style.zIndex = "2147483647"; // max-ish
+  lb.style.display = "flex";
+
   lb.classList.add("is-open");
   lb.setAttribute("aria-hidden", "false");
-  lb.style.display = "flex";
 
   lockScrollForLightbox();
 }
@@ -731,8 +754,21 @@ function closeLightbox() {
   lb.style.display = "none";
 
   if (img) img.src = "";
+
+  // ✅ Restore transition styles
+  const appEl = document.getElementById("app");
+  if (appEl) {
+    appEl.style.transform = appEl.dataset.prevTransform || "";
+    appEl.style.filter = appEl.dataset.prevFilter || "";
+    delete appEl.dataset.prevTransform;
+    delete appEl.dataset.prevFilter;
+  }
+
   unlockScrollForLightbox();
 }
+
+let __lightboxJustOpenedAt = 0;
+const LIGHTBOX_CLOSE_GUARD_MS = 180;
 
 function bindLightboxOnce() {
   if (document.documentElement.dataset.lightboxBound === "1") return;
