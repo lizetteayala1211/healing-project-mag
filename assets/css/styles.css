@@ -1283,6 +1283,29 @@ html.lb-lock .page {
     padding-bottom: 0 !important;
 }
 
+/* ========================================
+   ARTICLE BIO BLOCK
+======================================== */
+
+.article-bio {
+  margin-top: 2.5rem; /* breathing room after article */
+  padding-top: 2rem;
+}
+
+.article-bio-divider {
+  border: none;
+  height: 1px;
+  background: var(--rule); /* subtle line */
+  margin-bottom: 1.75rem;
+}
+
+.article-bio-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.85;
+  max-width: 680px; /* keeps it elegant */
+}
+
 /* =========================================================
    20) FOOTER TICKER
 ========================================================= */
