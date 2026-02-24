@@ -1337,7 +1337,6 @@ html.lb-lock .page {
     white-space: nowrap;
     will-change: transform;
     color: rgba(255, 255, 255, 0.85);
-
     letter-spacing: 0.015em;
     word-spacing: 0.05em;
     line-height: 1.2;
@@ -1600,6 +1599,7 @@ body.drawer-open {
 /* =========================================================
    24) HOME (SPLASH) — OVERRIDES (KEEP AT VERY BOTTOM)
 ========================================================= */
+
 body.is-home .layout-container {
     max-width: none !important;
     width: 100% !important;
@@ -2224,3 +2224,159 @@ body.is-article .gutter-right {
   .desktop-ui #menu-button { z-index: 5000; } /* keep button clickable */
 }
 
+/* =========================
+   WDW Pull Quote Cards
+========================= */
+
+.wdw-pullquote {
+  margin: 28px 0;
+  padding: 22px 24px;
+  border-radius: 28px;
+  border: 2px solid rgba(0,0,0,0.22);
+  background: var(--wdw-quote-bg, #dfe6db); /* default if you don’t set a color */
+  box-shadow: 0 10px 26px rgba(0,0,0,0.10);
+}
+
+.wdw-pullquote__text {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.45;
+}
+
+.wdw-pullquote__meta {
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.35;
+  opacity: 0.85;
+}
+
+/* optional: subtle quote mark */
+.wdw-pullquote::before {
+  content: "“";
+  display: block;
+  font-size: 44px;
+  line-height: 1;
+  opacity: 0.18;
+  margin-bottom: 8px;
+}
+
+/* If you want tighter on mobile */
+@media (max-width: 700px) {
+  .wdw-pullquote {
+    padding: 18px 18px;
+    border-radius: 22px;
+  }
+  .wdw-pullquote__text {
+    font-size: 18px;
+  }
+}
+
+/* =========================
+   WDW Quote — OUTLINE STYLE
+   (article-card inspired)
+========================= */
+
+.wdw-pullquote {
+  position: relative;
+  margin: 28px 0;
+  padding: 26px 26px 22px;
+
+  /* 👇 KEY CHANGE — no fill */
+  background: #fcd4d408;
+
+  /* 👇 card-style outline */
+  border: 2px solid #fcd4d4; /* deep ink tone */
+  border-radius: 28px;
+
+  /* 👇 subtle elevation like cards */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.09);
+}
+
+/* =========================
+   PULL QUOTE (BREAKOUT)
+========================= */
+
+/* 1) Break out of the prose column */
+.prose .pull-quote {
+  /* kills the "paragraph width" feeling */
+  max-width: none;
+
+  /* pull it wider than the prose text */
+  width: calc(100% + 12vw);
+  margin-left: calc(-6vw);
+
+  /* spacing */
+  margin-top: 42px;
+  margin-bottom: 42px;
+
+  /* the “separate band” look */
+  padding: 34px 42px;
+
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+
+  /* keeps it feeling like a card/band */
+  /* background: rgba(0,0,0,0.04); */
+}
+
+/* clamp the breakout so it doesn’t go wild on huge screens */
+@media (min-width: 1100px) {
+  .prose .pull-quote {
+    width: calc(100% + 275px);
+    margin-left: -138px;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+}
+
+/* mobile: don’t breakout (it’ll feel cramped) */
+@media (max-width: 700px) {
+  .prose .pull-quote {
+    width: calc(100% + 61px);
+    margin-left: -5;
+    padding: 22px 18px;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+}
+
+/* 2) Typography */
+.prose .pull-quote p {
+  margin: 0;
+  font-size: clamp(24px, 2.2vw, 38px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+
+  /* centered like the reference */
+  text-align: center;
+
+  /* slightly softer than pure black looks nice */
+  color: rgba(0,0,0,.88);
+}
+
+/* 3) Big opening quote mark */
+.prose .pull-quote::before {
+  /* content: "“"; */
+  display: block;
+  font-size: 64px;
+  line-height: 1;
+  margin-bottom: 10px;
+
+  /* rose/pink from the article cards vibe */
+  color: #d8a6a3; 
+
+  /* optional: use the logo font */
+  font-family: var(--logo-font, inherit);
+}
+
+.pq-highlight {
+  color: #0F1832; /* or your dark ink */
+  background: rgba(252, 212, 212, 0.65);
+  padding: 0 .14em;
+  border-radius: .18em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  font-weight: 600;
+}

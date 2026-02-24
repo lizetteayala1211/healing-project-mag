@@ -1076,6 +1076,39 @@ function escapeHTML(str = "") {
     .replaceAll("'", "&#039;");
 }
 
+const WDW_CARD_COLORS = [
+  "#3F5448", // deep sage
+  "#9A775E", // taupe
+  "#D2A100", // mustard
+  "#C54A36", // terra
+  "#3C8F92", // teal
+  "#7FAA86", // sage light
+  "#A9C9D6", // powder blue
+  "#D8A6A3", // rose
+];
+
+function isDarkHex(hex) {
+  // quick luminance check for #RRGGBB
+  const h = String(hex || "").replace("#", "");
+  if (h.length !== 6) return false;
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  return luminance < 0.52;
+}
+
+function applyWDWCardStyle(index) {
+  const card = document.getElementById("wdwCard");
+  if (!card) return;
+
+  const color = WDW_CARD_COLORS[index % WDW_CARD_COLORS.length];
+  card.style.setProperty("--wdw-quote-bg", color);
+
+  const dark = isDarkHex(color);
+  card.classList.toggle("is-dark", dark);
+}
+
 function mountWDWCarousel() {
   const bodyEl = document.getElementById("wdwBody");
   const metaEl = document.getElementById("wdwMeta");
@@ -1085,6 +1118,25 @@ function mountWDWCarousel() {
 
   if (!bodyEl || !countEl || !prevBtn || !nextBtn) return;
 
+  // Card-like accent rotation (matches your site palette)
+const WDW_ACCENTS_RGB = [
+  "63 84 72",    // #3F5448 sage
+  "154 119 94",  // #9A775E taupe
+  "210 161 0",   // #D2A100 mustard
+  "197 74 54",   // #C54A36 rust
+  "60 143 146",  // #3C8F92 teal
+  "127 170 134", // #7FAA86 soft green
+  "169 201 214", // #A9C9D6 sky
+  "15 24 50",    // #0F1832 ink/navy
+  "216 166 163"  // #D8A6A3 blush
+];
+
+const frameEl = bodyEl.closest(".prose-carousel__frame");
+if (frameEl) {
+  const accent = WDW_ACCENTS_RGB[wdwIndex % WDW_ACCENTS_RGB.length];
+  frameEl.style.setProperty("--wdw-accent-rgb", accent);
+}
+
   if (bodyEl.dataset.bound === "1") {
     renderWDW();
     return;
@@ -1093,7 +1145,11 @@ function mountWDWCarousel() {
 
   function renderWDW() {
     const item = WDW_REFLECTIONS[wdwIndex];
+
+    applyWDWCardStyle(wdwIndex);
     if (!item) return;
+
+    applyWDWCardStyle(wdwIndex);
 
     if (metaEl) metaEl.textContent = "";
 
